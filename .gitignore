@@ -4,6 +4,8 @@ frameworks_tests/cpp_loops_o3
 
 signals_comparison/*.root
 
+first_steps/check_top_channel
+
 
 # Prerequisites
 *.d
