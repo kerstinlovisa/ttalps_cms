@@ -10,32 +10,27 @@
 class PhysicsObject;
 typedef std::vector<std::shared_ptr<PhysicsObject>> PhysicsObjects;
 
-/// Class representing a physics object, such as gen particle, reconstructed photon/electron,
-/// calorimeter tower, supercluster etc.
 class PhysicsObject
 {
 public:
-  /// Default constructor
   PhysicsObject();
-
-  /// Default destructor
   ~PhysicsObject();
 
-  // Trivial getters:
+  
   double GetEta() const;
   double GetPhi() const;
   double GetEt() const;
   double GetPt() const;
 
   inline float GetFloat(std::string name){return *values_float[name];}
+  inline float GetInt(std::string name){return *values_int[name];}
 
 private:
-  double eta;    ///< Pseudorapidity
-  double phi;    ///< Azimuthal angle
-  double energy; ///< Energy
-
   std::map<std::string, UInt_t> values_uint;
-  std::map<std::string, float*> values_float;
+  std::map<std::string, Float_t*> values_float;
+  std::map<std::string, UChar_t*> values_uchar;
+  std::map<std::string, Int_t*> values_int;
+  std::map<std::string, Bool_t*> values_bool;
 
   friend class EventReader;
 };
