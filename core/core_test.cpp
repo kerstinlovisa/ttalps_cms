@@ -9,38 +9,49 @@ int main()
     string inputPath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root";
     auto eventReader = make_unique<EventReader>(inputPath);
 
-    cout<<"\n\nentering event loop\n\n"<<endl;
+    // auto nEvents = eventReader->GetNevents();
 
-    for(int i_event=0; i_event<10; i_event++){
-        cout<<"\n\nevent: "<<i_event<<endl;
-        auto event = eventReader->GetEvent(i_event);
-        
-        uint runNumber = event->GetUint("run");
+    for (int iEvent = 0; iEvent < 3; iEvent++)
+    {
+        cout<<"\n event "<<iEvent<<endl;
+        auto event = eventReader->GetEvent(iEvent);
 
-        cout<<"run number: "<<runNumber<<endl;
+
+
+        // use some event-level info
+        ULong64_t eventNumber = event->Get("event");
+        double eventNumbers = event->Get("events"); // this is to demonstrate what will happen if you try to access a branch that doesn't exist
+        float runNumber = event->Get("run"); // this is to demonstrate what will happen if you try to cast to a wrong type
+        bool hltFlag = event->Get("HLT_Mu8_IP3_part4");
+        cout<<"Event "<<eventNumber<<" from run: "<<runNumber<<" has the HLT flag: "<<hltFlag<<endl;
+
+        // get a collection and its size
+        uint nGenParticles = event->Get("nGenPart");
+        int maxParticles = nGenParticles > 10 ? 10 : nGenParticles;
+        auto genParticles = event->GetCollection("GenPart");
         
-        uint nMuons = event->GetUint("nMuons");
-        cout<<"n muons: "<<nMuons<<endl;
+        for (int iParticle = 0; iParticle < maxParticles; iParticle++)
+        {
+            // access elements of the collection
+            auto particle = genParticles->at(iParticle);
+
+            // use some element-level info
+            int pdgId = particle->Get("pdgId");
+            float pt = particle->Get("pt");
+            cout<<"\tParticle ("<<pdgId<<") pt: "<<pt<<endl;
+        }
+
+        // and just another example with muons
+        uint nMuons = event->Get("nMuon");
+        if (nMuons < 1)
+            continue;
 
         auto muons = event->GetCollection("Muon");
-
-        cout<<"starting muons loop"<<endl;
-        for(int i_muon=0; i_muon<nMuons; i_muon++){
-            float pt = muons->at(i_muon)->GetFloat("pt");
-            cout<<"muon pt: "<<pt<<endl;
+        for (int iMuon = 0; iMuon < nMuons; iMuon++)
+        {
+            float pt = muons->at(iMuon)->Get("pt");
+            cout<<"\tMuon pt: "<<pt<<endl;
         }
-
-        uint nGenParticles = event->GetUint("nGenPart");
-        auto genParticles = event->GetCollection("GenPart");
-
-        for(int i_part=0; i_part<nGenParticles; i_part++){
-            int pdgId =  genParticles->at(i_part)->GetInt("pdgId");
-            float pt = genParticles->at(i_part)->GetFloat("pt");
-            cout<<"gen particle: "<<pdgId<<"\tpt: "<<pt<<endl;
-        }
-
-        cout<<"finished event"<<endl;
-
     }
 
     return 0;

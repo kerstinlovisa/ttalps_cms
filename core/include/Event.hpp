@@ -11,25 +11,86 @@
 #include "PhysicsObject.hpp"
 // #include "ConfigManager.hpp"
 
-/// This class represents a single event with all its gen-level and reconstructed objects,
-/// as well as triggers and other event-wide properties
+#include <type_traits>
+
 class Event
 {
 public:
   Event();
   ~Event();
 
-  /// Removes all physics objects from the event, resets all flags
   void Reset();
 
+  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) { return collections[name]; }
 
-  inline UInt_t GetUint(std::string branchName){return values_uint[branchName];}
-  inline UInt_t GetInt(std::string branchName){return values_int[branchName];}
-  inline Bool_t GetBool(std::string branchName){return values_bool[branchName];}
-  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name){ return collections[name];}
+  inline auto Get(std::string branchName)
+  {
+    if (values_types.count(branchName) == 0)
+    {
+      std::cout << "\033[1;31m ERROR -- you're trying to access incorrect branch: " << branchName << "\033[0m"
+                << std::endl;
+    }
 
+    struct result
+    {
+      operator UInt_t()
+      {
+        checkType("UInt_t");
+        return event->GetUint(branchName);
+      }
+      operator Int_t()
+      {
+        checkType("Int_t");
+        return event->GetInt(branchName);
+      }
+      operator Bool_t()
+      {
+        checkType("Bool_t");
+        return event->GetBool(branchName);
+      }
+      operator Float_t()
+      {
+        checkType("Float_t");
+        return event->GetFloat(branchName);
+      }
+      operator ULong64_t()
+      {
+        checkType("ULong64_t");
+        return event->GetULong(branchName);
+      }
+      operator UChar_t()
+      {
+        checkType("UChar_t");
+        return event->GetUChar(branchName);
+      }
+
+      Event *event;
+      std::string branchName;
+
+      void checkType(std::string typeName)
+      {
+        std::string branchType = event->values_types[branchName];
+        if (branchType != typeName)
+        {
+          std::cout << "\033[1;33m WARNING -- you're trying to cast branch " << branchName << " (" << branchType << ") to " << typeName << "\033[0m"
+                    << std::endl;
+        }
+      }
+    };
+
+    return result{this, branchName};
+  }
+
+  std::map<std::string, std::string> values_types; /// contains all branch names and corresponding types
 
 private:
+  inline UInt_t GetUint(std::string branchName) { return values_uint[branchName]; }
+  inline UInt_t GetInt(std::string branchName) { return values_int[branchName]; }
+  inline Bool_t GetBool(std::string branchName) { return values_bool[branchName]; }
+  inline Float_t GetFloat(std::string branchName) { return values_float[branchName]; }
+  inline ULong64_t GetULong(std::string branchName) { return values_ulong[branchName]; }
+  inline UChar_t GetUChar(std::string branchName) { return values_uchar[branchName]; }
+
   std::map<std::string, UInt_t> values_uint;
   std::map<std::string, Int_t> values_int;
   std::map<std::string, Bool_t> values_bool;
