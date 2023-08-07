@@ -14,7 +14,9 @@ SET(CMAKE_INSTALL_RPATH "/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_executable(core_test core_test.cpp)
+add_executable(top_trig_efficiency top_trig_efficiency.cpp)
 set_property(TARGET core_test PROPERTY CXX_STANDARD 17)
+set_property(TARGET top_trig_efficiency PROPERTY CXX_STANDARD 17)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
@@ -22,8 +24,10 @@ add_library(OldSchoolCore   src/EventReader.cpp
                             src/EventWriter.cpp
                             src/Event.cpp
                             src/PhysicsObject.cpp
+                            event_tools.hpp
 )
 
 set_property(TARGET OldSchoolCore PROPERTY CXX_STANDARD 17)
 
 target_link_libraries(core_test OldSchoolCore ${ROOT_LIBRARIES})
+target_link_libraries(top_trig_efficiency OldSchoolCore ${ROOT_LIBRARIES})
