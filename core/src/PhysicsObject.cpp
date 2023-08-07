@@ -6,10 +6,8 @@
 
 PhysicsObject::PhysicsObject()
 {
-  
 }
 
 PhysicsObject::~PhysicsObject()
 {
-  
 }
