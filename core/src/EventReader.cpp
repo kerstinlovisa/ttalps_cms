@@ -46,7 +46,27 @@ void EventReader::SetupBranches(string inputPath)
     if (branchType == "")
       cout << "ERROR -- couldn't find branch type for branch: " << branchName << endl;
 
-    if (branchName.find("_") == std::string::npos || branchName.find("HLT") == 0 || branchName.find("Flag") == 0 || branchName.find("L1") == 0 || branchName.find("PV_") == 0 || branchName.find("MET_") == 0 || branchName.find("GenMET_") == 0 || branchName.find("CaloMET") == 0 || branchName.find("ChsMET") == 0 || branchName.find("DeepMETResolutionTune") == 0 || branchName.find("DeepMETResponseTune") == 0 || branchName.find("GenVtx") == 0 || branchName.find("Generator") == 0 || branchName.find("HTXS") == 0)
+    if (branchName.find("_") == std::string::npos 
+    || branchName.find("HLT") == 0 
+    || branchName.find("Flag") == 0 
+    || branchName.find("L1") == 0 
+    || branchName.find("PV_") == 0 
+    || branchName.find("MET_") == 0 
+    || branchName.find("GenMET_") == 0 
+    || branchName.find("CaloMET") == 0 
+    || branchName.find("ChsMET") == 0 
+    || branchName.find("DeepMETResolutionTune") == 0 
+    || branchName.find("DeepMETResponseTune") == 0 
+    || branchName.find("GenVtx") == 0 
+    || branchName.find("Generator") == 0 
+    || branchName.find("HTXS") == 0
+    || branchName.find("Pileup_") == 0
+    || branchName.find("PuppiMET") == 0
+    || branchName.find("RawMET") == 0
+    || branchName.find("RawPuppiMET") == 0
+    || branchName.find("TkMET") == 0
+    || branchName.find("btagWeight") == 0
+    )
     { // it's a single number
       currentEvent->values_types[branchName] = branchType;
 
@@ -152,10 +172,10 @@ shared_ptr<Event> EventReader::GetEvent(int iEvent)
   for (auto &[name, tree] : inputTrees)
     tree->GetEntry(iEvent);
 
-  // for (auto &[name, collection] : currentEvent->collections)
-  // {
-  //   UInt_t collectionSize = currentEvent->GetUint("n" + name);
-  //   collection->resize(collectionSize);
-  // }
+  for (auto &[name, collection] : currentEvent->collections)
+  {
+    UInt_t collectionSize = currentEvent->Get("n" + name);
+    collection->ChangeVisibleSize(collectionSize);
+  }
   return currentEvent;
 }

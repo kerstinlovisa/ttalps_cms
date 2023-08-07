@@ -57,7 +57,7 @@ private:
 
     bool isCorrectType(std::string typeName)
     {
-        std::string branchType = object->values_types[branchName];
+        std::string branchType = object->values_types.at(branchName);
         if (branchType != typeName)
         {
             Warn() << "Casting a physics object-level branch " << branchName << " (" << branchType << ") to " << typeName << "\n";
