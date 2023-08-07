@@ -43,12 +43,13 @@ void EventReader::SetupBranches(string inputPath, vector<string> outputPaths)
     string branchName = branch->GetName();
     string branchType = branch->FindLeaf(branchName.c_str())->GetTypeName();
 
-    if(branchType=="") cout<<"ERROR -- couldn't find branch type for branch: "<<branchName<<endl;
-    
-    currentEvent->values_types[branchName] = branchType;
+    if (branchType == "")
+      cout << "ERROR -- couldn't find branch type for branch: " << branchName << endl;
 
     if (branchName.find("_") == std::string::npos || branchName.find("HLT") == 0 || branchName.find("Flag") == 0 || branchName.find("L1") == 0 || branchName.find("PV_") == 0 || branchName.find("MET_") == 0 || branchName.find("GenMET_") == 0 || branchName.find("CaloMET") == 0 || branchName.find("ChsMET") == 0 || branchName.find("DeepMETResolutionTune") == 0 || branchName.find("DeepMETResponseTune") == 0 || branchName.find("GenVtx") == 0 || branchName.find("Generator") == 0 || branchName.find("HTXS") == 0)
     { // it's a single number
+      currentEvent->values_types[branchName] = branchType;
+
       if (branchType == "UInt_t")
       {
         currentEvent->values_uint[branchName] = 0;
@@ -93,10 +94,16 @@ void EventReader::SetupBranches(string inputPath, vector<string> outputPaths)
       if (!currentEvent->collections.count(collectionName))
       {
         currentEvent->collections[collectionName] = make_shared<PhysicsObjects>();
+
         for (int i = 0; i < maxCollectionElements; i++)
         {
           currentEvent->collections[collectionName]->push_back(make_shared<PhysicsObject>());
         }
+      }
+
+      for (int i = 0; i < maxCollectionElements; i++)
+      {
+        currentEvent->collections[collectionName]->at(i)->values_types[variableName] = branchType;
       }
 
       if (branchType == "Float_t")
