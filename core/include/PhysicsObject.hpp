@@ -16,27 +16,73 @@ public:
   PhysicsObject();
   ~PhysicsObject();
 
-  // double GetEta() const;
-  // double GetPhi() const;
-  // double GetEt() const;
-  // double GetPt() const;
+  void Reset();
 
   inline auto Get(std::string branchName)
   {
+    bool badBranch = false;
+
+    if (values_types.count(branchName) == 0)
+    {
+      std::cout << "\033[1;31m ERROR -- you're trying to access incorrect physics object-level branch: " << branchName << "\033[0m"
+                << std::endl;
+      badBranch = true;
+    }
+
     struct result
     {
-      operator UInt_t() { return physicsObject->GetUint(branchName); }
-      operator Int_t() { return physicsObject->GetInt(branchName); }
-      operator Bool_t() { return physicsObject->GetBool(branchName); }
-      operator Float_t() { return physicsObject->GetFloat(branchName); }
-      operator ULong64_t() { return physicsObject->GetULong(branchName); }
-      operator UChar_t() { return physicsObject->GetUChar(branchName); }
+      operator UInt_t()
+      {
+        if (badBranch || !isCorrectType("UInt_t"))return 0;
+        return physicsObject->GetUint(branchName);
+      }
+      operator Int_t()
+      {
+        if (badBranch || !isCorrectType("Int_t"))return 0;
+        return physicsObject->GetInt(branchName);
+      }
+      operator Bool_t()
+      {
+        if (badBranch || !isCorrectType("Bool_t"))return 0;
+        return physicsObject->GetBool(branchName);
+      }
+      operator Float_t()
+      {
+        if (badBranch || !isCorrectType("Float_t"))return 0;
+        return physicsObject->GetFloat(branchName);;
+      }
+      operator ULong64_t()
+      {
+        if (badBranch || !isCorrectType("ULong64_t"))return 0;
+        return physicsObject->GetULong(branchName);
+      }
+      operator UChar_t()
+      {
+        if (badBranch || !isCorrectType("UChar_t"))return 0;
+        return physicsObject->GetUChar(branchName);
+      }
 
       PhysicsObject *physicsObject;
       std::string branchName;
+      bool badBranch;
+
+      bool isCorrectType(std::string typeName)
+      {
+        std::string branchType = physicsObject->values_types[branchName];
+        if (branchType != typeName)
+        {
+          std::cout << "\033[1;33m WARNING -- you're trying to cast a physics object-level branch " << branchName << " (" << branchType << ") to " << typeName << "\033[0m"
+                    << std::endl;
+          return false;
+        }
+        return true;
+      }
     };
-    return result{this, branchName};
+
+    return result{this, branchName, badBranch};
   }
+
+  std::map<std::string, std::string> values_types; /// contains all branch names and corresponding types
 
 private:
   inline UInt_t GetUint(std::string branchName) { return *values_uint[branchName]; }
