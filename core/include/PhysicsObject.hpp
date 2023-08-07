@@ -8,6 +8,7 @@
 #include "Helpers.hpp"
 #include "Multitype.hpp"
 
+
 class PhysicsObject;
 typedef std::vector<std::shared_ptr<PhysicsObject>> PhysicsObjects;
 
@@ -25,8 +26,7 @@ public:
 
     if (values_types.count(branchName) == 0)
     {
-      std::cout << "\033[1;31m ERROR -- you're trying to access incorrect physics object-level branch: " << branchName << "\033[0m"
-                << std::endl;
+      Err() << "Trying to access incorrect physics object-level branch: " << branchName<<"\n";
       badBranch = true;
     }
 

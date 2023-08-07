@@ -28,9 +28,8 @@ public:
 
     if (values_types.count(branchName) == 0)
     {
-      std::cout << "\033[1;31m ERROR -- you're trying to access incorrect event-level branch: " << branchName << "\033[0m"
-                << std::endl;
-                badBranch = true;
+      Err() << "Trying to access incorrect event-level branch: " << branchName << "\n";
+      badBranch = true;
     }
 
     return Multitype(this, branchName, badBranch);
@@ -61,7 +60,8 @@ private:
   std::map<std::string, std::shared_ptr<PhysicsObjects>> collections;
 
   friend class EventReader;
-  template <typename T> friend class Multitype;
+  template <typename T>
+  friend class Multitype;
 };
 
 #endif /* Event_hpp */

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool showBadExamples = false;
+bool showBadExamples = true;
 
 void printEventInto(const shared_ptr<Event> event)
 {
@@ -71,7 +71,7 @@ int main()
 
     // auto nEvents = eventReader->GetNevents();
 
-    for (int iEvent = 0; iEvent < 100; iEvent++)
+    for (int iEvent = 0; iEvent < 10; iEvent++)
     {
         cout << "\n event " << iEvent << endl;
         auto event = eventReader->GetEvent(iEvent);

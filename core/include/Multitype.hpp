@@ -1,4 +1,4 @@
-//  Event.hpp
+//  Multitype.hpp
 //
 //  Created by Jeremi Niedziela on 07/08/2023.
 
@@ -60,8 +60,7 @@ private:
         std::string branchType = object->values_types[branchName];
         if (branchType != typeName)
         {
-            std::cout << "\033[1;33m WARNING -- you're trying to cast a physics object-level branch " << branchName << " (" << branchType << ") to " << typeName << "\033[0m"
-                      << std::endl;
+            Warn() << "Casting a physics object-level branch " << branchName << " (" << branchType << ") to " << typeName << "\n";
             return false;
         }
         return true;
