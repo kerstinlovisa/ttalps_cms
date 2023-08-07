@@ -21,11 +21,20 @@ vector<string> filenames = {
   "TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root",
 };
 
+struct ParticleObject {
+  float pt;
+  float eta;
+  string type;
+  float btagDeepB = 0;
+};
+
 map<string,vector<string>> trigger_sets = {
   {"had_both",            {"HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59",
                           "HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94"}},
   {"had_Singlebtag",      {"HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59"}},
   {"had_Doublebtag",      {"HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94"}},
+  // {"had_Doublebtag_5jet100", {"HLT_PFHT400_FivePFJet_100_100_60_30_30_DoublePFBTagDeepCSV_4p5"}},
+  // {"had_Doublebtag_5jet120", {"HLT_PFHT400_FivePFJet_120_120_60_30_30_DoublePFBTagDeepCSV_4p5"}},
 
   {"he_both",             {"HLT_Ele28_eta2p1_WPTight_Gsf_HT150",
                           "HLT_Ele30_eta2p1_WPTight_Gsf_CentralPFJet35_EleCleaned"}},
@@ -33,6 +42,10 @@ map<string,vector<string>> trigger_sets = {
   {"he_ele30_Jet35",      {"HLT_Ele30_eta2p1_WPTight_Gsf_CentralPFJet35_EleCleaned"}},
   
   {"ele28",               {"HLT_Ele28_WPTight_Gsf"}},
+  {"ele30",               {"HLT_Ele30_WPTight_Gsf"}},
+  {"ele32",               {"HLT_Ele32_WPTight_Gsf"}},
+  {"ele35",               {"HLT_Ele35_WPTight_Gsf"}},
+  {"ele38",               {"HLT_Ele38_WPTight_Gsf"}},
   {"ele23_ele12",         {"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL"}},
 
   {"isomu24",             {"HLT_IsoMu24"}},
@@ -50,10 +63,17 @@ vector<string> variable_names = {
   "jet_ht",
 };
 
+vector<string> selection_names = {
+  "single_lepton",
+  "dilepton",
+  "hadron",
+};
+
 vector<string> short_names = {"","hh","he","hmu","htau","ee","mumu","tautau","emu","etau","mutau"};
 
-map<string, TH1D*> get_setup_histograms() {
-  map<string, TH1D*> hists;
+map<string, TH1D*> hists;
+
+void setup_histograms() {
   for(auto short_name : short_names){
     if(short_name != "") short_name = short_name+"_";
     for(auto variable : variable_names){
@@ -63,16 +83,15 @@ map<string, TH1D*> get_setup_histograms() {
         string set_name = trigger_set.first;
         hists[short_name+variable+"_"+set_name] = new TH1D((short_name+variable+"_"+set_name).c_str(), (short_name+variable+"_"+set_name).c_str(), 1000, 0, 1000);
         hists[short_name+variable+"_"+set_name+"_eff"] = new TH1D((short_name+variable+"_"+set_name+"_eff").c_str(), (short_name+variable+"_"+set_name+"_eff").c_str(), 1000, 0, 1000);
-      }
-      for(auto &selection : selections){
-        hists[short_name+variable+"_"+selection] = new TH1D((short_name+variable+"_"+selection).c_str(), (short_name+variable+"_"+selection).c_str(), 1000, 0, 1000);
+        for(auto &selection : selection_names){
+          hists[short_name+variable+"_"+set_name+"_"+selection] = new TH1D((short_name+variable+"_"+set_name+"_"+selection).c_str(), (short_name+variable+"_"+set_name+"_"+selection).c_str(), 1000, 0, 1000);
+        }
       }
     }
   }
-  return hists;
 }
 
-map<string, TH1D*> fill_trigger_efficiencies(map<string, TH1D*> hists){
+void fill_trigger_efficiencies(){
   TH1D* hist_tmp;
   for(auto short_name : short_names){
     if(short_name != "") short_name = short_name+"_";
@@ -85,7 +104,6 @@ map<string, TH1D*> fill_trigger_efficiencies(map<string, TH1D*> hists){
       }
     }
   }
-  return hists;
 }
 
 map<string, bool> set_trigger_branches(TTree* input_tree){
@@ -104,39 +122,156 @@ map<string, bool> set_trigger_branches(TTree* input_tree){
   return triggers;
 }
 
-float get_max_pt(int n_particles, float* particle_pt){
+float get_max_pt(vector<ParticleObject> particles){
   float max_pt = 0;
-  for(int i=0; i<n_particles; i++){ 
-      if(particle_pt[i] > max_pt) max_pt=particle_pt[i];
+  for(int i=0; i<particles.size(); i++){ 
+      if(particles[i].pt> max_pt) max_pt=particles[i].pt;
   }
   return max_pt;
 }
 
-float get_jet_ht(int n_jets, float* jet_pt){
-  float jet_ht = 0;
-  for(int i=0; i<n_jets; i++){ 
-      jet_ht += jet_pt[i];
+float get_ht(vector<ParticleObject> particles){
+  float ht = 0;
+  for(int i=0; i<particles.size(); i++){ 
+      ht += particles[i].pt;
   }
-  return jet_ht;
+  return ht;
 }
 
-void fill_hists_for_trigger_sets(float muon_max_pt, float ele_max_pt, float jet_max_pt, float jet_ht, 
-                                map<string, TH1D*> hists, map<string, bool> trigger_branches, string short_name=""){
-  if(short_name != "") short_name = short_name+"_";
-  for(auto &trigger_set : trigger_sets){
-    for(auto &trigger : trigger_set.second){
-      if(trigger_branches[trigger]){
-        hists[short_name+"muon_max_pt_"+trigger_set.first]->Fill(muon_max_pt);
-        hists[short_name+"ele_max_pt_"+trigger_set.first]->Fill(ele_max_pt);
-        hists[short_name+"jet_max_pt_"+trigger_set.first]->Fill(jet_max_pt);
-        hists[short_name+"jet_ht_"+trigger_set.first]->Fill(jet_ht);
-        break;
-      }
+
+vector<ParticleObject> get_particles_in_event(int n_particles, float* particle_pt, float* particle_eta, string type, float* particle_btagDeepB = NULL){
+  vector<ParticleObject> particles;
+  for(int i = 0; i < n_particles; i++){
+    auto particle  = ParticleObject();
+    particle.pt = particle_pt[i];
+    particle.eta = particle_eta[i];
+    particle.type = type;
+    if(particle_btagDeepB != NULL) particle.btagDeepB = particle_btagDeepB[i];
+    particles.push_back(particle);
+  }
+  return particles;
+}
+
+
+void fill_hist_variables(float muon_max_pt, float ele_max_pt, float jet_max_pt, float jet_ht, string prefix = "", string suffix = ""){
+  if(prefix != "") prefix = prefix+"_";
+  if(suffix != "") suffix = "_"+suffix;
+
+  hists[prefix+"muon_max_pt"+suffix]->Fill(muon_max_pt);
+  hists[prefix+"ele_max_pt"+suffix]->Fill(ele_max_pt);
+  hists[prefix+"jet_max_pt"+suffix]->Fill(jet_max_pt);
+  hists[prefix+"jet_ht"+suffix]->Fill(jet_ht);  
+}
+
+
+bool passes_single_lepton_selections(vector<ParticleObject> muons, vector<ParticleObject> electrons, vector<ParticleObject> jets, float met_pt){
+
+  int leptons_pt30 = 0;
+  int leptons_pt15 = 0;
+  int jets_btagged = 0;
+  int jets_pt30;
+
+  for(auto muon : muons){
+    if(muon.pt > 30 && abs(muon.eta) <2.4) leptons_pt30++;
+    else if(muon.pt > 15 && abs(muon.eta) <2.5) leptons_pt15++;
+  }
+  for(auto electron : electrons){
+    if(electron.pt > 30 && abs(electron.eta) <2.4) leptons_pt30++;
+    else if(electron.pt > 15 && abs(electron.eta) <2.5) leptons_pt15++;
+  }
+  for(auto jet : jets){
+    if(jet.pt > 30 && abs(jet.eta) < 2.4) {
+      jets_pt30++;
+      if(jet.btagDeepB > 0.5) jets_btagged++;
     }
   }
+
+  if(leptons_pt30 != 1) return false;
+  if(leptons_pt15 != 0) return false;
+  if(met_pt <= 30) return false;
+  if(jets_btagged < 2) return false;
+  if(jets_pt30 < 4) return false; 
+  return true;
 }
 
-void save_hists(map<string, TH1D*> hists, string output_path){
+bool passes_dilepton_selections(vector<ParticleObject> muons, vector<ParticleObject> electrons, vector<ParticleObject> jets, float met_pt){
+
+  int muons_pt30 = 0;
+  int electrons_pt30;
+  int jets_btagged = 0;
+
+  for(auto muon : muons){
+    if(muon.pt > 30 && abs(muon.eta) <2.4) muons_pt30++;
+  }
+  for(auto electron : electrons){
+    if(electron.pt > 30 && abs(electron.eta) <2.4) electrons_pt30++;
+  }
+  for(auto jet : jets){
+    if(jet.pt > 30 && abs(jet.eta) < 2.4) {
+      if(jet.btagDeepB > 0.5) jets_btagged++;
+    }
+  }
+
+  if((muons_pt30+electrons_pt30) < 2) return false;
+  if(met_pt <= 30) return false;
+  if(jets_btagged < 2) return false;
+  return true;
+}
+
+
+bool passes_hadron_selections(vector<ParticleObject> muons, vector<ParticleObject> electrons, vector<ParticleObject> jets, float met_pt){
+
+  int jets_btagged = 0;
+  int jets_pt30;
+
+  for(auto jet : jets){
+    if(jet.pt > 30 && abs(jet.eta) < 2.4) {
+      jets_pt30++;
+      if(jet.btagDeepB > 0.5) jets_btagged++;
+    }
+  }
+
+  if(jets_btagged < 2) return false;
+  if(jets_pt30 < 6) return false;
+  return true;
+}
+
+
+void fill_hists_for_trigger_sets(vector<ParticleObject> muons, vector<ParticleObject> electrons, vector<ParticleObject> jets, float met_pt,
+                                map<string, bool> trigger_branches, string short_name=""){
+
+  float muon_max_pt = get_max_pt(muons);
+  float ele_max_pt = get_max_pt(electrons);
+  float jet_max_pt = get_max_pt(jets);
+  float jet_ht = get_ht(jets);
+
+  bool passes_triggers;
+  bool passes_triggers_single_lepton;
+  bool passes_triggers_dilepton;
+  bool passes_triggers_hadron;
+
+  for(auto &trigger_set : trigger_sets){
+    passes_triggers = false;
+    passes_triggers_single_lepton = false;
+    passes_triggers_dilepton = false;
+    passes_triggers_hadron = false;
+    for(auto &trigger : trigger_set.second){
+      if(trigger_branches[trigger]){
+        passes_triggers = true;
+        if(passes_single_lepton_selections(muons, electrons, jets, met_pt)) passes_triggers_single_lepton = true;
+        if(passes_dilepton_selections(muons, electrons, jets, met_pt)) passes_triggers_dilepton = true;
+        if(passes_hadron_selections(muons, electrons, jets, met_pt)) passes_triggers_hadron = true;
+      }
+    }
+    if(passes_triggers) fill_hist_variables(muon_max_pt,ele_max_pt,jet_max_pt,jet_ht,short_name,trigger_set.first);
+    if(passes_triggers_single_lepton) fill_hist_variables(muon_max_pt,ele_max_pt,jet_max_pt,jet_ht,short_name,trigger_set.first+"_single_lepton");
+    if(passes_triggers_dilepton) fill_hist_variables(muon_max_pt,ele_max_pt,jet_max_pt,jet_ht,short_name,trigger_set.first+"_dilepton");
+    if(passes_triggers_hadron) fill_hist_variables(muon_max_pt,ele_max_pt,jet_max_pt,jet_ht,short_name,trigger_set.first+"_hadron");
+  }
+}
+
+
+void save_hists(string output_path){
   auto output_file = new TFile((output_path).c_str(), "recreate");
   output_file->cd();
 
@@ -162,12 +297,17 @@ void save_hists(map<string, TH1D*> hists, string output_path){
 int main()
 {
 
-  uint n_muons = 0;
+  uint n_eles = 0;
   float ele_pt[9999];
-  uint n_ele = 0;
+  float ele_eta[9999];
+  uint n_muons = 0;
   float muon_pt[9999];
+  float muon_eta[9999];
   uint n_jets = 0;
   float jet_pt[9999];
+  float jet_eta[9999];
+  float jet_btagDeepB[9999];
+  float met_pt;
   uint nGenPart = 0;
   int GenPart_pdgId[9999];
   int GenPart_genPartIdxMother[9999];
@@ -179,10 +319,15 @@ int main()
     
     input_tree->SetBranchAddress("nMuon", &n_muons);
     input_tree->SetBranchAddress("Muon_pt", &muon_pt);
-    input_tree->SetBranchAddress("nElectron", &n_ele);
+    input_tree->SetBranchAddress("Muon_eta", &muon_eta);
+    input_tree->SetBranchAddress("nElectron", &n_eles);
     input_tree->SetBranchAddress("Electron_pt", &ele_pt);
+    input_tree->SetBranchAddress("Electron_eta", &ele_eta);
     input_tree->SetBranchAddress("nJet", &n_jets);
     input_tree->SetBranchAddress("Jet_pt", &jet_pt);
+    input_tree->SetBranchAddress("Jet_eta", &jet_eta);
+    input_tree->SetBranchAddress("Jet_btagDeepB", &jet_btagDeepB);
+    input_tree->SetBranchAddress("MET_pt", &met_pt);
     input_tree->SetBranchAddress("nGenPart", &nGenPart);
     input_tree->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId);
     input_tree->SetBranchAddress("GenPart_genPartIdxMother", &GenPart_genPartIdxMother);
@@ -192,7 +337,7 @@ int main()
     
     int i_event_output = 0;
 
-    map<string, TH1D*> hists = get_setup_histograms();
+    setup_histograms();
 
     for(int i_event=0; i_event<input_tree->GetEntries(); i_event++){
       if(max_events >= 0 && i_event>max_events) break;
@@ -201,34 +346,29 @@ int main()
       input_tree->GetEntry(i_event);
 
       string short_name = get_short_name(nGenPart, GenPart_pdgId, GenPart_genPartIdxMother, GenPart_statusFlags);
-      if(short_name=="error"){
-        cout << "Short name error - skipping event" << endl;
-        continue;
-      }
+      if(short_name=="error") continue;
 
       // if(n_muons == 0) continue;
 
-      float muon_max_pt = get_max_pt(n_muons, muon_pt);
-      float ele_max_pt = get_max_pt(n_ele, ele_pt);
-      float jet_max_pt = get_max_pt(n_jets, jet_pt);
-      float jet_ht = get_jet_ht(n_jets, jet_pt);
-      
-      hists["muon_max_pt"]->Fill(muon_max_pt);
-      hists["ele_max_pt"]->Fill(ele_max_pt);
-      hists["jet_max_pt"]->Fill(jet_max_pt);
-      hists["jet_ht"]->Fill(jet_ht);
-      hists[short_name+"_muon_max_pt"]->Fill(muon_max_pt);
-      hists[short_name+"_ele_max_pt"]->Fill(ele_max_pt);
-      hists[short_name+"_jet_max_pt"]->Fill(jet_max_pt);
-      hists[short_name+"_jet_ht"]->Fill(jet_ht);
+      vector<ParticleObject> muons = get_particles_in_event(n_muons, muon_pt, muon_eta, "muon");
+      vector<ParticleObject> electrons = get_particles_in_event(n_eles, ele_pt, ele_eta, "electron");
+      vector<ParticleObject> jets = get_particles_in_event(n_jets, jet_pt, jet_eta, "jet", jet_btagDeepB);
 
-      fill_hists_for_trigger_sets(muon_max_pt, ele_max_pt, jet_max_pt, jet_ht, hists, trigger_branches, "");
-      fill_hists_for_trigger_sets(muon_max_pt, ele_max_pt, jet_max_pt, jet_ht, hists, trigger_branches, short_name);
+      float muon_max_pt = get_max_pt(muons);
+      float ele_max_pt = get_max_pt(electrons);
+      float jet_max_pt = get_max_pt(jets);
+      float jet_ht = get_ht(jets);
+
+      fill_hist_variables(muon_max_pt,ele_max_pt,jet_max_pt,jet_ht);
+      fill_hist_variables(muon_max_pt,ele_max_pt,jet_max_pt,jet_ht,short_name);
+
+      fill_hists_for_trigger_sets(muons, electrons, jets, met_pt, trigger_branches, "");
+      fill_hists_for_trigger_sets(muons, electrons, jets, met_pt, trigger_branches, short_name);
     }
 
-    hists = fill_trigger_efficiencies(hists);
+    fill_trigger_efficiencies();
 
-    save_hists(hists, output_file_path+filename);
+    save_hists(output_file_path+filename);
 
     input_file->Close();
   }
