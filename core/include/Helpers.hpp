@@ -36,6 +36,8 @@
 #include <string>
 #include <any>
 
+#include "Logger.hpp"
+
 const int maxCollectionElements = 9999;
 
 inline std::vector<std::string> getListOfTrees(TFile *file)
