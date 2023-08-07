@@ -5,7 +5,8 @@
 
 using namespace std;
 
-bool showBadExamples = true;
+bool showBadExamples = false;
+bool showFatallyBadExamples = false;
 
 void printEventInto(const shared_ptr<Event> event)
 {
@@ -29,11 +30,8 @@ void printGenParticlesInfo(const shared_ptr<Event> event)
     int maxParticles = nGenParticles > 10 ? 10 : nGenParticles;
     auto genParticles = event->GetCollection("GenPart");
 
-    for (int iParticle = 0; iParticle < maxParticles; iParticle++)
+    for (auto particle : *genParticles)
     {
-        // access elements of the collection
-        auto particle = genParticles->at(iParticle);
-
         // use some element-level info
         int pdgId = particle->Get("pdgId");
         float pt = particle->Get("pt");
@@ -43,22 +41,19 @@ void printGenParticlesInfo(const shared_ptr<Event> event)
 
 void printMuonsInfo(const shared_ptr<Event> event)
 {
-    if (showBadExamples)
+    if (showFatallyBadExamples)
     {
         auto muonsBad = event->GetCollection("Muons"); // this is to demonstrate what will happen if you try t access a branch that doesn't exist
     }
 
     auto muons = event->GetCollection("Muon");
 
-    uint nMuons = event->Get("nMuon");
-
-    for (int iMuon = 0; iMuon < nMuons; iMuon++)
-    {
-        float pt = muons->at(iMuon)->Get("pt");
-
+    for (auto muon : *muons)
+    {   
+        float pt = muon->Get("pt");
         if (showBadExamples)
         {
-            bool ptBad = muons->at(iMuon)->Get("pt"); // this is to demonstrate what will happen if you try to cast to a wrong type
+            bool ptBad = muon->Get("pt"); // this is to demonstrate what will happen if you try to cast to a wrong type
         }
 
         cout << "\tMuon pt: " << pt << endl;
@@ -79,12 +74,13 @@ int main()
     {
         cout << "\n event " << iEvent << endl;
         auto event = eventReader->GetEvent(iEvent);
+        
         uint nMuons = event->Get("nMuon");
         if (nMuons < 1)
             continue;
 
         printEventInto(event);
-        // printGenParticlesInfo(event);
+        printGenParticlesInfo(event);
         printMuonsInfo(event);
 
         eventWriter->AddCurrentEvent("Events");

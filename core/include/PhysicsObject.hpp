@@ -7,10 +7,11 @@
 
 #include "Helpers.hpp"
 #include "Multitype.hpp"
+#include "Collection.hpp"
 
 
 class PhysicsObject;
-typedef std::vector<std::shared_ptr<PhysicsObject>> PhysicsObjects;
+typedef Collection<std::shared_ptr<PhysicsObject>> PhysicsObjects;
 
 class PhysicsObject
 {

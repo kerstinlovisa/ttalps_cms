@@ -5,8 +5,6 @@
 #ifndef Event_hpp
 #define Event_hpp
 
-#include <vector>
-
 #include "Helpers.hpp"
 #include "PhysicsObject.hpp"
 #include "Multitype.hpp"
@@ -20,7 +18,13 @@ public:
 
   void Reset();
 
-  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) { return collections[name]; }
+  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const { 
+    if(!collections.count(name)){
+      FatalErr() << "Tried to get a collection that doesn't exist: " << name <<"\n";
+      exit(1);
+    }
+    return collections.at(name); 
+  }
 
   inline auto Get(std::string branchName)
   {
