@@ -1,6 +1,7 @@
 
 #include "Helpers.hpp"
 #include "EventReader.hpp"
+#include "EventWriter.hpp"
 
 using namespace std;
 
@@ -67,8 +68,11 @@ void printMuonsInfo(const shared_ptr<Event> event)
 int main()
 {
     string inputPath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root";
-    auto eventReader = make_unique<EventReader>(inputPath);
+    string outputPath = "test.root";
 
+    auto eventReader = make_shared<EventReader>(inputPath);
+    auto eventWriter = make_unique<EventWriter>(outputPath, eventReader);
+    
     // auto nEvents = eventReader->GetNevents();
 
     for (int iEvent = 0; iEvent < 10; iEvent++)
@@ -82,7 +86,11 @@ int main()
         printEventInto(event);
         // printGenParticlesInfo(event);
         printMuonsInfo(event);
+
+        eventWriter->AddCurrentEvent("Events");
     }
+
+    eventWriter->Save();
 
     return 0;
 }
