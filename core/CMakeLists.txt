@@ -21,6 +21,7 @@ set_property(TARGET top_trig_efficiency PROPERTY CXX_STANDARD 17)
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 add_library(OldSchoolCore   src/EventReader.cpp
+                            src/EventWriter.cpp
                             src/Event.cpp
                             src/PhysicsObject.cpp
                             event_tools.hpp

@@ -5,13 +5,10 @@
 #ifndef Event_hpp
 #define Event_hpp
 
-#include <vector>
-
 #include "Helpers.hpp"
 #include "PhysicsObject.hpp"
+#include "Multitype.hpp"
 // #include "ConfigManager.hpp"
-
-#include <type_traits>
 
 class Event
 {
@@ -21,7 +18,13 @@ public:
 
   void Reset();
 
-  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) { return collections[name]; }
+  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const { 
+    if(!collections.count(name)){
+      FatalErr() << "Tried to get a collection that doesn't exist: " << name <<"\n";
+      exit(1);
+    }
+    return collections.at(name); 
+  }
 
   inline auto Get(std::string branchName)
   {
@@ -29,66 +32,11 @@ public:
 
     if (values_types.count(branchName) == 0)
     {
-      std::cout << "\033[1;31m ERROR -- you're trying to access incorrect event-level branch: " << branchName << "\033[0m"
-                << std::endl;
-                badBranch = true;
+      Err() << "Trying to access incorrect event-level branch: " << branchName << "\n";
+      badBranch = true;
     }
 
-    struct result
-    {
-      operator UInt_t()
-      {
-        if(badBranch) return 0;
-        checkType("UInt_t");
-        return event->GetUint(branchName);
-      }
-      operator Int_t()
-      {
-        if(badBranch) return 0;
-        checkType("Int_t");
-        return event->GetInt(branchName);
-      }
-      operator Bool_t()
-      {
-        if(badBranch) return 0;
-        checkType("Bool_t");
-        return event->GetBool(branchName);
-      }
-      operator Float_t()
-      {
-        if(badBranch) return 0;
-        checkType("Float_t");
-        return event->GetFloat(branchName);
-      }
-      operator ULong64_t()
-      {
-        if(badBranch) return 0;
-        checkType("ULong64_t");
-        return event->GetULong(branchName);
-      }
-      operator UChar_t()
-      {
-        if(badBranch) return 0;
-        checkType("UChar_t");
-        return event->GetUChar(branchName);
-      }
-
-      Event *event;
-      std::string branchName;
-      bool badBranch;
-      
-      void checkType(std::string typeName)
-      {
-        std::string branchType = event->values_types[branchName];
-        if (branchType != typeName)
-        {
-          std::cout << "\033[1;33m WARNING -- you're trying to cast an event-level branch \"" << branchName << "\" (" << branchType << ") to " << typeName << "\033[0m"
-                    << std::endl;
-        }
-      }
-    };
-
-    return result{this, branchName, badBranch};
+    return Multitype(this, branchName, badBranch);
   }
 
 private:
@@ -116,6 +64,8 @@ private:
   std::map<std::string, std::shared_ptr<PhysicsObjects>> collections;
 
   friend class EventReader;
+  template <typename T>
+  friend class Multitype;
 };
 
 #endif /* Event_hpp */

@@ -6,9 +6,12 @@
 #define PhysicsObject_hpp
 
 #include "Helpers.hpp"
+#include "Multitype.hpp"
+#include "Collection.hpp"
+
 
 class PhysicsObject;
-typedef std::vector<std::shared_ptr<PhysicsObject>> PhysicsObjects;
+typedef Collection<std::shared_ptr<PhysicsObject>> PhysicsObjects;
 
 class PhysicsObject
 {
@@ -24,62 +27,11 @@ public:
 
     if (values_types.count(branchName) == 0)
     {
-      std::cout << "\033[1;31m ERROR -- you're trying to access incorrect physics object-level branch: " << branchName << "\033[0m"
-                << std::endl;
+      Err() << "Trying to access incorrect physics object-level branch: " << branchName<<"\n";
       badBranch = true;
     }
 
-    struct result
-    {
-      operator UInt_t()
-      {
-        if (badBranch || !isCorrectType("UInt_t"))return 0;
-        return physicsObject->GetUint(branchName);
-      }
-      operator Int_t()
-      {
-        if (badBranch || !isCorrectType("Int_t"))return 0;
-        return physicsObject->GetInt(branchName);
-      }
-      operator Bool_t()
-      {
-        if (badBranch || !isCorrectType("Bool_t"))return 0;
-        return physicsObject->GetBool(branchName);
-      }
-      operator Float_t()
-      {
-        if (badBranch || !isCorrectType("Float_t"))return 0;
-        return physicsObject->GetFloat(branchName);;
-      }
-      operator ULong64_t()
-      {
-        if (badBranch || !isCorrectType("ULong64_t"))return 0;
-        return physicsObject->GetULong(branchName);
-      }
-      operator UChar_t()
-      {
-        if (badBranch || !isCorrectType("UChar_t"))return 0;
-        return physicsObject->GetUChar(branchName);
-      }
-
-      PhysicsObject *physicsObject;
-      std::string branchName;
-      bool badBranch;
-
-      bool isCorrectType(std::string typeName)
-      {
-        std::string branchType = physicsObject->values_types[branchName];
-        if (branchType != typeName)
-        {
-          std::cout << "\033[1;33m WARNING -- you're trying to cast a physics object-level branch " << branchName << " (" << branchType << ") to " << typeName << "\033[0m"
-                    << std::endl;
-          return false;
-        }
-        return true;
-      }
-    };
-
-    return result{this, branchName, badBranch};
+    return Multitype(this, branchName, badBranch);
   }
 
   std::map<std::string, std::string> values_types; /// contains all branch names and corresponding types
@@ -100,6 +52,7 @@ private:
   std::map<std::string, UChar_t *> values_uchar;
 
   friend class EventReader;
+  template <typename T> friend class Multitype;
 };
 
 #endif /* PhysicsObject_hpp */

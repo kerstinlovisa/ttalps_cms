@@ -10,16 +10,16 @@
 
 using namespace std;
 
-EventReader::EventReader(string inputPath, vector<string> outputPaths) : currentEvent(make_shared<Event>())
+EventReader::EventReader(string inputPath) : currentEvent(make_shared<Event>())
 {
-  SetupBranches(inputPath, outputPaths);
+  SetupBranches(inputPath);
 }
 
 EventReader::~EventReader()
 {
 }
 
-void EventReader::SetupBranches(string inputPath, vector<string> outputPaths)
+void EventReader::SetupBranches(string inputPath)
 {
   // Read trees from input files
   TFile *inFile = TFile::Open(inputPath.c_str());
@@ -46,7 +46,27 @@ void EventReader::SetupBranches(string inputPath, vector<string> outputPaths)
     if (branchType == "")
       cout << "ERROR -- couldn't find branch type for branch: " << branchName << endl;
 
-    if (branchName.find("_") == std::string::npos || branchName.find("HLT") == 0 || branchName.find("Flag") == 0 || branchName.find("L1") == 0 || branchName.find("PV_") == 0 || branchName.find("MET_") == 0 || branchName.find("GenMET_") == 0 || branchName.find("CaloMET") == 0 || branchName.find("ChsMET") == 0 || branchName.find("DeepMETResolutionTune") == 0 || branchName.find("DeepMETResponseTune") == 0 || branchName.find("GenVtx") == 0 || branchName.find("Generator") == 0 || branchName.find("HTXS") == 0)
+    if (branchName.find("_") == std::string::npos 
+    || branchName.find("HLT") == 0 
+    || branchName.find("Flag") == 0 
+    || branchName.find("L1") == 0 
+    || branchName.find("PV_") == 0 
+    || branchName.find("MET_") == 0 
+    || branchName.find("GenMET_") == 0 
+    || branchName.find("CaloMET") == 0 
+    || branchName.find("ChsMET") == 0 
+    || branchName.find("DeepMETResolutionTune") == 0 
+    || branchName.find("DeepMETResponseTune") == 0 
+    || branchName.find("GenVtx") == 0 
+    || branchName.find("Generator") == 0 
+    || branchName.find("HTXS") == 0
+    || branchName.find("Pileup_") == 0
+    || branchName.find("PuppiMET") == 0
+    || branchName.find("RawMET") == 0
+    || branchName.find("RawPuppiMET") == 0
+    || branchName.find("TkMET") == 0
+    || branchName.find("btagWeight") == 0
+    )
     { // it's a single number
       currentEvent->values_types[branchName] = branchType;
 
@@ -146,98 +166,16 @@ void EventReader::SetupBranches(string inputPath, vector<string> outputPaths)
   }
 }
 
-void EventReader::SetupOutputTree(string outFileName)
-{
-  outFile[outFileName] = new TFile(outFileName.c_str(), "recreate");
-  outFile[outFileName]->cd();
-
-  dirEvent[outFileName] = outFile[outFileName]->mkdir("ggHiNtuplizer");
-  dirHLT[outFileName] = outFile[outFileName]->mkdir("hltanalysis");
-  dirL1[outFileName] = outFile[outFileName]->mkdir("l1object");
-
-  outEventTree[outFileName] = eventTree->CloneTree(0);
-  outHltTree[outFileName] = hltTree->CloneTree(0);
-  outL1Tree[outFileName] = l1Tree->CloneTree(0);
-
-  outEventTree[outFileName]->Reset();
-  outHltTree[outFileName]->Reset();
-  outL1Tree[outFileName]->Reset();
-
-  if (zdcTree)
-  {
-    dirZdc[outFileName] = outFile[outFileName]->mkdir("rechitanalyzerpp");
-    outZdcTree[outFileName] = zdcTree->CloneTree(0);
-    outZdcTree[outFileName]->Reset();
-  }
-  else
-  {
-    outZdcTree[outFileName] = nullptr;
-    cout << "\n\nWARNING -- no ZDC tree found in the input file!\n\n"
-         << endl;
-  }
-
-  if (pixelTree)
-  {
-    dirPixel[outFileName] = outFile[outFileName]->mkdir("pixelTracks");
-    outPixelTree[outFileName] = pixelTree->CloneTree(0);
-    outPixelTree[outFileName]->Reset();
-  }
-  else
-  {
-    cout << "\n\nWARNING -- no Pixel Tracks tree found in the input file!\n\n"
-         << endl;
-  }
-}
-
-void EventReader::AddEventToOutputTree(int iEvent, string outFileName, bool saveHLTtree)
-{
-  eventTree->GetEntry(iEvent);
-  hltTree->GetEntry(iEvent);
-  l1Tree->GetEntry(iEvent);
-  if (zdcTree)
-    zdcTree->GetEntry(iEvent);
-
-  outEventTree[outFileName]->Fill();
-
-  outHltTree[outFileName]->Fill();
-  outL1Tree[outFileName]->Fill();
-  outZdcTree[outFileName]->Fill();
-}
-
-void EventReader::SaveOutputTree(string outFileName)
-{
-  dirHLT[outFileName]->cd();
-  outHltTree[outFileName]->Write();
-  dirL1[outFileName]->cd();
-  outL1Tree[outFileName]->Write();
-  dirEvent[outFileName]->cd();
-  outEventTree[outFileName]->Write();
-
-  if (outZdcTree[outFileName])
-  {
-    dirZdc[outFileName]->cd();
-    outZdcTree[outFileName]->Write();
-  }
-
-  if (pixelTree)
-  {
-    dirPixel[outFileName]->cd();
-    outPixelTree[outFileName]->Write();
-  }
-
-  outFile[outFileName]->Close();
-}
-
 shared_ptr<Event> EventReader::GetEvent(int iEvent)
 {
   // Move to desired entry in all trees
   for (auto &[name, tree] : inputTrees)
     tree->GetEntry(iEvent);
 
-  // for (auto &[name, collection] : currentEvent->collections)
-  // {
-  //   UInt_t collectionSize = currentEvent->GetUint("n" + name);
-  //   collection->resize(collectionSize);
-  // }
+  for (auto &[name, collection] : currentEvent->collections)
+  {
+    UInt_t collectionSize = currentEvent->Get("n" + name);
+    collection->ChangeVisibleSize(collectionSize);
+  }
   return currentEvent;
 }

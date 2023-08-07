@@ -1,10 +1,12 @@
 
 #include "Helpers.hpp"
 #include "EventReader.hpp"
+#include "EventWriter.hpp"
 
 using namespace std;
 
 bool showBadExamples = false;
+bool showFatallyBadExamples = false;
 
 void printEventInto(const shared_ptr<Event> event)
 {
@@ -28,11 +30,8 @@ void printGenParticlesInfo(const shared_ptr<Event> event)
     int maxParticles = nGenParticles > 10 ? 10 : nGenParticles;
     auto genParticles = event->GetCollection("GenPart");
 
-    for (int iParticle = 0; iParticle < maxParticles; iParticle++)
+    for (auto particle : *genParticles)
     {
-        // access elements of the collection
-        auto particle = genParticles->at(iParticle);
-
         // use some element-level info
         int pdgId = particle->Get("pdgId");
         float pt = particle->Get("pt");
@@ -42,22 +41,19 @@ void printGenParticlesInfo(const shared_ptr<Event> event)
 
 void printMuonsInfo(const shared_ptr<Event> event)
 {
-    if (showBadExamples)
+    if (showFatallyBadExamples)
     {
         auto muonsBad = event->GetCollection("Muons"); // this is to demonstrate what will happen if you try t access a branch that doesn't exist
     }
 
     auto muons = event->GetCollection("Muon");
 
-    uint nMuons = event->Get("nMuon");
-
-    for (int iMuon = 0; iMuon < nMuons; iMuon++)
-    {
-        float pt = muons->at(iMuon)->Get("pt");
-
+    for (auto muon : *muons)
+    {   
+        float pt = muon->Get("pt");
         if (showBadExamples)
         {
-            bool ptBad = muons->at(iMuon)->Get("pt"); // this is to demonstrate what will happen if you try to cast to a wrong type
+            bool ptBad = muon->Get("pt"); // this is to demonstrate what will happen if you try to cast to a wrong type
         }
 
         cout << "\tMuon pt: " << pt << endl;
@@ -67,22 +63,30 @@ void printMuonsInfo(const shared_ptr<Event> event)
 int main()
 {
     string inputPath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root";
-    auto eventReader = make_unique<EventReader>(inputPath);
+    string outputPath = "test.root";
 
+    auto eventReader = make_shared<EventReader>(inputPath);
+    auto eventWriter = make_unique<EventWriter>(outputPath, eventReader);
+    
     // auto nEvents = eventReader->GetNevents();
 
-    for (int iEvent = 0; iEvent < 100; iEvent++)
+    for (int iEvent = 0; iEvent < 10; iEvent++)
     {
         cout << "\n event " << iEvent << endl;
         auto event = eventReader->GetEvent(iEvent);
+        
         uint nMuons = event->Get("nMuon");
         if (nMuons < 1)
             continue;
 
         printEventInto(event);
-        // printGenParticlesInfo(event);
+        printGenParticlesInfo(event);
         printMuonsInfo(event);
+
+        eventWriter->AddCurrentEvent("Events");
     }
+
+    eventWriter->Save();
 
     return 0;
 }
