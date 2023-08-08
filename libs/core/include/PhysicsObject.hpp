@@ -23,8 +23,7 @@ class PhysicsObject {
     bool badBranch = false;
 
     if (values_types.count(branchName) == 0) {
-      error() << "Trying to access incorrect physics object-level branch: "
-              << branchName << "\n";
+      error() << "Trying to access incorrect physics object-level branch: " << branchName << "\n";
       badBranch = true;
     }
 
@@ -32,24 +31,12 @@ class PhysicsObject {
   }
 
  private:
-  inline UInt_t GetUint(std::string branchName) {
-    return *values_uint[branchName];
-  }
-  inline UInt_t GetInt(std::string branchName) {
-    return *values_int[branchName];
-  }
-  inline Bool_t GetBool(std::string branchName) {
-    return *values_bool[branchName];
-  }
-  inline Float_t GetFloat(std::string branchName) {
-    return *values_float[branchName];
-  }
-  inline ULong64_t GetULong(std::string branchName) {
-    return *values_ulong[branchName];
-  }
-  inline UChar_t GetUChar(std::string branchName) {
-    return *values_uchar[branchName];
-  }
+  inline UInt_t GetUint(std::string branchName) { return *values_uint[branchName]; }
+  inline UInt_t GetInt(std::string branchName) { return *values_int[branchName]; }
+  inline Bool_t GetBool(std::string branchName) { return *values_bool[branchName]; }
+  inline Float_t GetFloat(std::string branchName) { return *values_float[branchName]; }
+  inline ULong64_t GetULong(std::string branchName) { return *values_ulong[branchName]; }
+  inline UChar_t GetUChar(std::string branchName) { return *values_uchar[branchName]; }
 
   // contains all branch names and corresponding types
   std::map<std::string, std::string> values_types;
