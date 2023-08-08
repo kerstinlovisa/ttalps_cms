@@ -21,16 +21,11 @@ class EventProcessor {
 
   std::string GetTTbarEventCategory(std::shared_ptr<Event> event);
 
-  bool ParticlesMotherInIndices(std::shared_ptr<Event> event, int particleIndex,
-                               std::vector<int> indices);
+  bool ParticlesMotherInIndices(std::shared_ptr<Event> event, int particleIndex, std::vector<int> indices);
 
-  
-  bool ParticleHasISRmotherAfterTopMother(std::shared_ptr<Event> event,
-                                          int particleIndex);
+  bool ParticleHasISRmotherAfterTopMother(std::shared_ptr<Event> event, int particleIndex);
 
-  bool IsGoodParticle(std::shared_ptr<Event> event, int particleIndex,
-                      std::vector<int> topIndices,
-                      std::vector<int> bottomIndices);
+  bool IsGoodParticle(std::shared_ptr<Event> event, int particleIndex, std::vector<int> topIndices, std::vector<int> bottomIndices);
 
  private:
   EventProcessor() {}
@@ -44,8 +39,7 @@ class EventProcessor {
 
 struct FinalState {
   std::map<std::string, int> nObjects = {
-      {"neutrinos", 0}, {"electrons", 0}, {"muons", 0},
-      {"taus", 0},      {"udsc_jets", 0}, {"b_jets", 0},
+      {"neutrinos", 0}, {"electrons", 0}, {"muons", 0}, {"taus", 0}, {"udsc_jets", 0}, {"b_jets", 0},
   };
 
   void print() {
@@ -56,8 +50,7 @@ struct FinalState {
   }
 
   void AddParticle(int pid) {
-    if (abs(pid) == 12 || abs(pid) == 14 || abs(pid) == 16)
-      nObjects["neutrinos"]++;
+    if (abs(pid) == 12 || abs(pid) == 14 || abs(pid) == 16) nObjects["neutrinos"]++;
     if (abs(pid) == 11) nObjects["electrons"]++;
     if (abs(pid) == 13) nObjects["muons"]++;
     if (abs(pid) == 15) nObjects["taus"]++;
@@ -69,12 +62,9 @@ struct FinalState {
     if (nObjects["b_jets"] != 2) return false;
     int nLeptons = nObjects["electrons"] + nObjects["muons"] + nObjects["taus"];
 
-    if (nLeptons == 2 && nObjects["neutrinos"] == 2)
-      return true;  // fully leptonic
-    if (nLeptons == 1 && nObjects["neutrinos"] == 1 &&
-        nObjects["udsc_jets"] == 2)
-      return true;                                // semi-leptonic
-    if (nObjects["udsc_jets"] == 4) return true;  // fully hadronic
+    if (nLeptons == 2 && nObjects["neutrinos"] == 2) return true;                                // fully leptonic
+    if (nLeptons == 1 && nObjects["neutrinos"] == 1 && nObjects["udsc_jets"] == 2) return true;  // semi-leptonic
+    if (nObjects["udsc_jets"] == 4) return true;                                                 // fully hadronic
 
     return false;
   }

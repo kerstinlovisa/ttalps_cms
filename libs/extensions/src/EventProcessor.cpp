@@ -49,9 +49,7 @@ vector<int> EventProcessor::GetBottomIndices(shared_ptr<Event> event) {
   return bottomIndices;
 }
 
-bool EventProcessor::IsGoodParticle(shared_ptr<Event> event, int particleIndex,
-                                    vector<int> topIndices,
-                                    vector<int> bottomIndices) {
+bool EventProcessor::IsGoodParticle(shared_ptr<Event> event, int particleIndex, vector<int> topIndices, vector<int> bottomIndices) {
   auto genParticles = event->GetCollection("GenPart");
   auto particle = asGenParticle(genParticles->at(particleIndex));
 
@@ -69,12 +67,10 @@ bool EventProcessor::IsGoodParticle(shared_ptr<Event> event, int particleIndex,
     if (!particle->IsGoodLepton(mother)) return false;
 
     // we want to make sure it comes from a top
-    if (!ParticlesMotherInIndices(event, particleIndex, topIndices))
-      return false;
+    if (!ParticlesMotherInIndices(event, particleIndex, topIndices)) return false;
 
     // we don't want leptons coming from b decays
-    if (ParticlesMotherInIndices(event, particleIndex, bottomIndices))
-      return false;
+    if (ParticlesMotherInIndices(event, particleIndex, bottomIndices)) return false;
 
     // no gluons/jets after the top
     if (ParticleHasISRmotherAfterTopMother(event, particleIndex)) return false;
@@ -101,8 +97,7 @@ string EventProcessor::GetTTbarEventCategory(shared_ptr<Event> event) {
   for (auto physicsObject : *genParticles) {
     iGenParticle++;
     auto genParticle = asGenParticle(physicsObject);
-    if (!IsGoodParticle(event, iGenParticle, topIndices, bottomIndices))
-      continue;
+    if (!IsGoodParticle(event, iGenParticle, topIndices, bottomIndices)) continue;
     finalState.AddParticle(genParticle->GetPdgId());
   }
 
@@ -114,22 +109,18 @@ string EventProcessor::GetTTbarEventCategory(shared_ptr<Event> event) {
   return finalState.GetShortName();
 }
 
-bool EventProcessor::ParticlesMotherInIndices(shared_ptr<Event> event,
-                                             int particleIndex,
-                                             vector<int> indices) {
+bool EventProcessor::ParticlesMotherInIndices(shared_ptr<Event> event, int particleIndex, vector<int> indices) {
   auto genParticles = event->GetCollection("GenPart");
   auto genParticle = asGenParticle(genParticles->at(particleIndex));
   int motherIndex = genParticle->GetMotherIndex();
 
-  if (find(indices.begin(), indices.end(), motherIndex) != indices.end())
-    return true;
+  if (find(indices.begin(), indices.end(), motherIndex) != indices.end()) return true;
   if (motherIndex < 0) return false;
 
   return ParticlesMotherInIndices(event, motherIndex, indices);
 }
 
-bool EventProcessor::ParticleHasISRmotherAfterTopMother(shared_ptr<Event> event,
-                                                        int particleIndex) {
+bool EventProcessor::ParticleHasISRmotherAfterTopMother(shared_ptr<Event> event, int particleIndex) {
   auto genParticles = event->GetCollection("GenPart");
   auto genParticle = asGenParticle(genParticles->at(particleIndex));
   int motherIndex = genParticle->GetMotherIndex();

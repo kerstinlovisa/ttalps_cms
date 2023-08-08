@@ -24,6 +24,10 @@ private:
 
   void SetupBranches(std::string inputPath);
 
+  void SetupScalarBranch(std::string branchName, std::string branchType);
+  void SetupVectorBranch(std::string branchName, std::string branchType);
+  void InitializeCollection(std::string collectionName);
+
   friend class EventWriter;
 };
 
