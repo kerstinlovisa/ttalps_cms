@@ -19,7 +19,7 @@ void EventReader::SetupBranches(string inputPath) {
     cout << "Loading tree: " << treeName << endl;
     inputTrees[treeName] = (TTree *)inFile->Get(treeName.c_str());
   }
-  
+
   auto keysInEventTree = inputTrees["Events"]->GetListOfBranches();
   for (auto i : *keysInEventTree) {
     auto branch = (TBranch *)i;
