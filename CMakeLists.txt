@@ -30,15 +30,14 @@ add_executable(core_test apps/core_test.cpp)
 add_executable(extensions_test apps/extensions_test.cpp)
 add_executable(top_trig_efficiency apps/top_trig_efficiency.cpp)
 add_executable(histogramming_test apps/histogramming_test.cpp)
+add_executable(top_trig_efficiency apps/top_trig_efficiency.cpp)
+
+target_link_libraries(core_test core ${ROOT_LIBRARIES})
+target_link_libraries(extensions_test core extensions ${ROOT_LIBRARIES})
+target_link_libraries(histogramming_test core extensions histogramming ${ROOT_LIBRARIES})
+target_link_libraries(top_trig_efficiency core extensions ${ROOT_LIBRARIES})
 
 set_property(TARGET core_test PROPERTY CXX_STANDARD 17)
 set_property(TARGET extensions_test PROPERTY CXX_STANDARD 17)
 set_property(TARGET top_trig_efficiency PROPERTY CXX_STANDARD 17)
 set_property(TARGET histogramming PROPERTY CXX_STANDARD 17)
-
-target_link_libraries(core_test core ${ROOT_LIBRARIES})
-target_link_libraries(extensions_test core extensions ${ROOT_LIBRARIES})
-target_link_libraries(top_trig_efficiency core extensions ${ROOT_LIBRARIES})
-target_link_libraries(histogramming_test core extensions histogramming ${ROOT_LIBRARIES})
-
-
