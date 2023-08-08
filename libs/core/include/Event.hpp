@@ -19,8 +19,8 @@ public:
 
   inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const {
     if (!collections.count(name)) {
-      FatalErr() << "Tried to get a collection that doesn't exist: "; 
-      FatalErr() << name << "\n";
+      fatal() << "Tried to get a collection that doesn't exist: "; 
+      fatal() << name << "\n";
       exit(1);
     }
     return collections.at(name);
@@ -30,7 +30,7 @@ public:
     bool badBranch = false;
 
     if (values_types.count(branchName) == 0) {
-      Err() << "Trying to access incorrect event-level branch: " << branchName
+      error() << "Trying to access incorrect event-level branch: " << branchName
             << "\n";
       badBranch = true;
     }

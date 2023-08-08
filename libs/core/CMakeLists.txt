@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project (OldSchool)
+project (core)
 
 set(CMAKE_OSX_ARCHITECTURES "arm64")
 
@@ -13,21 +13,13 @@ SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 SET(CMAKE_INSTALL_RPATH "/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-centos7-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/tbb/2019_U7-ba3eb/x86_64-centos7-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/Davix/0.7.3-d94fa/x86_64-centos7-gcc8-opt/lib64/:/cvmfs/sft.cern.ch/lcg/releases/png/1.6.37-9c2fe/x86_64-centos7-gcc8-opt/lib/:/cvmfs/sft.cern.ch/lcg/releases/GSL/2.5-32fc5/x86_64-centos7-gcc8-opt/lib/")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-add_executable(core_test core_test.cpp)
-add_executable(top_trig_efficiency top_trig_efficiency.cpp)
-set_property(TARGET core_test PROPERTY CXX_STANDARD 17)
-set_property(TARGET top_trig_efficiency PROPERTY CXX_STANDARD 17)
-
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-add_library(OldSchoolCore   src/EventReader.cpp
+add_library(core   src/EventReader.cpp
                             src/EventWriter.cpp
                             src/Event.cpp
                             src/PhysicsObject.cpp
                             event_tools.hpp
 )
 
-set_property(TARGET OldSchoolCore PROPERTY CXX_STANDARD 17)
-
-target_link_libraries(core_test OldSchoolCore ${ROOT_LIBRARIES})
-target_link_libraries(top_trig_efficiency OldSchoolCore ${ROOT_LIBRARIES})
+set_property(TARGET core PROPERTY CXX_STANDARD 17)

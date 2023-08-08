@@ -6,8 +6,6 @@
 
 PhysicsObject::PhysicsObject() {}
 
-PhysicsObject::~PhysicsObject() {}
-
 void PhysicsObject::Reset() {
   for (auto &[key, value] : values_uint) value = 0;
   for (auto &[key, value] : values_int) value = 0;
