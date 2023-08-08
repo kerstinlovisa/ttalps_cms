@@ -8,47 +8,35 @@
 #include <vector>
 
 template <typename T>
-class Collection : public std::vector<T>
-{
-private:
-    size_t stopIndex;
+class Collection : public std::vector<T> {
+ private:
+  size_t stopIndex;
 
-public:
-    
-    void ChangeVisibleSize(size_t index){stopIndex = index;}
+ public:
+  void ChangeVisibleSize(size_t index) { stopIndex = index; }
 
-    class Iterator
-    {
-    public:
-        Iterator(Collection &v, size_t index) : vec(v), currentIndex(index){}
+  class Iterator {
+   public:
+    Iterator(Collection &v, size_t index) : vec(v), currentIndex(index) {}
 
-        Iterator &operator++()
-        {
-            ++currentIndex;
-            return *this;
-        }
+    Iterator &operator++() {
+      ++currentIndex;
+      return *this;
+    }
 
-        bool operator!=(const Iterator &other) const
-        {
-            return currentIndex != other.vec.stopIndex;
-        }
+    bool operator!=(const Iterator &other) const {
+      return currentIndex != other.vec.stopIndex;
+    }
 
-        T &operator*()
-        {
-            return vec[currentIndex];
-        }
-    private:
-        Collection &vec;
-        size_t currentIndex;
-    };
+    T &operator*() { return vec[currentIndex]; }
 
-    Iterator begin(){return Iterator(*this, 0);}
-    Iterator end(){return Iterator(*this, stopIndex);}
+   private:
+    Collection &vec;
+    size_t currentIndex;
+  };
 
-
-    
+  Iterator begin() { return Iterator(*this, 0); }
+  Iterator end() { return Iterator(*this, stopIndex); }
 };
-
-
 
 #endif /* Collection_hpp */
