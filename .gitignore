@@ -1,8 +1,18 @@
+.vscode/
+
+libs/core/build/*
+build/*
+
 frameworks_tests/__pycache__/*
 frameworks_tests/cpp_loops
 frameworks_tests/cpp_loops_o3
 
 signals_comparison/*.root
+
+first_steps/check_top_channel
+
+
+core/build/*
 
 
 # Prerequisites
