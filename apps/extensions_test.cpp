@@ -1,3 +1,7 @@
+//  extensions_test.cpp
+//
+//  Created by Jeremi Niedziela on 08/08/2023.
+
 #include "EventProcessor.hpp"
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
@@ -12,14 +16,14 @@ int main() {
       "TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root";
 
   auto eventReader = make_shared<EventReader>(inputPath);
-  cout<<"Event reader created"<<endl;
+  cout << "Event reader created" << endl;
 
   EventProcessor &eventProcessor = EventProcessor::getInstance();
 
   for (int iEvent = 0; iEvent < 10; iEvent++) {
     cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
-    cout<<eventProcessor.GetTTbarEventCategory(event)<<endl;
+    cout << eventProcessor.GetTTbarEventCategory(event) << endl;
 
     // auto physicsObjects = event->GetCollection("GenPart");
 

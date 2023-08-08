@@ -31,11 +31,8 @@ bool GenParticle::IsGoodLepton(shared_ptr<GenParticle> mother) {
 }
 
 bool GenParticle::IsJet() {
-  if (GetPdgId() == 21 || (abs(GetPdgId()) >= 1 && abs(GetPdgId()) <= 5))
-    return true;
+  if (GetPdgId() == 21 || (abs(GetPdgId()) >= 1 && abs(GetPdgId()) <= 5)) return true;
   return false;
 }
 
-bool GenParticle::IsTop(){
-  return abs(GetPdgId()) == 6;
-}
+bool GenParticle::IsTop() { return abs(GetPdgId()) == 6; }
