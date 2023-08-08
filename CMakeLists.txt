@@ -20,6 +20,7 @@ set(LIBRARIES
     core
     extensions
     histogramming
+    histogramming
 )
 foreach(LIBRARY ${LIBRARIES})
     add_subdirectory("${LIBRARIES_DIR}/${LIBRARY}")
@@ -30,7 +31,6 @@ add_executable(core_test apps/core_test.cpp)
 add_executable(extensions_test apps/extensions_test.cpp)
 add_executable(top_trig_efficiency apps/top_trig_efficiency.cpp)
 add_executable(histogramming_test apps/histogramming_test.cpp)
-add_executable(top_trig_efficiency apps/top_trig_efficiency.cpp)
 
 target_link_libraries(core_test core ${ROOT_LIBRARIES})
 target_link_libraries(extensions_test core extensions ${ROOT_LIBRARIES})
