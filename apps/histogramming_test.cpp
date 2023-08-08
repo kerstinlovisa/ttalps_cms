@@ -20,11 +20,20 @@ int main() {
 
   EventProcessor &eventProcessor = EventProcessor::getInstance();
 
-  for (int iEvent = 0; iEvent < 10; iEvent++) {
+  auto muonPt = new TH1D("muonPt", "muonPt", 100, 0, 100);
+  auto muonEta = new TH1D("muonEta", "muonEta", 100, -5, 5);
+
+  for (int iEvent = 0; iEvent < 1000; iEvent++) {
     cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
     cout << eventProcessor.GetTTbarEventCategory(event) << endl;
 
+    auto muons = event->GetCollection("Muon");
+
+    for(auto muon : *muons){
+      muonPt->Fill(muon->Get("pt"));
+      muonEta->Fill(muon->Get("eta"));
+    }
     // auto physicsObjects = event->GetCollection("GenPart");
 
     // for (auto physicsObject : *physicsObjects) {
@@ -35,6 +44,14 @@ int main() {
     //   genParticle->print();
     // }
   }
+
+  auto outputFile = new TFile("hists.root", "recreate");
+  outputFile->cd();
+
+  muonPt->Write();
+  muonEta->Write();
+
+  outputFile->Close();
 
   return 0;
 }
