@@ -46,8 +46,8 @@ class Multitype {
   bool isCorrectType(std::string typeName) {
     std::string branchType = object->values_types.at(branchName);
     if (branchType != typeName) {
-      Warn() << "Casting a physics object-level branch " << branchName;
-      Warn() << " (" << branchType << ") to " << typeName << "\n";
+      warn() << "Casting a physics object-level branch " << branchName;
+      warn() << " (" << branchType << ") to " << typeName << "\n";
       return false;
     }
     return true;

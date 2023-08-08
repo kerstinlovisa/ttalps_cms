@@ -3,11 +3,7 @@
 //  Created by Jeremi Niedziela on 04/08/2023.
 
 #include "EventReader.hpp"
-
 #include "Helpers.hpp"
-// #include "Logger.hpp"
-
-#include <TKey.h>
 
 using namespace std;
 
@@ -19,18 +15,21 @@ EventReader::EventReader(string inputPath)
 EventReader::~EventReader() {}
 
 void EventReader::SetupBranches(string inputPath) {
-  // Read trees from input files
+  
+  info() << "Opening input file...";
   TFile *inFile = TFile::Open(inputPath.c_str());
-
+  info() << " done\n";
+  
+  info() << "Reading trees...";
   vector<string> treeNames = getListOfTrees(inFile);
-
   for (string treeName : treeNames) {
     cout << "Loading tree: " << treeName << endl;
     inputTrees[treeName] = (TTree *)inFile->Get(treeName.c_str());
   }
+  info() << "done\n";
 
+  info() << "Setting branches...";
   auto keysInEventTree = inputTrees["Events"]->GetListOfBranches();
-
   for (auto i : *keysInEventTree) {
     auto branch = (TBranch *)i;
     string branchName = branch->GetName();
@@ -145,6 +144,8 @@ void EventReader::SetupBranches(string inputPath) {
       }
     }
   }
+
+  info() << "done\n";
 }
 
 shared_ptr<Event> EventReader::GetEvent(int iEvent) {

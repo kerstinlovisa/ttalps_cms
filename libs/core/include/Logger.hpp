@@ -7,29 +7,29 @@
 
 #include "Helpers.hpp"
 
-struct Info {
-  template <class T> Info &operator<<(const T &v) {
+struct info {
+  template <class T> info &operator<<(const T &v) {
     std::cout << v;
     return *this;
   }
 };
 
-struct Warn {
-  template <class T> Warn &operator<<(const T &v) {
+struct warn {
+  template <class T> warn &operator<<(const T &v) {
     std::cout << "\033[1;33m" << v << "\033[0m";
     return *this;
   }
 };
 
-struct Err {
-  template <class T> Err &operator<<(const T &v) {
+struct error {
+  template <class T> error &operator<<(const T &v) {
     std::cout << "\033[1;31m" << v << "\033[0m";
     return *this;
   }
 };
 
-struct FatalErr {
-  template <class T> FatalErr &operator<<(const T &v) {
+struct fatal {
+  template <class T> fatal &operator<<(const T &v) {
     std::cout << "\033[1;35m" << v << "\033[0m";
     return *this;
   }
