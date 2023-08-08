@@ -2,19 +2,18 @@
 #include <iostream>
 
 #include <TFile.h>
-#include <TTree.h>
 #include <TH1D.h>
 
-#include "event_tools.hpp"
 #include "Event.hpp"
 #include "EventReader.hpp"
+#include "EventProcessor.hpp"
 
 using namespace std;
 
 const int max_events = -1;
 
 string input_file_path = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/";
-string output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output2/";
+string output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/";
 
 vector<string> filenames = {
   // "TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root",
@@ -64,22 +63,22 @@ vector<string> selection_names = {
   "hadron",
 };
 
-vector<string> short_names = {"","hh","he","hmu","htau","ee","mumu","tautau","emu","etau","mutau"};
+vector<string> ttbar_categories = {"","hh","he","hmu","htau","ee","mumu","tautau","emu","etau","mutau"};
 
 map<string, TH1D*> hists;
 
 void setup_histograms() {
-  for(auto short_name : short_names){
-    if(short_name != "") short_name = short_name+"_";
+  for(auto ttbar_category : ttbar_categories){
+    if(ttbar_category != "") ttbar_category = ttbar_category+"_";
     for(auto variable : variable_names){
-      hists[short_name+variable] = new TH1D((short_name+variable).c_str(), (short_name+variable).c_str(), 1000, 0, 1000);
+      hists[ttbar_category+variable] = new TH1D((ttbar_category+variable).c_str(), (ttbar_category+variable).c_str(), 1000, 0, 1000);
 
       for(auto &trigger_set : trigger_sets){
         string set_name = trigger_set.first;
-        hists[short_name+variable+"_"+set_name] = new TH1D((short_name+variable+"_"+set_name).c_str(), (short_name+variable+"_"+set_name).c_str(), 1000, 0, 1000);
-        hists[short_name+variable+"_"+set_name+"_eff"] = new TH1D((short_name+variable+"_"+set_name+"_eff").c_str(), (short_name+variable+"_"+set_name+"_eff").c_str(), 1000, 0, 1000);
+        hists[ttbar_category+variable+"_"+set_name] = new TH1D((ttbar_category+variable+"_"+set_name).c_str(), (ttbar_category+variable+"_"+set_name).c_str(), 1000, 0, 1000);
+        hists[ttbar_category+variable+"_"+set_name+"_eff"] = new TH1D((ttbar_category+variable+"_"+set_name+"_eff").c_str(), (ttbar_category+variable+"_"+set_name+"_eff").c_str(), 1000, 0, 1000);
         for(auto &selection : selection_names){
-          hists[short_name+variable+"_"+set_name+"_"+selection] = new TH1D((short_name+variable+"_"+set_name+"_"+selection).c_str(), (short_name+variable+"_"+set_name+"_"+selection).c_str(), 1000, 0, 1000);
+          hists[ttbar_category+variable+"_"+set_name+"_"+selection] = new TH1D((ttbar_category+variable+"_"+set_name+"_"+selection).c_str(), (ttbar_category+variable+"_"+set_name+"_"+selection).c_str(), 1000, 0, 1000);
         }
       }
     }
@@ -88,14 +87,14 @@ void setup_histograms() {
 
 void fill_trigger_efficiencies(){
   TH1D* hist_tmp;
-  for(auto short_name : short_names){
-    if(short_name != "") short_name = short_name+"_";
+  for(auto ttbar_category : ttbar_categories){
+    if(ttbar_category != "") ttbar_category = ttbar_category+"_";
     for(auto &trigger_set : trigger_sets){
       string set_name = trigger_set.first;
       for(auto variable : variable_names){
-        hist_tmp = (TH1D*)hists[short_name+variable+"_"+set_name]->Clone((short_name+variable+"_"+set_name+"_eff").c_str());
-        hist_tmp->Divide(hist_tmp,hists[short_name+variable],1,1,"B");
-        hists[short_name+variable+"_"+set_name+"_eff"] = hist_tmp;
+        hist_tmp = (TH1D*)hists[ttbar_category+variable+"_"+set_name]->Clone((ttbar_category+variable+"_"+set_name+"_eff").c_str());
+        hist_tmp->Divide(hist_tmp,hists[ttbar_category+variable],1,1,"B");
+        hists[ttbar_category+variable+"_"+set_name+"_eff"] = hist_tmp;
       }
     }
   }
@@ -247,7 +246,7 @@ bool passes_hadron_selections(const shared_ptr<Event> event){
 }
 
 
-void fill_hists_for_trigger_sets(const shared_ptr<Event> event, string short_name=""){
+void fill_hists_for_trigger_sets(const shared_ptr<Event> event, string ttbar_category=""){
 
   bool passes_triggers;
   bool passes_triggers_single_lepton;
@@ -268,10 +267,10 @@ void fill_hists_for_trigger_sets(const shared_ptr<Event> event, string short_nam
         if(passes_hadron_selections(event)) passes_triggers_hadron = true;
       }
     }
-    if(passes_triggers) fill_hist_variables(event,short_name,trigger_set.first);
-    if(passes_triggers_single_lepton) fill_hist_variables(event,short_name,trigger_set.first+"_single_lepton");
-    if(passes_triggers_dilepton) fill_hist_variables(event,short_name,trigger_set.first+"_dilepton");
-    if(passes_triggers_hadron) fill_hist_variables(event,short_name,trigger_set.first+"_hadron");
+    if(passes_triggers) fill_hist_variables(event,ttbar_category,trigger_set.first);
+    if(passes_triggers_single_lepton) fill_hist_variables(event,ttbar_category,trigger_set.first+"_single_lepton");
+    if(passes_triggers_dilepton) fill_hist_variables(event,ttbar_category,trigger_set.first+"_dilepton");
+    if(passes_triggers_hadron) fill_hist_variables(event,ttbar_category,trigger_set.first+"_hadron");
   }
 }
 
@@ -280,7 +279,7 @@ void save_hists(string output_path){
   auto output_file = new TFile((output_path).c_str(), "recreate");
   output_file->cd();
 
-  for(auto name : short_names) output_file->mkdir(name.c_str());
+  for(auto name : ttbar_categories) output_file->mkdir(name.c_str());
 
   for(auto hist : hists){
     string hist_name = hist.first;
@@ -304,6 +303,8 @@ int main()
   for(auto &filename : filenames) {
 
     auto eventReader = make_unique<EventReader>(input_file_path+filename);
+    cout<<"Event reader created for input file: "<<input_file_path+filename<<endl;
+    EventProcessor &eventProcessor = EventProcessor::getInstance();
     
     setup_histograms();
 
@@ -315,17 +316,17 @@ int main()
 
       auto event = eventReader->GetEvent(i_event);
 
-      string short_name = get_short_name(event);
-      if(find(short_names.begin(), short_names.end(), short_name) == short_names.end()){
-        if(short_name != "error") cout << "Decay mode: " << short_name << " not found - skipped" << endl;
+      string ttbar_category = eventProcessor.GetTTbarEventCategory(event);
+      if(find(ttbar_categories.begin(), ttbar_categories.end(), ttbar_category) == ttbar_categories.end()){
+        if(ttbar_category != "error") cout << "Decay mode: " << ttbar_category << " not found - skipped" << endl;
         continue;
       }
 
       fill_hist_variables(event);
-      fill_hist_variables(event,short_name);
+      fill_hist_variables(event,ttbar_category);
 
       fill_hists_for_trigger_sets(event, "");
-      fill_hists_for_trigger_sets(event, short_name);
+      fill_hists_for_trigger_sets(event, ttbar_category);
     }
 
     fill_trigger_efficiencies();

@@ -4,16 +4,9 @@
 
 #include "PhysicsObject.hpp"
 
-PhysicsObject::PhysicsObject()
-{
-}
+PhysicsObject::PhysicsObject() {}
 
-PhysicsObject::~PhysicsObject()
-{
-}
-
-void PhysicsObject::Reset()
-{
+void PhysicsObject::Reset() {
   for (auto &[key, value] : values_uint) value = 0;
   for (auto &[key, value] : values_int) value = 0;
   for (auto &[key, value] : values_bool) value = 0;

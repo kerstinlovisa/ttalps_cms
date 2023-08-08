@@ -6,33 +6,32 @@
 #define Event_hpp
 
 #include "Helpers.hpp"
-#include "PhysicsObject.hpp"
 #include "Multitype.hpp"
+#include "PhysicsObject.hpp"
 // #include "ConfigManager.hpp"
 
-class Event
-{
+class Event {
 public:
   Event();
   ~Event();
 
   void Reset();
 
-  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const { 
-    if(!collections.count(name)){
-      FatalErr() << "Tried to get a collection that doesn't exist: " << name <<"\n";
+  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const {
+    if (!collections.count(name)) {
+      fatal() << "Tried to get a collection that doesn't exist: "; 
+      fatal() << name << "\n";
       exit(1);
     }
-    return collections.at(name); 
+    return collections.at(name);
   }
 
-  inline auto Get(std::string branchName)
-  {
+  inline auto Get(std::string branchName) {
     bool badBranch = false;
 
-    if (values_types.count(branchName) == 0)
-    {
-      Err() << "Trying to access incorrect event-level branch: " << branchName << "\n";
+    if (values_types.count(branchName) == 0) {
+      error() << "Trying to access incorrect event-level branch: " << branchName
+            << "\n";
       badBranch = true;
     }
 
@@ -40,14 +39,25 @@ public:
   }
 
 private:
-  inline UInt_t GetUint(std::string branchName) { return values_uint[branchName]; }
+  inline UInt_t GetUint(std::string branchName) {
+    return values_uint[branchName];
+  }
   inline Int_t GetInt(std::string branchName) { return values_int[branchName]; }
-  inline Bool_t GetBool(std::string branchName) { return values_bool[branchName]; }
-  inline Float_t GetFloat(std::string branchName) { return values_float[branchName]; }
-  inline ULong64_t GetULong(std::string branchName) { return values_ulong[branchName]; }
-  inline UChar_t GetUChar(std::string branchName) { return values_uchar[branchName]; }
+  inline Bool_t GetBool(std::string branchName) {
+    return values_bool[branchName];
+  }
+  inline Float_t GetFloat(std::string branchName) {
+    return values_float[branchName];
+  }
+  inline ULong64_t GetULong(std::string branchName) {
+    return values_ulong[branchName];
+  }
+  inline UChar_t GetUChar(std::string branchName) {
+    return values_uchar[branchName];
+  }
 
-  std::map<std::string, std::string> values_types; /// contains all branch names and corresponding types
+  std::map<std::string, std::string>
+      values_types; /// contains all branch names and corresponding types
 
   std::map<std::string, UInt_t> values_uint;
   std::map<std::string, Int_t> values_int;
@@ -64,8 +74,7 @@ private:
   std::map<std::string, std::shared_ptr<PhysicsObjects>> collections;
 
   friend class EventReader;
-  template <typename T>
-  friend class Multitype;
+  template <typename T> friend class Multitype;
 };
 
 #endif /* Event_hpp */
