@@ -20,7 +20,6 @@ set(LIBRARIES
     core
     extensions
     histogramming
-    histogramming
 )
 foreach(LIBRARY ${LIBRARIES})
     add_subdirectory("${LIBRARIES_DIR}/${LIBRARY}")
