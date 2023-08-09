@@ -4,13 +4,20 @@
 
 #include "HistogramsHandler.hpp"
 
+#include "ConfigManager.hpp"
 #include "EventProcessor.hpp"
 #include "ExtensionsHelpers.hpp"
 
 using namespace std;
 
 HistogramsHandler::HistogramsHandler() {
-  ttbar_categories = {"", "hh", "he", "hmu", "htau", "ee", "mumu", "tautau", "emu", "etau", "mutau"};
+  string configPath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/ttalps_cms/apps/configs/trigger_efficiency_histograms.py";
+
+  auto configManager = make_unique<ConfigManager>(configPath);
+
+  vector<string> ttbar_categories;
+  configManager->GetVector("ttbar_categories", ttbar_categories);
+
   variable_names = {
       "muon_max_pt",
       "ele_max_pt",
