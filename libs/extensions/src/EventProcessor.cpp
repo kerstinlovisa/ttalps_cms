@@ -100,7 +100,7 @@ string EventProcessor::GetTTbarEventCategory(shared_ptr<Event> event) {
     if (!IsGoodParticle(event, iGenParticle, topIndices, bottomIndices)) continue;
     finalState.AddParticle(genParticle->GetPdgId());
   }
-ś
+
   if (!finalState.IsConsistent()) return "other";
   return finalState.GetShortName();
 }
