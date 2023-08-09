@@ -29,6 +29,14 @@ class HistogramsHandler {
   std::vector<std::string> variable_names;
   std::map<std::string, std::vector<std::string>> trigger_sets;
   std::vector<std::string> selection_names;
+
+  std::map<std::string, std::string> histTitles;
+  std::map<std::string, int> histNbins;
+  std::map<std::string, float> histMin;
+  std::map<std::string, float> histMax;
+
+  std::vector<std::string> triggerNames;
+  bool EndsWithTriggerName(std::string name);
 };
 
 #endif /* HistogramsHandler_hpp */

@@ -15,14 +15,22 @@ class ConfigManager {
   ~ConfigManager();
 
   template <typename T>
+  void GetValue(std::string name, T &outputValue);
+
+  template <typename T>
   void GetVector(std::string name, std::vector<T> &outputVector);
+
+  template <typename T, typename U>
+  void GetMap(std::string name, std::map<T, U> &outputMap);
 
  private:
   FILE *pythonFile;
   PyObject *pythonModule;
-  PyObject *pythonDict;
+  PyObject *config;
 
+  PyObject *GetPythonValue(std::string name);
   PyObject *GetPythonList(std::string name);
+  PyObject *GetPythonDict(std::string name);
 };
 
 template <typename T>
@@ -37,7 +45,8 @@ void ConfigManager::GetVector(std::string name, std::vector<T> &outputVector) {
         PyErr_Print();
         continue;
       }
-      outputVector.push_back(PyUnicode_AsUTF8(item));
+      std::string value = PyUnicode_AsUTF8(item);
+      outputVector.push_back(value);
     } else {
       error() << "Unknown type encountered in ConfigManager::GetVector()\n";
     }

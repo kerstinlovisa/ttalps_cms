@@ -14,10 +14,7 @@ struct FinalState;
 
 class EventProcessor {
  public:
-  static EventProcessor& getInstance() {
-    static EventProcessor instance;
-    return instance;
-  }
+  EventProcessor() {}
 
   std::string GetTTbarEventCategory(std::shared_ptr<Event> event);
 
@@ -35,11 +32,6 @@ class EventProcessor {
   bool passes_hadron_selections(const std::shared_ptr<Event> event);
 
  private:
-  EventProcessor() {}
-
-  EventProcessor(EventProcessor const&);
-  void operator=(EventProcessor const&);
-
   std::vector<int> GetTopIndices(std::shared_ptr<Event> event);
   std::vector<int> GetBottomIndices(std::shared_ptr<Event> event);
 };

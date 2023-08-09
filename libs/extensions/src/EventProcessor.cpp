@@ -100,12 +100,8 @@ string EventProcessor::GetTTbarEventCategory(shared_ptr<Event> event) {
     if (!IsGoodParticle(event, iGenParticle, topIndices, bottomIndices)) continue;
     finalState.AddParticle(genParticle->GetPdgId());
   }
-
-  if (!finalState.IsConsistent()) {
-    error() << "Final state is not consistent with tt̄ event!\n";
-    finalState.print();
-    return "error";
-  }
+ś
+  if (!finalState.IsConsistent()) return "other";
   return finalState.GetShortName();
 }
 

@@ -14,6 +14,8 @@ SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 SET(CMAKE_INSTALL_RPATH "/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-centos7-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/tbb/2019_U7-ba3eb/x86_64-centos7-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/Davix/0.7.3-d94fa/x86_64-centos7-gcc8-opt/lib64/:/cvmfs/sft.cern.ch/lcg/releases/png/1.6.37-9c2fe/x86_64-centos7-gcc8-opt/lib/:/cvmfs/sft.cern.ch/lcg/releases/GSL/2.5-32fc5/x86_64-centos7-gcc8-opt/lib/")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+find_package(Python3 REQUIRED)
+find_package(PythonLibs REQUIRED)
 
 set(LIBRARIES_DIR libs)
 set(LIBRARIES 
@@ -23,7 +25,7 @@ set(LIBRARIES
 )
 foreach(LIBRARY ${LIBRARIES})
     add_subdirectory("${LIBRARIES_DIR}/${LIBRARY}")
-    include_directories("${LIBRARIES_DIR}/${LIBRARY}/include")
+    include_directories("${LIBRARIES_DIR}/${LIBRARY}/include" ${PYTHON_INCLUDE_DIRS})
 endforeach(LIBRARY)
 
 add_executable(core_test apps/core_test.cpp)
@@ -31,10 +33,10 @@ add_executable(extensions_test apps/extensions_test.cpp)
 add_executable(top_trig_efficiency apps/top_trig_efficiency.cpp)
 add_executable(histogramming_test apps/histogramming_test.cpp)
 
-target_link_libraries(core_test core ${ROOT_LIBRARIES})
-target_link_libraries(extensions_test core extensions ${ROOT_LIBRARIES})
-target_link_libraries(histogramming_test core extensions histogramming ${ROOT_LIBRARIES})
-target_link_libraries(top_trig_efficiency core extensions histogramming ${ROOT_LIBRARIES})
+target_link_libraries(core_test core ${ROOT_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(extensions_test core extensions ${ROOT_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(histogramming_test core extensions histogramming ${ROOT_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(top_trig_efficiency core extensions histogramming ${ROOT_LIBRARIES} ${PYTHON_LIBRARIES})
 
 set_property(TARGET core_test PROPERTY CXX_STANDARD 17)
 set_property(TARGET extensions_test PROPERTY CXX_STANDARD 17)
