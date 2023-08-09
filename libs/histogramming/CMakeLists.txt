@@ -15,7 +15,7 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-add_library(histogramming   src/Histogram.cpp
+add_library(histogramming   src/HistogramsHandler.cpp
 
 )
 
