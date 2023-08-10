@@ -1,24 +1,22 @@
-nEvents = 1000
+nEvents = -1
 
-filenames = [
-    # "TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root",
-    # "TTToHadronic/0BDBFD47-3437-4145-B237-14C107687FB9.root",
-    # "TTToSemiLeptonic/2ADCE027-B24B-334E-87AD-D894007D232D.root",
-    # "TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root",
-    "FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root",
-]
+inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+# inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root"
+# inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTToHadronic/0BDBFD47-3437-4145-B237-14C107687FB9.root"
+# inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTToSemiLeptonic/2ADCE027-B24B-334E-87AD-D894007D232D.root"
+# inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
 
-# input_file_path = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/"
-# output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/"
+outputFilePath = "./FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+# output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root"
+# output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTToHadronic/0BDBFD47-3437-4145-B237-14C107687FB9.root"
+# output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTToSemiLeptonic/2ADCE027-B24B-334E-87AD-D894007D232D.root"
+# output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
 
-input_file_path = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/"
-output_file_path = "./"
+ttbarCategories = ["inclusive", "hh", "he", "hmu", "htau", "ee", "mumu", "tautau", "emu", "etau", "mutau", "other"]
+variableNames = ["muonMaxPt", "eleMaxPt", "jetMaxPt", "jetHt"]
+selectionNames = ["singleLepton", "dilepton", "hadron"]
 
-ttbar_categories = ["inclusive", "hh", "he", "hmu", "htau", "ee", "mumu", "tautau", "emu", "etau", "mutau", "other"]
-variable_names = ["muonMaxPt", "eleMaxPt", "jetMaxPt", "jetHt"]
-selection_names = ["singleLepton", "dilepton", "hadron"]
-
-trigger_sets = {
+triggerSets = {
     "hadBoth": ("HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59", "HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94"),
     "hadSinglebtag": ("HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59", ),
     "hadDoublebtag": ("HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94", ),
@@ -47,19 +45,19 @@ trigger_sets = {
 def GetHistogramsParameters():
     histParams = {}
 
-    for ttbar_category in ttbar_categories:
-        for variable in variable_names:
+    for ttbar_category in ttbarCategories:
+        for variable in variableNames:
             outputDir = f"{ttbar_category}/{variable}"
             name = f"{ttbar_category}_{variable}"
             histParams[name] = (name, 1000, 0, 1000, outputDir)
 
-            for set_name in trigger_sets.keys():
+            for set_name in triggerSets.keys():
                 name = f"{ttbar_category}_{variable}_{set_name}"
                 histParams[name] = (name, 1000, 0, 1000, outputDir)
                 name += "_eff"
                 histParams[name] = (name, 1000, 0, 1000, outputDir)
 
-                for selection in selection_names:
+                for selection in selectionNames:
                     name = f"{ttbar_category}_{variable}_{set_name}_{selection}"
                     histParams[name] = (name, 1000, 0, 1000, outputDir)
 

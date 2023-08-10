@@ -13,9 +13,9 @@ class HistogramsHandler {
   HistogramsHandler(std::string configPath);
   ~HistogramsHandler();
 
-  void setup_histograms();
-  void save_hists(std::string output_path);
-  
+  void SetupHistograms();
+  void SaveHistograms();
+
   std::map<std::string, TH1D*> histograms1D;
   std::map<std::string, TH2D*> histograms2D;
 
@@ -24,7 +24,9 @@ class HistogramsHandler {
   std::map<std::string, int> histNbins;
   std::map<std::string, float> histMin;
   std::map<std::string, float> histMax;
-  std::map<std::string, std::string> histOutputDir;  
+  std::map<std::string, std::string> histOutputDir;
+
+  std::string outputPath;
 };
 
 #endif /* HistogramsHandler_hpp */

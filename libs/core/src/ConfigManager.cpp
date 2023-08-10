@@ -36,6 +36,30 @@ ConfigManager::ConfigManager(string configPath) {
 
 ConfigManager::~ConfigManager() { Py_Finalize(); }
 
+int ConfigManager::GetCollectionSize(PyObject *collection) {
+  int size = -1;
+  if (PyList_Check(collection))
+    size = PyList_Size(collection);
+  else if (PyTuple_Check(collection))
+    size = PyTuple_Size(collection);
+  return size;
+}
+
+PyObject* ConfigManager::GetItem(PyObject *collection, int index) {
+  PyObject *item;
+
+  if (PyList_Check(collection))
+    item = PyList_GetItem(collection, index);
+  else if (PyTuple_Check(collection))
+    item = PyTuple_GetItem(collection, index);
+
+  return item;
+}
+
+//-------------------------------------------------------------------------------------------------
+// Methods to retrieve a value/list/dict from the python file
+//-------------------------------------------------------------------------------------------------
+
 PyObject *ConfigManager::GetPythonValue(string name) {
   PyObject *pythonValue = PyDict_GetItemString(config, name.c_str());
   if (!pythonValue) {
@@ -63,6 +87,10 @@ PyObject *ConfigManager::GetPythonDict(string name) {
   }
   return pythonDict;
 }
+
+//-------------------------------------------------------------------------------------------------
+// Template specializations to extract a value from the python file
+//-------------------------------------------------------------------------------------------------
 
 template <>
 void ConfigManager::GetValue<string>(std::string name, string &outputValue) {
@@ -93,6 +121,30 @@ void ConfigManager::GetValue<float>(std::string name, float &outputValue) {
   }
   outputValue = PyFloat_AsDouble(pythonValue);
 }
+
+//-------------------------------------------------------------------------------------------------
+// Template specializations to extract a vector from the python file
+//-------------------------------------------------------------------------------------------------
+
+template <>
+void ConfigManager::GetVector<std::string>(std::string name, std::vector<std::string> &outputVector) {
+  PyObject *pythonList = GetPythonList(name);
+
+  for (Py_ssize_t i = 0; i < GetCollectionSize(pythonList); ++i) {
+    PyObject *item = GetItem(pythonList, i);
+    
+    if (!item || !PyUnicode_Check(item)) {
+      error() << "Failed retriving python vector<string>\n";
+      continue;
+    }
+    std::string value = PyUnicode_AsUTF8(item);
+    outputVector.push_back(value);
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+// Template specializations to extract a map from the python file
+//-------------------------------------------------------------------------------------------------
 
 template <>
 void ConfigManager::GetMap<std::string, std::string>(std::string name, std::map<std::string, std::string> &outputMap) {
@@ -154,21 +206,9 @@ void ConfigManager::GetMap<string, vector<string>>(string name, map<string, vect
       error() << "Failed retriving python key-value pair (string-vector<string>)\n";
       continue;
     }
-    int size = -1;
-    if (PyList_Check(pValue))
-      size = PyList_Size(pValue);
-    else if (PyTuple_Check(pValue))
-      size = PyTuple_Size(pValue);
-
     vector<string> outputVector;
-    for (Py_ssize_t i = 0; i < size; ++i) {
-      PyObject *item;
-
-      if (PyList_Check(pValue))
-        item = PyList_GetItem(pValue, i);
-      else if (PyTuple_Check(pValue))
-        item = PyTuple_GetItem(pValue, i);
-
+    for (Py_ssize_t i = 0; i < GetCollectionSize(pValue); ++i) {
+      PyObject *item = GetItem(pValue, i);
       outputVector.push_back(PyUnicode_AsUTF8(item));
     }
     outputMap[PyUnicode_AsUTF8(pKey)] = outputVector;

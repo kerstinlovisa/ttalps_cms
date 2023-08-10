@@ -3,8 +3,8 @@
 #include "EventProcessor.hpp"
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
-#include "HistogramsHandler.hpp"
 #include "HistogramsFiller.hpp"
+#include "HistogramsHandler.hpp"
 
 using namespace std;
 
@@ -15,41 +15,36 @@ int main(int argc, char **argv) {
   }
 
   string configPath = argv[1];
+  auto configManager = make_unique<ConfigManager>(configPath);
 
   auto eventProcessor = make_unique<EventProcessor>();
-  auto configManager = make_unique<ConfigManager>(configPath);
+  
 
   int maxEvents;
   configManager->GetValue("nEvents", maxEvents);
 
-  string input_file_path, output_file_path;
-  configManager->GetValue("input_file_path", input_file_path);
-  configManager->GetValue("output_file_path", output_file_path);
+  string inputFilePath;
+  configManager->GetValue("inputFilePath", inputFilePath);
+  
+  auto histogramsHandler = make_shared<HistogramsHandler>(configPath);
+  auto histogramsFiller = make_unique<HistogramsFiller>(configPath, histogramsHandler);
+  auto eventReader = make_unique<EventReader>(inputFilePath);
 
-  vector<string> filenames;
-  configManager->GetVector("filenames", filenames);
+  histogramsHandler->SetupHistograms();
 
-  for (auto &filename : filenames) {
-    auto histogramsHandler = make_shared<HistogramsHandler>(configPath);
-    auto histogramsFiller = make_unique<HistogramsFiller>(configPath, histogramsHandler);
-    auto eventReader = make_unique<EventReader>(input_file_path + filename);
+  for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
+    if (maxEvents >= 0 && i_event >= maxEvents) break;
+    if (i_event % 1000 == 0) cout << "Event: " << i_event << endl;
+    auto event = eventReader->GetEvent(i_event);
 
-    histogramsHandler->setup_histograms();
-
-    for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-      if (maxEvents >= 0 && i_event >= maxEvents) break;
-      if (i_event % 1000 == 0) cout << "Event: " << i_event << endl;
-      auto event = eventReader->GetEvent(i_event);
-
-      string ttbar_category = eventProcessor->GetTTbarEventCategory(event);
-      histogramsFiller->fill_hist_variables(event, "inclusive");
-      histogramsFiller->fill_hist_variables(event, ttbar_category);
-      histogramsFiller->fill_hists_for_trigger_sets(event, "inclusive");
-      histogramsFiller->fill_hists_for_trigger_sets(event, ttbar_category);
-    }
-    histogramsFiller->fill_trigger_efficiencies();
-    histogramsHandler->save_hists(output_file_path + filename);
+    string ttbar_category = eventProcessor->GetTTbarEventCategory(event);
+    histogramsFiller->FillTriggerVariables(event, "inclusive");
+    histogramsFiller->FillTriggerVariables(event, ttbar_category);
+    histogramsFiller->FillTriggerVariablesPerTriggerSet(event, "inclusive");
+    histogramsFiller->FillTriggerVariablesPerTriggerSet(event, ttbar_category);
   }
+  histogramsFiller->FillTriggerEfficiencies();
+  histogramsHandler->SaveHistograms();
 
   return 0;
 }

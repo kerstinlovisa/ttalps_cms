@@ -31,26 +31,9 @@ class ConfigManager {
   PyObject *GetPythonValue(std::string name);
   PyObject *GetPythonList(std::string name);
   PyObject *GetPythonDict(std::string name);
+
+  int GetCollectionSize(PyObject *collection);
+  PyObject* GetItem(PyObject *collection, int index);
 };
-
-template <typename T>
-void ConfigManager::GetVector(std::string name, std::vector<T> &outputVector) {
-  PyObject *pythonList = GetPythonList(name);
-
-  for (Py_ssize_t i = 0; i < PyList_Size(pythonList); ++i) {
-    PyObject *item = PyList_GetItem(pythonList, i);
-
-    if (std::is_same<T, std::string>::value) {
-      if (!item || !PyUnicode_Check(item)) {
-        PyErr_Print();
-        continue;
-      }
-      std::string value = PyUnicode_AsUTF8(item);
-      outputVector.push_back(value);
-    } else {
-      error() << "Unknown type encountered in ConfigManager::GetVector()\n";
-    }
-  }
-}
 
 #endif /* ConfigManager_hpp */

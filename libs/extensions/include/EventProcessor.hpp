@@ -24,12 +24,12 @@ class EventProcessor {
 
   bool IsGoodParticle(std::shared_ptr<Event> event, int particleIndex, std::vector<int> topIndices, std::vector<int> bottomIndices);
 
-  float get_max_pt(std::shared_ptr<Event> event, std::string collectionName);
-  float get_ht(std::shared_ptr<Event> event, std::string collectionName);
+  float GetMaxPt(std::shared_ptr<Event> event, std::string collectionName);
+  float GetHt(std::shared_ptr<Event> event, std::string collectionName);
 
-  bool passes_single_lepton_selections(const std::shared_ptr<Event> event);
-  bool passes_dilepton_selections(const std::shared_ptr<Event> event);
-  bool passes_hadron_selections(const std::shared_ptr<Event> event);
+  bool PassesSingleLeptonSelections(const std::shared_ptr<Event> event);
+  bool PassesDileptonSelections(const std::shared_ptr<Event> event);
+  bool PassesHadronSelections(const std::shared_ptr<Event> event);
 
  private:
   std::vector<int> GetTopIndices(std::shared_ptr<Event> event);

@@ -130,18 +130,18 @@ bool EventProcessor::ParticleHasISRmotherAfterTopMother(shared_ptr<Event> event,
   return ParticleHasISRmotherAfterTopMother(event, motherIndex);
 }
 
-float EventProcessor::get_max_pt(shared_ptr<Event> event, string collectionName) {
+float EventProcessor::GetMaxPt(shared_ptr<Event> event, string collectionName) {
   auto collection = event->GetCollection(collectionName);
 
-  float max_pt = 0;
+  float maxPt = 0;
   for (auto element : *collection) {
     float pt = element->Get("pt");
-    if (pt > max_pt) max_pt = pt;
+    if (pt > maxPt) maxPt = pt;
   }
-  return max_pt;
+  return maxPt;
 }
 
-float EventProcessor::get_ht(shared_ptr<Event> event, string collectionName) {
+float EventProcessor::GetHt(shared_ptr<Event> event, string collectionName) {
   auto collection = event->GetCollection(collectionName);
   float ht = 0;
   for (auto element : *collection) {
@@ -151,7 +151,7 @@ float EventProcessor::get_ht(shared_ptr<Event> event, string collectionName) {
   return ht;
 }
 
-bool EventProcessor::passes_single_lepton_selections(const shared_ptr<Event> event) {
+bool EventProcessor::PassesSingleLeptonSelections(const shared_ptr<Event> event) {
   int leptons_pt30 = 0;
   int leptons_pt15 = 0;
   int jets_btagged = 0;
@@ -160,32 +160,32 @@ bool EventProcessor::passes_single_lepton_selections(const shared_ptr<Event> eve
   uint nMuons = event->Get("nMuon");
   auto muons = event->GetCollection("Muon");
   for (int i = 0; i < nMuons; i++) {
-    float muon_pt = muons->at(i)->Get("pt");
-    float muon_eta = muons->at(i)->Get("eta");
-    if (muon_pt > 30 && abs(muon_eta) < 2.4)
+    float muonPt = muons->at(i)->Get("pt");
+    float muonEta = muons->at(i)->Get("eta");
+    if (muonPt > 30 && abs(muonEta) < 2.4)
       leptons_pt30++;
-    else if (muon_pt > 15 && abs(muon_eta) < 2.5)
+    else if (muonPt > 15 && abs(muonEta) < 2.5)
       leptons_pt15++;
   }
   uint nElectrons = event->Get("nElectron");
   auto electrons = event->GetCollection("Electron");
   for (int i = 0; i < nElectrons; i++) {
-    float electron_pt = electrons->at(i)->Get("pt");
-    float electron_eta = electrons->at(i)->Get("eta");
-    if (electron_pt > 30 && abs(electron_eta) < 2.4)
+    float electronPt = electrons->at(i)->Get("pt");
+    float electronEta = electrons->at(i)->Get("eta");
+    if (electronPt > 30 && abs(electronEta) < 2.4)
       leptons_pt30++;
-    else if (electron_pt > 15 && abs(electron_eta) < 2.5)
+    else if (electronPt > 15 && abs(electronEta) < 2.5)
       leptons_pt15++;
   }
   uint nJets = event->Get("nJet");
   auto jets = event->GetCollection("Jet");
   for (int i = 0; i < nJets; i++) {
-    float jet_pt = jets->at(i)->Get("pt");
-    float jet_eta = jets->at(i)->Get("eta");
-    float jet_btagDeepB = jets->at(i)->Get("btagDeepB");
-    if (jet_pt > 30 && abs(jet_eta) < 2.4) {
+    float jetPt = jets->at(i)->Get("pt");
+    float jetEta = jets->at(i)->Get("eta");
+    float jetBtagDeepB = jets->at(i)->Get("btagDeepB");
+    if (jetPt > 30 && abs(jetEta) < 2.4) {
       jets_pt30++;
-      if (jet_btagDeepB > 0.5) jets_btagged++;
+      if (jetBtagDeepB > 0.5) jets_btagged++;
     }
   }
 
@@ -198,58 +198,58 @@ bool EventProcessor::passes_single_lepton_selections(const shared_ptr<Event> eve
   return true;
 }
 
-bool EventProcessor::passes_dilepton_selections(const shared_ptr<Event> event) {
-  int muons_pt30 = 0;
-  int electrons_pt30;
-  int jets_btagged = 0;
+bool EventProcessor::PassesDileptonSelections(const shared_ptr<Event> event) {
+  int muonsPt30 = 0;
+  int electronsPt30;
+  int jetsBtagged = 0;
 
   uint nMuons = event->Get("nMuon");
   auto muons = event->GetCollection("Muon");
   for (int i = 0; i < nMuons; i++) {
-    float muon_pt = muons->at(i)->Get("pt");
-    float muon_eta = muons->at(i)->Get("eta");
-    if (muon_pt > 30 && abs(muon_eta) < 2.4) muons_pt30++;
+    float muonPt = muons->at(i)->Get("pt");
+    float muonEta = muons->at(i)->Get("eta");
+    if (muonPt > 30 && abs(muonEta) < 2.4) muonsPt30++;
   }
   uint nElectrons = event->Get("nElectron");
   auto electrons = event->GetCollection("Electron");
   for (int i = 0; i < nElectrons; i++) {
-    float electron_pt = electrons->at(i)->Get("pt");
-    float electron_eta = electrons->at(i)->Get("eta");
-    if (electron_pt > 30 && abs(electron_eta) < 2.4) electrons_pt30++;
+    float electronPt = electrons->at(i)->Get("pt");
+    float electronEta = electrons->at(i)->Get("eta");
+    if (electronPt > 30 && abs(electronEta) < 2.4) electronsPt30++;
   }
   uint nJets = event->Get("nJet");
   auto jets = event->GetCollection("Jet");
   for (int i = 0; i < nJets; i++) {
-    float jet_pt = jets->at(i)->Get("pt");
+    float jetPt = jets->at(i)->Get("pt");
     float jet_eta = jets->at(i)->Get("eta");
     float jet_btagDeepB = jets->at(i)->Get("btagDeepB");
-    if (jet_pt > 30 && abs(jet_eta) < 2.4 && jet_btagDeepB > 0.5) jets_btagged++;
+    if (jetPt > 30 && abs(jet_eta) < 2.4 && jet_btagDeepB > 0.5) jetsBtagged++;
   }
 
-  if ((muons_pt30 + electrons_pt30) < 2) return false;
-  float met_pt = event->Get("MET_pt");
-  if (met_pt <= 30) return false;
-  if (jets_btagged < 2) return false;
+  if ((muonsPt30 + electronsPt30) < 2) return false;
+  float metPt = event->Get("MET_pt");
+  if (metPt <= 30) return false;
+  if (jetsBtagged < 2) return false;
   return true;
 }
 
-bool EventProcessor::passes_hadron_selections(const shared_ptr<Event> event) {
-  int jets_btagged = 0;
-  int jets_pt30;
+bool EventProcessor::PassesHadronSelections(const shared_ptr<Event> event) {
+  int jetsBtagged = 0;
+  int jetsPt30;
 
   uint nJets = event->Get("nJet");
   auto jets = event->GetCollection("Jet");
   for (int i = 0; i < nJets; i++) {
-    float jet_pt = jets->at(i)->Get("pt");
-    float jet_eta = jets->at(i)->Get("eta");
-    float jet_btagDeepB = jets->at(i)->Get("btagDeepB");
-    if (jet_pt > 30 && abs(jet_eta) < 2.4) {
-      jets_pt30++;
-      if (jet_btagDeepB > 0.5) jets_btagged++;
+    float jetPt = jets->at(i)->Get("pt");
+    float jetEta = jets->at(i)->Get("eta");
+    float jetBtagDeepB = jets->at(i)->Get("btagDeepB");
+    if (jetPt > 30 && abs(jetEta) < 2.4) {
+      jetsPt30++;
+      if (jetBtagDeepB > 0.5) jetsBtagged++;
     }
   }
 
-  if (jets_btagged < 2) return false;
-  if (jets_pt30 < 6) return false;
+  if (jetsBtagged < 2) return false;
+  if (jetsPt30 < 6) return false;
   return true;
 }

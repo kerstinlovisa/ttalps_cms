@@ -46,26 +46,26 @@ void EventReader::SetupBranches(string inputPath) {
 }
 
 void EventReader::SetupScalarBranch(string branchName, string branchType) {
-  currentEvent->values_types[branchName] = branchType;
+  currentEvent->valuesTypes[branchName] = branchType;
 
   if (branchType == "UInt_t") {
-    currentEvent->values_uint[branchName] = 0;
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_uint[branchName]);
+    currentEvent->valuesUint[branchName] = 0;
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesUint[branchName]);
   } else if (branchType == "Int_t") {
-    currentEvent->values_int[branchName] = 0;
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_int[branchName]);
+    currentEvent->valuesInt[branchName] = 0;
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesInt[branchName]);
   } else if (branchType == "Bool_t") {
-    currentEvent->values_bool[branchName] = 0;
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_bool[branchName]);
+    currentEvent->valuesBool[branchName] = 0;
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesBool[branchName]);
   } else if (branchType == "Float_t") {
-    currentEvent->values_float[branchName] = 0;
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_float[branchName]);
+    currentEvent->valuesFloat[branchName] = 0;
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesFloat[branchName]);
   } else if (branchType == "ULong64_t") {
-    currentEvent->values_ulong[branchName] = 0;
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_ulong[branchName]);
+    currentEvent->valuesUlong[branchName] = 0;
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesUlong[branchName]);
   } else if (branchType == "UChar_t") {
-    currentEvent->values_uchar[branchName] = 0;
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_uchar[branchName]);
+    currentEvent->valuesUchar[branchName] = 0;
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesUchar[branchName]);
   } else {
     cout << "ERROR -- unsupported branch type: " << branchType << "\t (branch name: " << branchName << ")" << endl;
   }
@@ -79,28 +79,28 @@ void EventReader::SetupVectorBranch(string branchName, string branchType) {
   InitializeCollection(collectionName);
 
   for (int i = 0; i < maxCollectionElements; i++) {
-    currentEvent->collections[collectionName]->at(i)->values_types[variableName] = branchType;
+    currentEvent->collections[collectionName]->at(i)->valuesTypes[variableName] = branchType;
   }
 
   if (branchType == "Float_t") {
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_float_vector[branchName]);
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesFloatVector[branchName]);
     for (int i = 0; i < maxCollectionElements; i++) {
-      currentEvent->collections[collectionName]->at(i)->values_float[variableName] = &currentEvent->values_float_vector[branchName][i];
+      currentEvent->collections[collectionName]->at(i)->valuesFloat[variableName] = &currentEvent->valuesFloatVector[branchName][i];
     }
   } else if (branchType == "UChar_t") {
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_uchar_vector[branchName]);
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesUcharVector[branchName]);
     for (int i = 0; i < maxCollectionElements; i++) {
-      currentEvent->collections[collectionName]->at(i)->values_uchar[variableName] = &currentEvent->values_uchar_vector[branchName][i];
+      currentEvent->collections[collectionName]->at(i)->valuesUchar[variableName] = &currentEvent->valuesUcharVector[branchName][i];
     }
   } else if (branchType == "Int_t") {
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_int_vector[branchName]);
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesIntVector[branchName]);
     for (int i = 0; i < maxCollectionElements; i++) {
-      currentEvent->collections[collectionName]->at(i)->values_int[variableName] = &currentEvent->values_int_vector[branchName][i];
+      currentEvent->collections[collectionName]->at(i)->valuesInt[variableName] = &currentEvent->valuesIntVector[branchName][i];
     }
   } else if (branchType == "Bool_t") {
-    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->values_bool_vector[branchName]);
+    inputTrees["Events"]->SetBranchAddress(branchName.c_str(), &currentEvent->valuesBoolVector[branchName]);
     for (int i = 0; i < maxCollectionElements; i++) {
-      currentEvent->collections[collectionName]->at(i)->values_bool[variableName] = &currentEvent->values_bool_vector[branchName][i];
+      currentEvent->collections[collectionName]->at(i)->valuesBool[variableName] = &currentEvent->valuesBoolVector[branchName][i];
     }
   } else {
     cout << "ERROR -- unsupported branch type: " << branchType << "\t (branch name: " << branchName << ")" << endl;

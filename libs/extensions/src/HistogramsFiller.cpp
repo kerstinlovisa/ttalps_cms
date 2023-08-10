@@ -14,8 +14,8 @@ HistogramsFiller::HistogramsFiller(string configPath, shared_ptr<HistogramsHandl
     : histogramsHandler(histogramsHandler_) {
   auto configManager = std::make_unique<ConfigManager>(configPath);
 
-  configManager->GetMap("trigger_sets", trigger_sets);
-  for (auto it = trigger_sets.begin(); it != trigger_sets.end(); ++it) triggerNames.push_back(it->first);
+  configManager->GetMap("triggerSets", triggerSets);
+  for (auto it = triggerSets.begin(); it != triggerSets.end(); ++it) triggerNames.push_back(it->first);
 }
 
 HistogramsFiller::~HistogramsFiller() {}
@@ -25,7 +25,7 @@ bool HistogramsFiller::EndsWithTriggerName(string name) {
   return find(triggerNames.begin(), triggerNames.end(), lastPart) != triggerNames.end();
 }
 
-void HistogramsFiller::fill_trigger_efficiencies() {
+void HistogramsFiller::FillTriggerEfficiencies() {
   TH1D *hist_tmp;
 
   for (auto &[name, hist] : histogramsHandler->histograms1D) {
@@ -38,17 +38,9 @@ void HistogramsFiller::fill_trigger_efficiencies() {
   }
 }
 
-void HistogramsFiller::fill_hist_variables(const std::shared_ptr<Event> event, std::string prefix,
-                                           std::string suffix) {
+void HistogramsFiller::FillTriggerVariables(const std::shared_ptr<Event> event, std::string prefix, std::string suffix) {
   if (prefix != "") prefix = prefix + "_";
   if (suffix != "") suffix = "_" + suffix;
-
-  auto eventProcessor = make_unique<EventProcessor>();
-
-  float muon_max_pt = eventProcessor->get_max_pt(event, "Muon");
-  float ele_max_pt = eventProcessor->get_max_pt(event, "Electron");
-  float jet_max_pt = eventProcessor->get_max_pt(event, "Jet");
-  float jet_ht = eventProcessor->get_ht(event, "Jet");
 
   string muonName = prefix + "muonMaxPt" + suffix;
   string eleName = prefix + "eleMaxPt" + suffix;
@@ -60,38 +52,33 @@ void HistogramsFiller::fill_hist_variables(const std::shared_ptr<Event> event, s
   if (!histogramsHandler->histograms1D.count(jetPtName)) error() << "Couldn't find key: " << jetPtName << " in histograms map\n";
   if (!histogramsHandler->histograms1D.count(jetHtName)) error() << "Couldn't find key: " << jetHtName << " in histograms map\n";
 
-  histogramsHandler->histograms1D[prefix + "muonMaxPt" + suffix]->Fill(muon_max_pt);
-  histogramsHandler->histograms1D[prefix + "eleMaxPt" + suffix]->Fill(ele_max_pt);
-  histogramsHandler->histograms1D[prefix + "jetMaxPt" + suffix]->Fill(jet_max_pt);
-  histogramsHandler->histograms1D[prefix + "jetHt" + suffix]->Fill(jet_ht);
-}
-
-void HistogramsFiller::fill_hists_for_trigger_sets(const std::shared_ptr<Event> event,
-                                                   std::string ttbar_category) {
-  bool passes_triggers;
-  bool passes_triggers_single_lepton;
-  bool passes_triggers_dilepton;
-  bool passes_triggers_hadron;
-
   auto eventProcessor = make_unique<EventProcessor>();
 
-  for (auto &trigger_set : trigger_sets) {
-    passes_triggers = false;
-    passes_triggers_single_lepton = false;
-    passes_triggers_dilepton = false;
-    passes_triggers_hadron = false;
-    for (auto &trigger_name : trigger_set.second) {
-      bool trigger = event->Get(trigger_name);
-      if (trigger) {
-        passes_triggers = true;
-        if (eventProcessor->passes_single_lepton_selections(event)) passes_triggers_single_lepton = true;
-        if (eventProcessor->passes_dilepton_selections(event)) passes_triggers_dilepton = true;
-        if (eventProcessor->passes_hadron_selections(event)) passes_triggers_hadron = true;
-      }
+  histogramsHandler->histograms1D[muonName]->Fill(eventProcessor->GetMaxPt(event, "Muon"));
+  histogramsHandler->histograms1D[eleName]->Fill(eventProcessor->GetMaxPt(event, "Electron"));
+  histogramsHandler->histograms1D[jetPtName]->Fill(eventProcessor->GetMaxPt(event, "Jet"));
+  histogramsHandler->histograms1D[jetHtName]->Fill(eventProcessor->GetHt(event, "Jet"));
+}
+
+void HistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory) {
+  auto eventProcessor = make_unique<EventProcessor>();
+
+  bool passesSingleLepton = eventProcessor->PassesSingleLeptonSelections(event);
+  bool passesDilepton = eventProcessor->PassesDileptonSelections(event);
+  bool passesHadron = eventProcessor->PassesHadronSelections(event);
+
+  for (auto &[triggerSetName, triggerSet] : triggerSets) {
+    bool passesTrigger = false;
+
+    for (auto &triggerName : triggerSet) {
+      passesTrigger = event->Get(triggerName);
+      if (passesTrigger) break;
     }
-    if (passes_triggers) fill_hist_variables(event, ttbar_category, trigger_set.first);
-    if (passes_triggers_single_lepton) fill_hist_variables(event, ttbar_category, trigger_set.first + "_singleLepton");
-    if (passes_triggers_dilepton) fill_hist_variables(event, ttbar_category, trigger_set.first + "_dilepton");
-    if (passes_triggers_hadron) fill_hist_variables(event, ttbar_category, trigger_set.first + "_hadron");
+    if (!passesTrigger) continue;
+
+    FillTriggerVariables(event, ttbarCategory, triggerSetName);
+    if (passesSingleLepton) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_singleLepton");
+    if (passesDilepton) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_dilepton");
+    if (passesHadron) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_hadron");
   }
 }
