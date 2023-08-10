@@ -18,7 +18,7 @@ int main() {
   auto eventReader = make_shared<EventReader>(inputPath);
   cout << "Event reader created" << endl;
 
-  EventProcessor &eventProcessor = EventProcessor::getInstance();
+  auto eventProcessor = make_unique<EventProcessor>();
 
   auto muonPt = new TH1D("muonPt", "muonPt", 100, 0, 100);
   auto muonEta = new TH1D("muonEta", "muonEta", 100, -5, 5);
@@ -26,7 +26,7 @@ int main() {
   for (int iEvent = 0; iEvent < 1000; iEvent++) {
     cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
-    cout << eventProcessor.GetTTbarEventCategory(event) << endl;
+    cout << eventProcessor->GetTTbarEventCategory(event) << endl;
 
     auto muons = event->GetCollection("Muon");
 

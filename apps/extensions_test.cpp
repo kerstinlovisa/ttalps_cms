@@ -18,12 +18,12 @@ int main() {
   auto eventReader = make_shared<EventReader>(inputPath);
   cout << "Event reader created" << endl;
 
-  EventProcessor &eventProcessor = EventProcessor::getInstance();
+  auto eventProcessor = make_unique<EventProcessor>();
 
   for (int iEvent = 0; iEvent < 10; iEvent++) {
     cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
-    cout << eventProcessor.GetTTbarEventCategory(event) << endl;
+    cout << eventProcessor->GetTTbarEventCategory(event) << endl;
 
     // auto physicsObjects = event->GetCollection("GenPart");
 

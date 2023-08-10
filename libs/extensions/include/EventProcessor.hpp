@@ -14,10 +14,7 @@ struct FinalState;
 
 class EventProcessor {
  public:
-  static EventProcessor& getInstance() {
-    static EventProcessor instance;
-    return instance;
-  }
+  EventProcessor() {}
 
   std::string GetTTbarEventCategory(std::shared_ptr<Event> event);
 
@@ -27,12 +24,14 @@ class EventProcessor {
 
   bool IsGoodParticle(std::shared_ptr<Event> event, int particleIndex, std::vector<int> topIndices, std::vector<int> bottomIndices);
 
+  float GetMaxPt(std::shared_ptr<Event> event, std::string collectionName);
+  float GetHt(std::shared_ptr<Event> event, std::string collectionName);
+
+  bool PassesSingleLeptonSelections(const std::shared_ptr<Event> event);
+  bool PassesDileptonSelections(const std::shared_ptr<Event> event);
+  bool PassesHadronSelections(const std::shared_ptr<Event> event);
+
  private:
-  EventProcessor() {}
-
-  EventProcessor(EventProcessor const&);
-  void operator=(EventProcessor const&);
-
   std::vector<int> GetTopIndices(std::shared_ptr<Event> event);
   std::vector<int> GetBottomIndices(std::shared_ptr<Event> event);
 };
