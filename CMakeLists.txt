@@ -25,8 +25,10 @@ set(LIBRARIES
 )
 foreach(LIBRARY ${LIBRARIES})
     add_subdirectory("${LIBRARIES_DIR}/${LIBRARY}")
-    include_directories("${LIBRARIES_DIR}/${LIBRARY}/include" ${PYTHON_INCLUDE_DIRS})
+    include_directories("${LIBRARIES_DIR}/${LIBRARY}/include")
 endforeach(LIBRARY)
+
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 add_executable(core_test apps/core_test.cpp)
 add_executable(extensions_test apps/extensions_test.cpp)

@@ -18,9 +18,10 @@ find_package(PythonLibs REQUIRED)
 
 include_directories("${PROJECT_SOURCE_DIR}/include" ${PYTHON_INCLUDE_DIRS})
 
-add_library(histogramming   src/HistogramsHandler.cpp
-)
+file(GLOB SOURCES "src/*.cpp")
+add_library(histogramming ${SOURCES})
 
 set_property(TARGET histogramming PROPERTY CXX_STANDARD 17)
 
 target_link_libraries(histogramming ${PYTHON_LIBRARIES})
+target_include_directories(histogramming PUBLIC "${PROJECT_SOURCE_DIR}/include")

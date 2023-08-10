@@ -4,6 +4,7 @@
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
 #include "HistogramsHandler.hpp"
+#include "HistogramsFiller.hpp"
 
 using namespace std;
 
@@ -29,23 +30,24 @@ int main(int argc, char **argv) {
   configManager->GetVector("filenames", filenames);
 
   for (auto &filename : filenames) {
-    auto histogramsHandler = make_unique<HistogramsHandler>(configPath);
+    auto histogramsHandler = make_shared<HistogramsHandler>(configPath);
+    auto histogramsFiller = make_unique<HistogramsFiller>(configPath, histogramsHandler);
     auto eventReader = make_unique<EventReader>(input_file_path + filename);
 
     histogramsHandler->setup_histograms();
 
     for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-      if (maxEvents >= 0 && i_event > maxEvents) break;
+      if (maxEvents >= 0 && i_event >= maxEvents) break;
       if (i_event % 1000 == 0) cout << "Event: " << i_event << endl;
       auto event = eventReader->GetEvent(i_event);
 
       string ttbar_category = eventProcessor->GetTTbarEventCategory(event);
-      histogramsHandler->fill_hist_variables(event, "inclusive");
-      histogramsHandler->fill_hist_variables(event, ttbar_category);
-      histogramsHandler->fill_hists_for_trigger_sets(event, "inclusive");
-      histogramsHandler->fill_hists_for_trigger_sets(event, ttbar_category);
+      histogramsFiller->fill_hist_variables(event, "inclusive");
+      histogramsFiller->fill_hist_variables(event, ttbar_category);
+      histogramsFiller->fill_hists_for_trigger_sets(event, "inclusive");
+      histogramsFiller->fill_hists_for_trigger_sets(event, ttbar_category);
     }
-    histogramsHandler->fill_trigger_efficiencies();
+    histogramsFiller->fill_trigger_efficiencies();
     histogramsHandler->save_hists(output_file_path + filename);
   }
 
