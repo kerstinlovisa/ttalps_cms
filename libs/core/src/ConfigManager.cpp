@@ -141,3 +141,36 @@ void ConfigManager::GetMap<std::string, float>(std::string name, std::map<std::s
     outputMap[PyUnicode_AsUTF8(pKey)] = PyFloat_AsDouble(pValue);
   }
 }
+
+template <>
+void ConfigManager::GetMap<string, vector<string>>(string name, map<string, vector<string>> &outputMap) {
+  PyObject *pythonDict = GetPythonDict(name);
+
+  PyObject *pKey, *pValue;
+  Py_ssize_t pos = 0;
+
+  while (PyDict_Next(pythonDict, &pos, &pKey, &pValue)) {
+    if (!PyUnicode_Check(pKey) || (!PyList_Check(pValue) && !PyTuple_Check(pValue))) {
+      error() << "Failed retriving python key-value pair (string-vector<string>)\n";
+      continue;
+    }
+    int size = -1;
+    if (PyList_Check(pValue))
+      size = PyList_Size(pValue);
+    else if (PyTuple_Check(pValue))
+      size = PyTuple_Size(pValue);
+
+    vector<string> outputVector;
+    for (Py_ssize_t i = 0; i < size; ++i) {
+      PyObject *item;
+
+      if (PyList_Check(pValue))
+        item = PyList_GetItem(pValue, i);
+      else if (PyTuple_Check(pValue))
+        item = PyTuple_GetItem(pValue, i);
+
+      outputVector.push_back(PyUnicode_AsUTF8(item));
+    }
+    outputMap[PyUnicode_AsUTF8(pKey)] = outputVector;
+  }
+}

@@ -1,4 +1,4 @@
-nEvents = 100
+nEvents = 1000
 
 filenames = [
     # "TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root",
@@ -14,20 +14,9 @@ filenames = [
 input_file_path = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/"
 output_file_path = "./"
 
-ttbar_categories = ["", "hh", "he", "hmu", "htau", "ee", "mumu", "tautau", "emu", "etau", "mutau", "other"]
-
-variable_names = [
-    "muon_max_pt",
-    "ele_max_pt",
-    "jet_max_pt",
-    "jet_ht",
-]
-
-selection_names = [
-    "single_lepton",
-    "dilepton",
-    "hadron",
-]
+ttbar_categories = ["inclusive", "hh", "he", "hmu", "htau", "ee", "mumu", "tautau", "emu", "etau", "mutau", "other"]
+variable_names = ["muonMaxPt", "eleMaxPt", "jetMaxPt", "jetHt"]
+selection_names = ["singleLepton", "dilepton", "hadron"]
 
 trigger_sets = {
     "hadBoth": ("HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59", "HLT_PFHT400_SixPFJet32_DoublePFBTagDeepCSV_2p94"),
@@ -56,34 +45,32 @@ trigger_sets = {
 
 
 def GetHistogramsParameters():
-
     histParams = {}
 
     for ttbar_category in ttbar_categories:
-        if ttbar_category != "":
-            ttbar_category = ttbar_category + "_"
-
         for variable in variable_names:
-            histParams[ttbar_category +
-                       variable] = (ttbar_category + variable, 1000, 0, 1000)
+            outputDir = f"{ttbar_category}/{variable}"
+            name = f"{ttbar_category}_{variable}"
+            histParams[name] = (name, 1000, 0, 1000, outputDir)
 
             for set_name in trigger_sets.keys():
-
-                histParams[ttbar_category + variable + "_" + set_name] = (
-                    ttbar_category + variable + "_" + set_name, 1000, 0, 1000)
-                histParams[ttbar_category + variable + "_" + set_name + "_eff"] = (
-                    ttbar_category + variable + "_" + set_name + "_eff", 1000, 0, 1000)
+                name = f"{ttbar_category}_{variable}_{set_name}"
+                histParams[name] = (name, 1000, 0, 1000, outputDir)
+                name += "_eff"
+                histParams[name] = (name, 1000, 0, 1000, outputDir)
 
                 for selection in selection_names:
-                    histParams[ttbar_category + variable + "_" + set_name + "_" + selection] = (
-                        ttbar_category + variable + "_" + set_name + "_" + selection, 1000, 0, 1000)
+                    name = f"{ttbar_category}_{variable}_{set_name}_{selection}"
+                    histParams[name] = (name, 1000, 0, 1000, outputDir)
 
     return histParams
 
 
 histParams = GetHistogramsParameters()
 
+
 histTitles = {key: params[0] for key, params in histParams.items()}
 histNbins = {key: params[1] for key, params in histParams.items()}
 histMin = {key: params[2] for key, params in histParams.items()}
 histMax = {key: params[3] for key, params in histParams.items()}
+histOutputDir = {key: params[4] for key, params in histParams.items()}

@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   configManager->GetVector("filenames", filenames);
 
   for (auto &filename : filenames) {
-    auto histogramsHandler = make_unique<HistogramsHandler>();
+    auto histogramsHandler = make_unique<HistogramsHandler>(configPath);
     auto eventReader = make_unique<EventReader>(input_file_path + filename);
 
     histogramsHandler->setup_histograms();
@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
       auto event = eventReader->GetEvent(i_event);
 
       string ttbar_category = eventProcessor->GetTTbarEventCategory(event);
-      histogramsHandler->fill_hist_variables(event);
+      histogramsHandler->fill_hist_variables(event, "inclusive");
       histogramsHandler->fill_hist_variables(event, ttbar_category);
-      histogramsHandler->fill_hists_for_trigger_sets(event, "");
+      histogramsHandler->fill_hists_for_trigger_sets(event, "inclusive");
       histogramsHandler->fill_hists_for_trigger_sets(event, ttbar_category);
     }
     histogramsHandler->fill_trigger_efficiencies();

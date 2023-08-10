@@ -10,7 +10,7 @@
 
 class HistogramsHandler {
  public:
-  HistogramsHandler();
+  HistogramsHandler(std::string configPath);
   ~HistogramsHandler();
 
   void setup_histograms();
@@ -25,15 +25,13 @@ class HistogramsHandler {
   std::map<std::string, TH1D*> histograms1D;
   std::map<std::string, TH2D*> histograms2D;
 
-  std::vector<std::string> ttbar_categories;
-  std::vector<std::string> variable_names;
   std::map<std::string, std::vector<std::string>> trigger_sets;
-  std::vector<std::string> selection_names;
-
+  
   std::map<std::string, std::string> histTitles;
   std::map<std::string, int> histNbins;
   std::map<std::string, float> histMin;
   std::map<std::string, float> histMax;
+  std::map<std::string, std::string> histOutputDir;
 
   std::vector<std::string> triggerNames;
   bool EndsWithTriggerName(std::string name);
