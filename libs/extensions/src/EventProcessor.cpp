@@ -40,6 +40,7 @@ vector<int> EventProcessor::GetBottomIndices(shared_ptr<Event> event) {
 
     if (abs(genParticle->GetPdgId()) == 5) {
       int motherIndex = genParticle->GetMotherIndex();
+      if(motherIndex < 0) continue;
       auto mother = asGenParticle(genParticles->at(motherIndex));
       if (!genParticle->IsGoodBottomQuark(mother)) continue;
       bottomIndices.push_back(iGenParticle);

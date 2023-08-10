@@ -19,7 +19,6 @@ add_library(core   src/EventReader.cpp
                             src/EventWriter.cpp
                             src/Event.cpp
                             src/PhysicsObject.cpp
-                            event_tools.hpp
 )
 
 set_property(TARGET core PROPERTY CXX_STANDARD 17)
