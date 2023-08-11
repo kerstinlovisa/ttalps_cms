@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project (core)
+project (histogramming)
 
 set(CMAKE_OSX_ARCHITECTURES "arm64")
 
@@ -19,7 +19,9 @@ find_package(PythonLibs REQUIRED)
 include_directories("${PROJECT_SOURCE_DIR}/include" ${PYTHON_INCLUDE_DIRS})
 
 file(GLOB SOURCES "src/*.cpp")
-add_library(core ${SOURCES})
+add_library(histogramming ${SOURCES})
 
-set_property(TARGET core PROPERTY CXX_STANDARD 17)
-target_link_libraries(core ${PYTHON_LIBRARIES})
+set_property(TARGET histogramming PROPERTY CXX_STANDARD 17)
+
+target_link_libraries(histogramming ${PYTHON_LIBRARIES})
+target_include_directories(histogramming PUBLIC "${PROJECT_SOURCE_DIR}/include")
