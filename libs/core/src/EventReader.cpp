@@ -117,6 +117,8 @@ void EventReader::InitializeCollection(string collectionName) {
 }
 
 shared_ptr<Event> EventReader::GetEvent(int iEvent) {
+  currentEvent->Reset();
+
   // Move to desired entry in all trees
   for (auto &[name, tree] : inputTrees) tree->GetEntry(iEvent);
 

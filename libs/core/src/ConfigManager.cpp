@@ -71,8 +71,9 @@ PyObject *ConfigManager::GetPythonValue(string name) {
 
 PyObject *ConfigManager::GetPythonList(string name) {
   PyObject *pythonList = PyDict_GetItemString(config, name.c_str());
-  if (!pythonList || !PyList_Check(pythonList)) {
-    fatal() << "Could not find a list in python config file: " << name << "\n";
+
+  if (!pythonList || (!PyList_Check(pythonList) && !PyTuple_Check(pythonList))) {
+    fatal() << "Could not find a list/tuple in python config file: " << name << "\n";
     exit(1);
   }
   return pythonList;

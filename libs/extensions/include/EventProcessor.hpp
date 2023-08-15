@@ -9,12 +9,13 @@
 #include "GenParticle.hpp"
 #include "Helpers.hpp"
 #include "PhysicsObject.hpp"
+#include "ConfigManager.hpp"
 
 struct FinalState;
 
 class EventProcessor {
  public:
-  EventProcessor() {}
+  EventProcessor(std::string configPath="");
 
   std::string GetTTbarEventCategory(std::shared_ptr<Event> event);
 
@@ -31,9 +32,16 @@ class EventProcessor {
   bool PassesDileptonSelections(const std::shared_ptr<Event> event);
   bool PassesHadronSelections(const std::shared_ptr<Event> event);
 
+  bool PassesTriggerSelections(const std::shared_ptr<Event> event);
+
  private:
+  std::unique_ptr<ConfigManager> config;
+  std::vector<std::string> triggerNames;
+
   std::vector<int> GetTopIndices(std::shared_ptr<Event> event);
   std::vector<int> GetBottomIndices(std::shared_ptr<Event> event);
+
+  void AddExtraCollections(std::shared_ptr<Event> event);
 };
 
 struct FinalState {
