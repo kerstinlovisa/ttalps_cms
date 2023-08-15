@@ -291,7 +291,7 @@ bool EventProcessor::PassesSingleLeptonicPlusMuonsSelections(const std::shared_p
   int nNegativeChargeMuons = 0;
   int nPositiveChargeMuons = 0;
   for(int i=0; i<nMuonPt5; i++) {
-    int charge = event->GetCollection("MuonPt5")->at(0)->Get("charge");
+    int charge = event->GetCollection("MuonPt5")->at(i)->Get("charge");
     if(charge < 0) nNegativeChargeMuons++;
     else nPositiveChargeMuons++;
   }
