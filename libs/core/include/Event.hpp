@@ -16,14 +16,6 @@ class Event {
 
   void Reset();
 
-  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const {
-    if (!collections.count(name)) {
-      fatal() << "Tried to get a collection that doesn't exist: " << name << "\n";
-      exit(1);
-    }
-    return collections.at(name);
-  }
-
   inline auto Get(std::string branchName) {
     bool badBranch = false;
 
@@ -33,6 +25,26 @@ class Event {
     }
 
     return Multitype(this, branchName, badBranch);
+  }
+
+  inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const {
+    if (collections.count(name)) return collections.at(name);
+    if (extraCollections.count(name)) return extraCollections.at(name);
+    fatal() << "Tried to get a collection that doesn't exist: " << name << "\n";
+    exit(1);
+  }
+
+  inline int GetCollectionSize(std::string name) {
+    if (collections.count(name)) return collections.at(name)->size();
+    if (extraCollections.count(name)) return extraCollections.at(name)->size();
+    fatal() << "Tried to get a collection that doesn't exist: " << name << "\n";
+    exit(1);
+  }
+
+  inline void AddExtraCollection(std::string name, std::shared_ptr<PhysicsObjects> collection) {
+    
+
+    extraCollections.insert({name, collection});
   }
 
  private:
@@ -58,6 +70,7 @@ class Event {
   std::map<std::string, UChar_t[maxCollectionElements]> valuesUcharVector;
 
   std::map<std::string, std::shared_ptr<PhysicsObjects>> collections;
+  std::map<std::string, std::shared_ptr<PhysicsObjects>> extraCollections;
 
   friend class EventReader;
   template <typename T>
