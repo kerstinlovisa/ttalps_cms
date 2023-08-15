@@ -12,6 +12,8 @@ triggerSelection = (
     "HLT_IsoMu24",
 )
 
+selectionOption = "singleLepton"
+
 extraEventCollections = {
     "LeptonPt30": {
         "inputCollections": ("Muon", "Electron"),

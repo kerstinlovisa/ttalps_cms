@@ -32,6 +32,8 @@ class EventProcessor {
   bool PassesDileptonSelections(const std::shared_ptr<Event> event);
   bool PassesHadronSelections(const std::shared_ptr<Event> event);
 
+  bool PassesSingleLeptonicPlusMuonsSelections(const std::shared_ptr<Event> event);
+
   bool PassesTriggerSelections(const std::shared_ptr<Event> event);
 
  private:

@@ -256,7 +256,7 @@ bool EventProcessor::PassesDileptonSelections(const shared_ptr<Event> event) {
 
 bool EventProcessor::PassesHadronSelections(const shared_ptr<Event> event) {
   int jetsBtagged = 0;
-  int jetsPt30;
+  int jetsPt30 = 0;
 
   uint nJets = event->Get("nJet");
   auto jets = event->GetCollection("Jet");
@@ -272,5 +272,48 @@ bool EventProcessor::PassesHadronSelections(const shared_ptr<Event> event) {
 
   if (jetsBtagged < 2) return false;
   if (jetsPt30 < 6) return false;
+  return true;
+}
+
+bool EventProcessor::PassesSingleLeptonicPlusMuonsSelections(const std::shared_ptr<Event> event) {
+  float metPt = event->Get("MET_pt");
+  if (metPt <= 30) return false;
+
+  AddExtraCollections(event);
+
+  if (event->GetCollectionSize("JetBtagged") < 2) return false;
+  if (event->GetCollectionSize("JetPt30") < 4) return false;
+
+  int nMuonPt5 = event->GetCollectionSize("MuonPt5");
+  if (nMuonPt5 < 2) return false;
+  if (event->GetCollectionSize("MuonPt15") > 3) return false;
+
+  int nNegativeChargeMuons = 0;
+  int nPositiveChargeMuons = 0;
+  for(int i=0; i<nMuonPt5; i++) {
+    int charge = event->GetCollection("MuonPt5")->at(0)->Get("charge");
+    if(charge < 0) nNegativeChargeMuons++;
+    else nPositiveChargeMuons++;
+  }
+  if(nNegativeChargeMuons < 1 || nPositiveChargeMuons < 1) return false;
+
+
+  // 1 electron from jet + 2 muons from ALP option
+  if (event->GetCollectionSize("ElectronPt30") > 1) return false;
+  if (event->GetCollectionSize("ElectronPt30") == 1) {
+    auto leadingElectron = event->GetCollection("ElectronPt30")->at(0);
+    auto survivingElectron = event->GetCollection("ElectronPt15")->at(0);
+    if (event->GetCollectionSize("ElectronPt15") == 1) {
+      if (survivingElectron == leadingElectron) return false;
+    }
+    if (event->GetCollectionSize("MuonPt15") > 2) return false;
+  }
+  else {
+    // 1 muon from jet + 2 muons from ALP option
+    if (nMuonPt5 < 3) return false;
+    if (event->GetCollectionSize("MuonPt30") < 1) return false;
+  }
+
+
   return true;
 }

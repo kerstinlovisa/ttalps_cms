@@ -1,12 +1,13 @@
 nEvents = 100
 
-inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+# inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
 # inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root"
 # inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTToHadronic/0BDBFD47-3437-4145-B237-14C107687FB9.root"
 # inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTToSemiLeptonic/2ADCE027-B24B-334E-87AD-D894007D232D.root"
 # inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+inputFilePath = "/nfs/dust/cms/user/lrygaard/ttalps_cms/LHEtoNanoAOD_output/UL_NanoAOD/tta_mAlp-0p35GeV_nEvents-10000/tta_mAlp-0p35GeV_nEvents-10000_part-0_NanoAOD_5.root"
 
-outputFilePath = "./FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+outputFilePath = "./outputs/tta_mAlp-0p35GeV_nEvents-10000_part-0/trigger_efficiency_histograms_5.root"
 # output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root"
 # output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTToHadronic/0BDBFD47-3437-4145-B237-14C107687FB9.root"
 # output_file_path = "/afs/desy.de/user/l/lrygaard/TTALP/output/TTToSemiLeptonic/2ADCE027-B24B-334E-87AD-D894007D232D.root"

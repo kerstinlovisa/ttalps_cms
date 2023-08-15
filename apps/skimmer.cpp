@@ -24,6 +24,9 @@ int main(int argc, char **argv) {
   
   int maxEvents;
   configManager->GetValue("nEvents", maxEvents);
+  string selectionOption;
+  configManager->GetValue("selectionOption", selectionOption);
+
 
   string inputFilePath, outputFilePath;
   configManager->GetValue("inputFilePath", inputFilePath);
@@ -39,7 +42,8 @@ int main(int argc, char **argv) {
     auto event = eventReader->GetEvent(i_event);
 
     if(!eventProcessor->PassesTriggerSelections(event)) continue;
-    if(!eventProcessor->PassesSingleLeptonSelections(event)) continue;
+    if((selectionOption == "singleLeptonPlusMuons") && (!eventProcessor->PassesSingleLeptonicPlusMuonsSelections(event))) continue;
+    if((selectionOption == "singleLepton") && (!eventProcessor->PassesSingleLeptonSelections(event))) continue;
     
     eventWriter->AddCurrentEvent("Events");
   }
