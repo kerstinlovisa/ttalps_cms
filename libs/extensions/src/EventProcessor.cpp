@@ -8,6 +8,13 @@
 
 using namespace std;
 
+EventProcessor::EventProcessor(string configPath) {
+  if (configPath != "") {
+    config = std::make_unique<ConfigManager>(configPath);
+    config->GetVector("triggerSelection", triggerNames);
+  }
+}
+
 vector<int> EventProcessor::GetTopIndices(shared_ptr<Event> event) {
   vector<int> topIndices = {-1, -1};
 
@@ -151,50 +158,64 @@ float EventProcessor::GetHt(shared_ptr<Event> event, string collectionName) {
   return ht;
 }
 
-bool EventProcessor::PassesSingleLeptonSelections(const shared_ptr<Event> event) {
-  int leptons_pt30 = 0;
-  int leptons_pt15 = 0;
-  int jets_btagged = 0;
-  int jets_pt30;
+bool EventProcessor::PassesTriggerSelections(const shared_ptr<Event> event) {
+  for (auto &triggerName : triggerNames) {
+    if (event->Get(triggerName)) return true;
+  }
+  return false;
+}
 
-  uint nMuons = event->Get("nMuon");
-  auto muons = event->GetCollection("Muon");
-  for (int i = 0; i < nMuons; i++) {
-    float muonPt = muons->at(i)->Get("pt");
-    float muonEta = muons->at(i)->Get("eta");
-    if (muonPt > 30 && abs(muonEta) < 2.4)
-      leptons_pt30++;
-    else if (muonPt > 15 && abs(muonEta) < 2.5)
-      leptons_pt15++;
-  }
-  uint nElectrons = event->Get("nElectron");
-  auto electrons = event->GetCollection("Electron");
-  for (int i = 0; i < nElectrons; i++) {
-    float electronPt = electrons->at(i)->Get("pt");
-    float electronEta = electrons->at(i)->Get("eta");
-    if (electronPt > 30 && abs(electronEta) < 2.4)
-      leptons_pt30++;
-    else if (electronPt > 15 && abs(electronEta) < 2.5)
-      leptons_pt15++;
-  }
-  uint nJets = event->Get("nJet");
-  auto jets = event->GetCollection("Jet");
-  for (int i = 0; i < nJets; i++) {
-    float jetPt = jets->at(i)->Get("pt");
-    float jetEta = jets->at(i)->Get("eta");
-    float jetBtagDeepB = jets->at(i)->Get("btagDeepB");
-    if (jetPt > 30 && abs(jetEta) < 2.4) {
-      jets_pt30++;
-      if (jetBtagDeepB > 0.5) jets_btagged++;
+void EventProcessor::AddExtraCollections(shared_ptr<Event> event) {
+  map<string, ExtraCollection> extraEventCollections;
+  config->GetExtraEventCollections(extraEventCollections);
+
+  for (auto &[name, extraCollection] : extraEventCollections) {
+    auto newCollection = make_shared<PhysicsObjects>();
+
+    for (auto inputCollectionName : extraCollection.inputCollections) {
+      auto inputCollection = event->GetCollection(inputCollectionName);
+
+      int n = 0;
+      for (auto physicsObject : *inputCollection) {
+        n++;
+
+        bool passes = true;
+
+        for (auto &[branchName, cuts] : extraCollection.selections) {
+          float value = physicsObject->Get(branchName);
+
+          if (value < cuts.first || value > cuts.second) {
+            passes = false;
+            break;
+          }
+        }
+
+        if (passes) newCollection->push_back(physicsObject);
+      }
     }
+    event->AddExtraCollection(name, newCollection);
+  }
+}
+
+bool EventProcessor::PassesSingleLeptonSelections(const shared_ptr<Event> event) {
+  float metPt = event->Get("MET_pt");
+  if (metPt <= 30) return false;
+
+  AddExtraCollections(event);
+
+  if (event->GetCollectionSize("LeptonPt30") != 1) return false;
+
+  int nLeptons15 = event->GetCollectionSize("LeptonPt15");
+  if (nLeptons15 > 1) return false;
+  if (nLeptons15 == 1) {
+    auto leadingLepton = event->GetCollection("LeptonPt30")->at(0);
+    auto survivingLepton = event->GetCollection("LeptonPt15")->at(0);
+    if (survivingLepton != leadingLepton) return false;
   }
 
-  if (leptons_pt30 != 1) return false;
-  if (leptons_pt15 != 0) return false;
-  float met_pt = event->Get("MET_pt");
-  if (met_pt <= 30) return false;
-  if (jets_btagged < 2) return false;
-  if (jets_pt30 < 4) return false;
+  if (event->GetCollectionSize("JetBtagged") < 2) return false;
+  if (event->GetCollectionSize("JetPt30") < 4) return false;
+
   return true;
 }
 

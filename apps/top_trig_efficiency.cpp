@@ -37,11 +37,11 @@ int main(int argc, char **argv) {
     if (i_event % 1000 == 0) cout << "Event: " << i_event << endl;
     auto event = eventReader->GetEvent(i_event);
 
-    string ttbar_category = eventProcessor->GetTTbarEventCategory(event);
+    string ttbarCategory = eventProcessor->GetTTbarEventCategory(event);
     histogramsFiller->FillTriggerVariables(event, "inclusive");
-    histogramsFiller->FillTriggerVariables(event, ttbar_category);
+    histogramsFiller->FillTriggerVariables(event, ttbarCategory);
     histogramsFiller->FillTriggerVariablesPerTriggerSet(event, "inclusive");
-    histogramsFiller->FillTriggerVariablesPerTriggerSet(event, ttbar_category);
+    histogramsFiller->FillTriggerVariablesPerTriggerSet(event, ttbarCategory);
   }
   histogramsFiller->FillTriggerEfficiencies();
   histogramsHandler->SaveHistograms();

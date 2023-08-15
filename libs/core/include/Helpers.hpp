@@ -58,4 +58,19 @@ inline std::vector<std::string> split(std::string input, char splitBy) {
   return parts;
 }
 
+struct ExtraCollection {
+  std::vector<std::string> inputCollections;
+  std::map<std::string, std::pair<float, float>> selections;
+
+  void Print(){
+    info() << "Input collections: \n";
+    for(std::string name : inputCollections) info() << name << "\n";
+
+    info() << "Selections: \n";
+    for(auto &[name, cuts] : selections){
+      info() << "\t" << name <<": "<< cuts.first <<", "<< cuts.second << "\n";
+    }
+  }
+};
+
 #endif /* Helpers_hpp */
