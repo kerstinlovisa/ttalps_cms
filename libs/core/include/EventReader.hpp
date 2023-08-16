@@ -19,6 +19,7 @@ public:
   std::shared_ptr<Event> GetEvent(int iEvent);
 
 private:
+  TFile *inputFile;
   std::map<std::string, TTree *> inputTrees;
   std::shared_ptr<Event> currentEvent;
 
@@ -29,6 +30,7 @@ private:
   void InitializeCollection(std::string collectionName);
 
   friend class EventWriter;
+  friend class CutFlowManager;
 };
 
 #endif /* EventReader_hpp */

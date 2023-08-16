@@ -6,6 +6,7 @@
 #define Logger_hpp
 
 #include "Helpers.hpp"
+#include <stdexcept>
 
 struct info {
   template <class T> info &operator<<(const T &v) {
@@ -33,6 +34,19 @@ struct fatal {
     std::cout << "\033[1;35m" << v << "\033[0m";
     return *this;
   }
+};
+
+
+class Exception : public std::exception {
+public:
+    Exception(const char* message) {
+      message_ = "\033[1;35m" + (std::string)message + "\033[0m";
+    }
+    virtual const char* what() const throw() {
+        return message_.c_str();
+    }
+private:
+    std::string message_;
 };
 
 #endif /* Logger_hpp */

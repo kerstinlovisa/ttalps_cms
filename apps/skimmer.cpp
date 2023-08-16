@@ -4,10 +4,11 @@
 
 #include "ConfigManager.hpp"
 #include "Event.hpp"
-#include "EventProcessor.hpp"
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
 #include "EventWriter.hpp"
+#include "CutFlowManager.hpp"
+#include "TTAlpsSelections.hpp"
 
 using namespace std;
 
@@ -20,8 +21,8 @@ int main(int argc, char **argv) {
   string configPath = argv[1];
   auto configManager = make_unique<ConfigManager>(configPath);
 
-  auto eventProcessor = make_unique<EventProcessor>(configPath);
-  
+  auto ttAlpsSelections = make_unique<TTAlpsSelections>(configPath);
+
   int maxEvents;
   configManager->GetValue("nEvents", maxEvents);
   string selectionOption;
@@ -33,7 +34,8 @@ int main(int argc, char **argv) {
   configManager->GetValue("outputFilePath", outputFilePath);
   
   auto eventReader = make_shared<EventReader>(inputFilePath);
-  auto eventWriter = make_unique<EventWriter>(outputFilePath, eventReader);
+  auto eventWriter = make_shared<EventWriter>(outputFilePath, eventReader);
+  auto cutFlowManager = make_unique<CutFlowManager>(eventReader, eventWriter);
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
     if (maxEvents >= 0 && i_event >= maxEvents) break;
@@ -41,12 +43,17 @@ int main(int argc, char **argv) {
   
     auto event = eventReader->GetEvent(i_event);
 
-    if(!eventProcessor->PassesTriggerSelections(event)) continue;
-    if((selectionOption == "singleLeptonPlusMuons") && (!eventProcessor->PassesSingleLeptonicPlusMuonsSelections(event))) continue;
-    if((selectionOption == "singleLepton") && (!eventProcessor->PassesSingleLeptonSelections(event))) continue;
+    cutFlowManager->UpdateCutFlow("0_initial");
+
+    if(!ttAlpsSelections->PassesTriggerSelections(event)) continue;
+    cutFlowManager->UpdateCutFlow("1_trigger");
+
+    if(!ttAlpsSelections->PassesSingleLeptonSelections(event)) continue;
+    cutFlowManager->UpdateCutFlow("2_singleLeptonTTbar");
     
     eventWriter->AddCurrentEvent("Events");
   }
+  cutFlowManager->SaveCutFlow();
 
   eventWriter->Save();
 
