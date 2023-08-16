@@ -63,8 +63,7 @@ PyObject* ConfigManager::GetItem(PyObject *collection, int index) {
 PyObject *ConfigManager::GetPythonValue(string name) {
   PyObject *pythonValue = PyDict_GetItemString(config, name.c_str());
   if (!pythonValue) {
-    fatal() << "Could not find a value in python config file: " << name << "\n";
-    exit(1);
+    throw Exception(("Could not find a value in python config file: "+name).c_str());
   }
   return pythonValue;
 }
@@ -73,8 +72,7 @@ PyObject *ConfigManager::GetPythonList(string name) {
   PyObject *pythonList = PyDict_GetItemString(config, name.c_str());
 
   if (!pythonList || (!PyList_Check(pythonList) && !PyTuple_Check(pythonList))) {
-    fatal() << "Could not find a list/tuple in python config file: " << name << "\n";
-    exit(1);
+    throw Exception(("Could not find a list/tuple in python config file: "+name).c_str());
   }
   return pythonList;
 }
@@ -82,9 +80,7 @@ PyObject *ConfigManager::GetPythonList(string name) {
 PyObject *ConfigManager::GetPythonDict(string name) {
   PyObject *pythonDict = PyDict_GetItemString(config, name.c_str());
   if (!pythonDict || !PyDict_Check(pythonDict)) {
-    fatal() << "Could not find a dict in python config file: " << name << "\n";
-    fatal() << "dict address: " << pythonDict << "\n";
-    exit(1);
+    throw Exception(("Could not find a dict in python config file: "+name).c_str());
   }
   return pythonDict;
 }

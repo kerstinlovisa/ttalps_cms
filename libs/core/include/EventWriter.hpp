@@ -25,6 +25,8 @@ private:
   std::shared_ptr<EventReader> eventReader;
 
   void SetupOutputTree(std::string outFileName);
+
+  friend class CutFlowManager;
 };
 
 #endif /* EventWriter_hpp */

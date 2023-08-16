@@ -5,17 +5,17 @@
 #ifndef EventProcessor_hpp
 #define EventProcessor_hpp
 
+#include "ConfigManager.hpp"
 #include "Event.hpp"
 #include "GenParticle.hpp"
 #include "Helpers.hpp"
 #include "PhysicsObject.hpp"
-#include "ConfigManager.hpp"
 
 struct FinalState;
 
 class EventProcessor {
  public:
-  EventProcessor(std::string configPath="");
+  EventProcessor(std::string configPath = "");
 
   std::string GetTTbarEventCategory(std::shared_ptr<Event> event);
 
@@ -28,20 +28,15 @@ class EventProcessor {
   float GetMaxPt(std::shared_ptr<Event> event, std::string collectionName);
   float GetHt(std::shared_ptr<Event> event, std::string collectionName);
 
-  bool PassesSingleLeptonSelections(const std::shared_ptr<Event> event);
-  bool PassesDileptonSelections(const std::shared_ptr<Event> event);
-  bool PassesHadronSelections(const std::shared_ptr<Event> event);
-
-  bool PassesTriggerSelections(const std::shared_ptr<Event> event);
+ protected:
+  std::vector<std::string> triggerNames;
+  void AddExtraCollections(std::shared_ptr<Event> event);
 
  private:
   std::unique_ptr<ConfigManager> config;
-  std::vector<std::string> triggerNames;
 
   std::vector<int> GetTopIndices(std::shared_ptr<Event> event);
   std::vector<int> GetBottomIndices(std::shared_ptr<Event> event);
-
-  void AddExtraCollections(std::shared_ptr<Event> event);
 };
 
 struct FinalState {
