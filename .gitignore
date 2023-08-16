@@ -15,7 +15,7 @@ first_steps/check_top_channel
 core/build/*
 
 tmp_configs/*
-
+MC_sample_production/LHEtoNanoAOD/tmp/*
 
 # Prerequisites
 *.d

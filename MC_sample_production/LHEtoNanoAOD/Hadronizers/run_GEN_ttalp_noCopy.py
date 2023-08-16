@@ -11,13 +11,14 @@ import FWCore.ParameterSet.Config as cms
 jobID = int("{0}".format(sys.argv[2]))
 evtperjob = int("{0}".format(sys.argv[5]))
 INPUTs = jobID*evtperjob
-#channel = "ZPhi_muons_M-15_PS"
+if(evtperjob == 0):
+    evtperjob = -1
 channel = sys.argv[3]
 condordir = sys.argv[4]
 filedir = sys.argv[6]
-print jobID
-print INPUTs
-print channel
+print("processId: {0}".format(jobID))
+print("Processing files {0}-{1}".format(INPUTs, INPUTs+evtperjob))
+print("File: {0}".format(channel))
 
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
 
@@ -38,7 +39,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(evtperjob)
 )
 
 # Input source
@@ -56,7 +57,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("LHESource",
 
     fileNames = cms.untracked.vstring('file:'+filedir+channel+'.lhe'), #
-    # skipEvents=cms.untracked.uint32(int(INPUTs))#,
+    skipEvents=cms.untracked.uint32(int(INPUTs))#,
     #inputCommands = cms.untracked.vstring('keep *',
         #'drop LHEXMLStringProduct_*_*_*'),
    # dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
