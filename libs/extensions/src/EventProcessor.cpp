@@ -11,7 +11,13 @@ using namespace std;
 EventProcessor::EventProcessor(string configPath) {
   if (configPath != "") {
     config = std::make_unique<ConfigManager>(configPath);
-    config->GetVector("triggerSelection", triggerNames);
+    try {
+      config->GetVector("triggerSelection", triggerNames);
+    }
+    catch (const Exception& e){
+      warn() << "Couldn't read triggerSelection from config file ";
+      warn() << "(which may be fine if you're not tyring to apply trigger selectinon)\n";
+    }
   }
 }
 
