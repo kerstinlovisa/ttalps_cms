@@ -8,6 +8,7 @@
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
 #include "EventWriter.hpp"
+#include "CutFlowManager.hpp"
 
 using namespace std;
 
@@ -30,7 +31,8 @@ int main(int argc, char **argv) {
   configManager->GetValue("outputFilePath", outputFilePath);
   
   auto eventReader = make_shared<EventReader>(inputFilePath);
-  auto eventWriter = make_unique<EventWriter>(outputFilePath, eventReader);
+  auto eventWriter = make_shared<EventWriter>(outputFilePath, eventReader);
+  auto cutFlowManager = make_unique<CutFlowManager>(eventReader, eventWriter);
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
     if (maxEvents >= 0 && i_event >= maxEvents) break;
@@ -38,11 +40,17 @@ int main(int argc, char **argv) {
   
     auto event = eventReader->GetEvent(i_event);
 
+    cutFlowManager->UpdateCutFlow("0_initial");
+
     if(!eventProcessor->PassesTriggerSelections(event)) continue;
+    cutFlowManager->UpdateCutFlow("1_trigger");
+
     if(!eventProcessor->PassesSingleLeptonSelections(event)) continue;
+    cutFlowManager->UpdateCutFlow("2_singleLeptonTTbar");
     
     eventWriter->AddCurrentEvent("Events");
   }
+  cutFlowManager->SaveCutFlow();
 
   eventWriter->Save();
 

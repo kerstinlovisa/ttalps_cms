@@ -8,16 +8,18 @@
 
 using namespace std;
 
-EventReader::EventReader(string inputPath) : currentEvent(make_shared<Event>()) { SetupBranches(inputPath); }
+EventReader::EventReader(string inputPath) : currentEvent(make_shared<Event>()) {
+  inputFile = TFile::Open(inputPath.c_str());
+  SetupBranches(inputPath);
+}
 
 EventReader::~EventReader() {}
 
 void EventReader::SetupBranches(string inputPath) {
-  TFile *inFile = TFile::Open(inputPath.c_str());
-  vector<string> treeNames = getListOfTrees(inFile);
+  vector<string> treeNames = getListOfTrees(inputFile);
   for (string treeName : treeNames) {
     cout << "Loading tree: " << treeName << endl;
-    inputTrees[treeName] = (TTree *)inFile->Get(treeName.c_str());
+    inputTrees[treeName] = (TTree *)inputFile->Get(treeName.c_str());
   }
 
   auto keysInEventTree = inputTrees["Events"]->GetListOfBranches();
