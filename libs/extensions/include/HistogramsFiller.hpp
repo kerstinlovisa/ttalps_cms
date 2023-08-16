@@ -18,10 +18,13 @@ class HistogramsFiller {
   void FillTriggerVariables(const std::shared_ptr<Event> event, std::string prefix = "", std::string suffix = "");
   void FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory = "");
 
+  void FillHistograms1D(const std::shared_ptr<Event> event);
+
  private:
   std::shared_ptr<HistogramsHandler> histogramsHandler;
 
   std::map<std::string, std::vector<std::string>> triggerSets;
+  std::map<std::string, std::vector<std::string>> histVariables;
 
   std::vector<std::string> triggerNames;
   bool EndsWithTriggerName(std::string name);

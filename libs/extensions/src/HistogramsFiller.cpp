@@ -16,6 +16,8 @@ HistogramsFiller::HistogramsFiller(string configPath, shared_ptr<HistogramsHandl
 
   configManager->GetMap("triggerSets", triggerSets);
   for (auto it = triggerSets.begin(); it != triggerSets.end(); ++it) triggerNames.push_back(it->first);
+
+  configManager->GetMap("histVariables", histVariables);
 }
 
 HistogramsFiller::~HistogramsFiller() {}
@@ -80,5 +82,12 @@ void HistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<E
     if (passesSingleLepton) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_singleLepton");
     if (passesDilepton) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_dilepton");
     if (passesHadron) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_hadron");
+  }
+}
+
+void HistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
+  for(auto &[histName, variableLocation] : histVariables) {
+    if(variableLocation[0] == "Event") histogramsHandler->histograms1D[histName]->Fill(event->Get(variableLocation[1]));
+    else histogramsHandler->histograms1D[histName]->Fill(event->GetCollection(variableLocation[0])->Get(variableLocation[1]));
   }
 }
