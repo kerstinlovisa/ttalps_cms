@@ -5,6 +5,7 @@
 #include "HistogramsFiller.hpp"
 
 #include "ConfigManager.hpp"
+#include "TTAlpsSelections.hpp"
 #include "EventProcessor.hpp"
 #include "ExtensionsHelpers.hpp"
 
@@ -61,11 +62,11 @@ void HistogramsFiller::FillTriggerVariables(const std::shared_ptr<Event> event, 
 }
 
 void HistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory) {
-  auto eventProcessor = make_unique<EventProcessor>();
+  auto ttAlpsSelections = make_unique<TTAlpsSelections>();
 
-  bool passesSingleLepton = eventProcessor->PassesSingleLeptonSelections(event);
-  bool passesDilepton = eventProcessor->PassesDileptonSelections(event);
-  bool passesHadron = eventProcessor->PassesHadronSelections(event);
+  bool passesSingleLepton = ttAlpsSelections->PassesSingleLeptonSelections(event);
+  bool passesDilepton = ttAlpsSelections->PassesDileptonSelections(event);
+  bool passesHadron = ttAlpsSelections->PassesHadronSelections(event);
 
   for (auto &[triggerSetName, triggerSet] : triggerSets) {
     bool passesTrigger = false;

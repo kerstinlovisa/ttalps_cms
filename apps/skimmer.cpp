@@ -4,11 +4,11 @@
 
 #include "ConfigManager.hpp"
 #include "Event.hpp"
-#include "EventProcessor.hpp"
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
 #include "EventWriter.hpp"
 #include "CutFlowManager.hpp"
+#include "TTAlpsSelections.hpp"
 
 using namespace std;
 
@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
   string configPath = argv[1];
   auto configManager = make_unique<ConfigManager>(configPath);
 
-  auto eventProcessor = make_unique<EventProcessor>(configPath);
-  
+  auto ttAlpsSelections = make_unique<TTAlpsSelections>(configPath);
+
   int maxEvents;
   configManager->GetValue("nEvents", maxEvents);
 
@@ -42,10 +42,10 @@ int main(int argc, char **argv) {
 
     cutFlowManager->UpdateCutFlow("0_initial");
 
-    if(!eventProcessor->PassesTriggerSelections(event)) continue;
+    if(!ttAlpsSelections->PassesTriggerSelections(event)) continue;
     cutFlowManager->UpdateCutFlow("1_trigger");
 
-    if(!eventProcessor->PassesSingleLeptonSelections(event)) continue;
+    if(!ttAlpsSelections->PassesSingleLeptonSelections(event)) continue;
     cutFlowManager->UpdateCutFlow("2_singleLeptonTTbar");
     
     eventWriter->AddCurrentEvent("Events");
