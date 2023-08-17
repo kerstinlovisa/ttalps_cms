@@ -1,7 +1,7 @@
 nEvents = 10000
 
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
-outputFilePath = "./skimmed.root"
+outputFilePath = "./skimmed_looseSemileptonic.root"
 
 triggerSelection = (
     "HLT_Ele28_eta2p1_WPTight_Gsf_HT150",
@@ -13,22 +13,17 @@ triggerSelection = (
 )
 
 extraEventCollections = {
-    "LeptonPt30": {
+    "GoodLeptons": {
         "inputCollections": ("Muon", "Electron"),
         "pt": (30., 9999999.),
         "eta": (-2.4, 2.4),
     },
-    "LeptonPt15": {
-        "inputCollections": ("Muon", "Electron"),
-        "pt": (15., 9999999.),
-        "eta": (-2.5, 2.5),
-    },
-    "JetPt30": {
+    "GoodJets": {
         "inputCollections": ("Jet", ),
         "pt": (30., 9999999.),
         "eta": (-2.4, 2.4),
     },
-    "JetBtagged": {
+    "GoodBtaggedJets": {
         "inputCollections": ("Jet", ),
         "pt": (30., 9999999.),
         "eta": (-2.4, 2.4),
@@ -36,3 +31,9 @@ extraEventCollections = {
     },
 }
 
+eventSelections = {
+    "MET_pt": (0, 30),
+    "nGoodLeptons": (1, 9999999),
+    "nGoodJets": (4, 9999999),
+    "nGoodBtaggedJets": (1, 9999999),
+}

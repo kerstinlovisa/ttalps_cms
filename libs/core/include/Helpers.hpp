@@ -58,6 +58,10 @@ inline std::vector<std::string> split(std::string input, char splitBy) {
   return parts;
 }
 
+inline bool inRange(float value, std::pair<float, float> range){
+  return value >= range.first && value <= range.second;
+}
+
 struct ExtraCollection {
   std::vector<std::string> inputCollections;
   std::map<std::string, std::pair<float, float>> selections;

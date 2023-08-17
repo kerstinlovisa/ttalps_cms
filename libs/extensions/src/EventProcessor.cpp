@@ -18,6 +18,13 @@ EventProcessor::EventProcessor(string configPath) {
       warn() << "Couldn't read triggerSelection from config file ";
       warn() << "(which may be fine if you're not tyring to apply trigger selectinon)\n";
     }
+
+    try {
+      config->GetSelections(eventSelections);
+    }
+    catch (const Exception& e){
+      warn() << "Couldn't read eventSelections from config file ";
+    }
   }
 }
 
