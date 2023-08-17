@@ -30,6 +30,8 @@ class EventProcessor {
 
  protected:
   std::vector<std::string> triggerNames;
+  std::map<std::string, std::pair<float, float>> eventSelections;
+  
   void AddExtraCollections(std::shared_ptr<Event> event);
 
  private:

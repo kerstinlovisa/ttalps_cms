@@ -15,6 +15,25 @@ bool TTAlpsSelections::PassesTriggerSelections(const shared_ptr<Event> event) {
   return false;
 }
 
+bool TTAlpsSelections::PassesLooseSemileptonicSelections(const shared_ptr<Event> event, shared_ptr<CutFlowManager> cutFlowManager) {
+  float metPt = event->Get("MET_pt");
+  if (!inRange(metPt, eventSelections["MET_pt"])) return false;
+  cutFlowManager->UpdateCutFlow("2_MetPt");
+
+  AddExtraCollections(event);
+
+  if (!inRange(event->GetCollectionSize("GoodLeptons"), eventSelections["nGoodLeptons"])) return false;
+  cutFlowManager->UpdateCutFlow("3_nGoodLeptons");
+
+  if (!inRange(event->GetCollectionSize("GoodBtaggedJets"), eventSelections["nGoodBtaggedJets"])) return false;
+  cutFlowManager->UpdateCutFlow("4_nGoodBtaggedJets");
+
+  if (!inRange(event->GetCollectionSize("GoodJets"), eventSelections["nGoodJets"])) return false;
+  cutFlowManager->UpdateCutFlow("5_nGoodJets");
+
+  return true;
+}
+
 bool TTAlpsSelections::PassesSingleLeptonSelections(const shared_ptr<Event> event) {
   float metPt = event->Get("MET_pt");
   if (metPt <= 30) return false;

@@ -8,12 +8,28 @@
 
 using namespace std;
 
-EventReader::EventReader(string inputPath) : currentEvent(make_shared<Event>()) {
-  inputFile = TFile::Open(inputPath.c_str());
-  SetupBranches(inputPath);
+EventReader::EventReader(string configPath) : currentEvent(make_shared<Event>()) {
+  config = make_unique<ConfigManager>(configPath);
+
+  config->GetValue("nEvents", maxEvents);
+
+  string inputFilePath;
+  config->GetValue("inputFilePath", inputFilePath);
+
+  inputFile = TFile::Open(inputFilePath.c_str());
+  SetupBranches(inputFilePath);
 }
 
 EventReader::~EventReader() {}
+
+long long EventReader::GetNevents() const {
+  long long nEntries = inputTrees.at("Events")->GetEntries();
+
+  long long nEvents = nEntries;
+  if (maxEvents >= 0 && nEvents >= maxEvents) nEvents = maxEvents;
+
+  return nEvents;
+}
 
 void EventReader::SetupBranches(string inputPath) {
   vector<string> treeNames = getListOfTrees(inputFile);
