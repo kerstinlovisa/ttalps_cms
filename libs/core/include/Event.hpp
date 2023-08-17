@@ -41,6 +41,25 @@ class Event {
     exit(1);
   }
 
+  inline int GetNObjectsInCollection(std::string name) {
+    if (collections.count(name)) {
+      uint nObjects = Get("n"+name);
+      return nObjects;
+    }
+    if (extraCollections.count(name)) {
+      try {
+        uint nObjects = Get("n"+name);
+        return nObjects;
+      }
+      catch (const Exception& e){
+        warn() << "No information of n"+name+" for this collection";
+        return 0;
+      }
+    }
+    fatal() << "Tried to get a collection that doesn't exist: " << name << "\n";
+    exit(1);
+  }
+
   inline void AddExtraCollection(std::string name, std::shared_ptr<PhysicsObjects> collection) {
     
 

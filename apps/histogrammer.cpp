@@ -37,11 +37,11 @@ int main(int argc, char **argv) {
     if (i_event % 1000 == 0) info() << "Event: " << i_event << "\n";
     auto event = eventReader->GetEvent(i_event);
 
-    histogramsFiller->FillHistograms(event);
+    histogramsFiller->FillHistograms1D(event);
 
   }
 
   histogramsHandler->SaveHistograms();
-  
+
   return 0;
 }
