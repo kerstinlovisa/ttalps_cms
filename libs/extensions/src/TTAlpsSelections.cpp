@@ -10,7 +10,16 @@ using namespace std;
 
 bool TTAlpsSelections::PassesTriggerSelections(const shared_ptr<Event> event) {
   for (auto &triggerName : triggerNames) {
-    if (event->Get(triggerName)) return true;
+    bool passes = false;
+    try {
+      passes = event->Get(triggerName);
+    } catch (Exception &) {
+      if (find(triggerWarningsPrinted.begin(), triggerWarningsPrinted.end(), triggerName) == triggerWarningsPrinted.end()) {
+        warn() << "Trigger not present: " << triggerName << "\n";
+        triggerWarningsPrinted.push_back(triggerName);
+      }
+    }
+    if (passes) return true;
   }
   return false;
 }

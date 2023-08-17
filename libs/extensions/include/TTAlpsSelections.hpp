@@ -6,11 +6,11 @@
 #define TTAlpsSelections_hpp
 
 #include "ConfigManager.hpp"
+#include "CutFlowManager.hpp"
 #include "Event.hpp"
 #include "EventProcessor.hpp"
 #include "Helpers.hpp"
 #include "PhysicsObject.hpp"
-#include "CutFlowManager.hpp"
 
 class TTAlpsSelections : public EventProcessor {
  public:
@@ -27,6 +27,9 @@ class TTAlpsSelections : public EventProcessor {
   bool PassesDileptonSelections(const std::shared_ptr<Event> event);
   bool PassesHadronSelections(const std::shared_ptr<Event> event);
   bool PassesTriggerSelections(const std::shared_ptr<Event> event);
+
+ private:
+  std::vector<std::string> triggerWarningsPrinted;
 };
 
 #endif /* TTAlpsSelections_hpp */

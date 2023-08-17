@@ -37,7 +37,12 @@ CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<
 CutFlowManager::~CutFlowManager() {}
 
 void CutFlowManager::UpdateCutFlow(string cutName) {
-  float weight = eventReader->currentEvent->Get("genWeight");
+  float weight = 1;
+
+  try {
+    eventReader->currentEvent->Get("genWeight");
+  } catch (Exception &) {
+  }
 
   if (weightsAfterCuts.count(cutName)) {
     weightsAfterCuts[cutName] += weight;

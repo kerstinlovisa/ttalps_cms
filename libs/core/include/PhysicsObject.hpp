@@ -20,14 +20,11 @@ class PhysicsObject {
   void Reset();
 
   inline auto Get(std::string branchName) {
-    bool badBranch = false;
-
+    
     if (valuesTypes.count(branchName) == 0) {
-      error() << "Trying to access incorrect physics object-level branch: " << branchName << "\n";
-      badBranch = true;
+      throw Exception(("Trying to access incorrect physics object-level branch: " + branchName).c_str());
     }
-
-    return Multitype(this, branchName, badBranch);
+    return Multitype(this, branchName);
   }
 
  private:
