@@ -32,6 +32,8 @@
 #include <any>
 #include <sstream>
 #include <string>
+#include <iostream>
+#include <filesystem>
 
 #include "Logger.hpp"
 
@@ -60,6 +62,18 @@ inline std::vector<std::string> split(std::string input, char splitBy) {
 
 inline bool inRange(float value, std::pair<float, float> range){
   return value >= range.first && value <= range.second;
+}
+
+inline void makeParentDirectories(std::string filePath) {
+    std::filesystem::path directoryPath = std::filesystem::path(filePath).parent_path();
+
+    if (!std::filesystem::exists(directoryPath)) {
+        if (std::filesystem::create_directories(directoryPath)) {
+            info() << "Created directory: " << directoryPath << "\n";
+        } else {
+            error() << "Failed to create directory: " << directoryPath << "\n";
+        }
+    }
 }
 
 struct ExtraCollection {

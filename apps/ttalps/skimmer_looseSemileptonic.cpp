@@ -19,23 +19,13 @@ int main(int argc, char **argv) {
   }
 
   string configPath = argv[1];
-  auto configManager = make_unique<ConfigManager>(configPath);
-
+  
+  auto eventReader = make_shared<EventReader>(configPath);
+  auto eventWriter = make_shared<EventWriter>(configPath, eventReader);
+  auto cutFlowManager = make_shared<CutFlowManager>(eventReader, eventWriter);
   auto ttAlpsSelections = make_unique<TTAlpsSelections>(configPath);
 
-  int maxEvents;
-  configManager->GetValue("nEvents", maxEvents);
-
-  string inputFilePath, outputFilePath;
-  configManager->GetValue("inputFilePath", inputFilePath);
-  configManager->GetValue("outputFilePath", outputFilePath);
-  
-  auto eventReader = make_shared<EventReader>(inputFilePath);
-  auto eventWriter = make_shared<EventWriter>(outputFilePath, eventReader);
-  auto cutFlowManager = make_shared<CutFlowManager>(eventReader, eventWriter);
-
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-    if (maxEvents >= 0 && i_event >= maxEvents) break;
     if (i_event % 1000 == 0) info() << "Event: " << i_event << "\n";
   
     auto event = eventReader->GetEvent(i_event);

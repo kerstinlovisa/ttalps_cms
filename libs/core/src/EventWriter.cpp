@@ -8,15 +8,20 @@
 
 using namespace std;
 
-EventWriter::EventWriter(string outputPath,
-                         const std::shared_ptr<EventReader> &eventReader_)
-    : eventReader(eventReader_) {
-  SetupOutputTree(outputPath);
+EventWriter::EventWriter(string configPath, const std::shared_ptr<EventReader> &eventReader_) : eventReader(eventReader_) {
+  config = make_unique<ConfigManager>(configPath);
+
+  string outputFilePath;
+  config->GetValue("outputFilePath", outputFilePath);
+
+  SetupOutputTree(outputFilePath);
 }
 
 EventWriter::~EventWriter() {}
 
 void EventWriter::SetupOutputTree(string outFileName) {
+  makeParentDirectories(outFileName);
+
   outFile = new TFile(outFileName.c_str(), "recreate");
   outFile->cd();
 
@@ -26,9 +31,7 @@ void EventWriter::SetupOutputTree(string outFileName) {
   }
 }
 
-void EventWriter::AddCurrentEvent(string treeName) {
-  outputTrees[treeName]->Fill();
-}
+void EventWriter::AddCurrentEvent(string treeName) { outputTrees[treeName]->Fill(); }
 
 void EventWriter::Save() {
   for (auto &[name, tree] : outputTrees) {
