@@ -30,7 +30,7 @@ endforeach(LIBRARY)
 
 include_directories(${PYTHON_INCLUDE_DIRS})
 
-file(GLOB APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/apps/*.cpp")
+file(GLOB APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/apps/*/*.cpp")
 
 foreach(APP_SOURCE ${APP_SOURCES})
     get_filename_component(APP_NAME ${APP_SOURCE} NAME_WE)
