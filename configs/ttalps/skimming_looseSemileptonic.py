@@ -1,7 +1,10 @@
 nEvents = 1000
 
-inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
-outputFilePath = "./results/skimmed_looseSemileptonic.root"
+# inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+# outputFilePath = "./results/skimmed_looseSemileptonic.root"
+
+inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+outputFilePath = "./TTbar_inclusive_FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
 
 triggerSelection = (
     "HLT_Ele28_eta2p1_WPTight_Gsf_HT150",

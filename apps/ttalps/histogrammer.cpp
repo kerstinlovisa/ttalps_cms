@@ -1,8 +1,6 @@
 #include "ConfigManager.hpp"
 #include "Event.hpp"
-#include "EventProcessor.hpp"
 #include "EventReader.hpp"
-#include "ExtensionsHelpers.hpp"
 #include "HistogramsFiller.hpp"
 #include "HistogramsHandler.hpp"
 
@@ -15,25 +13,14 @@ int main(int argc, char **argv) {
   }
 
   string configPath = argv[1];
-  auto configManager = make_unique<ConfigManager>(configPath);
 
-  auto eventProcessor = make_unique<EventProcessor>();
-
-  int maxEvents;
-  configManager->GetValue("nEvents", maxEvents);
-
-  string inputFilePath, outputFilePath;
-  configManager->GetValue("inputFilePath", inputFilePath);
-  configManager->GetValue("outputFilePath", outputFilePath);
-
+  auto eventReader = make_unique<EventReader>(configPath);
   auto histogramsHandler = make_shared<HistogramsHandler>(configPath);
   auto histogramsFiller = make_unique<HistogramsFiller>(configPath, histogramsHandler);
-  auto eventReader = make_unique<EventReader>(inputFilePath);
 
   histogramsHandler->SetupHistograms();
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-    if (maxEvents >= 0 && i_event >= maxEvents) break;
     if (i_event % 1000 == 0) info() << "Event: " << i_event << "\n";
     auto event = eventReader->GetEvent(i_event);
 

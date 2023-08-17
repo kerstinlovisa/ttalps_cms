@@ -62,7 +62,6 @@ cd CMSSW_10_6_30_patch1/src
 eval `scramv1 runtime -sh`
 cd $condordir
 
-# export HOME=$production_dir
 echo 1_run_GEN
 # inputs: jobID,  file_name,  condordir,  events/job,  filedir
 cmsRun run_GEN_ttalp_noCopy.py $1 $file_name $condordir $eventsperjob $input_dir
@@ -74,7 +73,6 @@ fi
 cmsrel CMSSW_10_6_19_patch3
 cd CMSSW_10_6_19_patch3/src
 eval `scramv1 runtime -sh`
-# export HOME=$production_dir
 
 echo 2_run_SIM
 cp $production_dir/Hadronizers/run_SIM_noCopy.py $condordir
@@ -88,7 +86,6 @@ fi
 cmsrel CMSSW_10_6_17_patch1
 cd CMSSW_10_6_17_patch1/src
 eval `scramv1 runtime -sh`
-# export HOME=$production_dir
 
 echo 3_run_DIGIPremix
 cp $production_dir/Hadronizers/run_DIGIPremix_noCopy.py $condordir
@@ -102,7 +99,6 @@ fi
 cmsrel CMSSW_10_2_16_UL
 cd CMSSW_10_2_16_UL/src
 eval `scramv1 runtime -sh`
-# export HOME=$production_dir
 
 
 echo 4_run_HLT
@@ -116,7 +112,6 @@ fi
 
 cd CMSSW_10_6_17_patch1/src
 eval `scramv1 runtime -sh`
-# export HOME=$production_dir
 
 
 echo 5_run_RECO
@@ -131,7 +126,6 @@ fi
 cmsrel CMSSW_10_6_20
 cd CMSSW_10_6_20/src
 eval `scramv1 runtime -sh`
-# export HOME=$production_dir
 
 echo 6_run_MiniAOD
 cp $production_dir/Hadronizers/run_MiniAOD_noCopy.py $condordir
@@ -143,7 +137,6 @@ cp output/UL_MiniAOD/$file_collection/${file_name}_MiniAOD_$(($1+0)).root $outpu
 cmsrel CMSSW_10_6_29
 cd CMSSW_10_6_29/src
 eval `scramv1 runtime -sh`
-# export HOME=$production_dir
 
 echo 7_run_NanoAOD
 cp $production_dir/Hadronizers/run_NanoAOD.py $condordir

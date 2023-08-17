@@ -12,7 +12,7 @@ nevents=10000
 eventsperjob=1000
 queue=$((${nevents} / ${eventsperjob}))
 
-submitfile_base=submit_fullsim_noCopy_ttalp_base.jcl
+submitfile_base=submit_fullsim_noCopy_ttalp_template.jcl
 
 mkdir tmp_submits
 
