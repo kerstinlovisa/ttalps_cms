@@ -7,18 +7,21 @@
 
 #include "Event.hpp"
 #include "Helpers.hpp"
+#include "ConfigManager.hpp"
 
 class EventReader {
 public:
-  EventReader(std::string inputPath);
+  EventReader(std::string configPath);
   ~EventReader();
 
-  inline long long GetNevents() const {
-    return inputTrees.at("Events")->GetEntries();
-  }
+  long long GetNevents() const;
   std::shared_ptr<Event> GetEvent(int iEvent);
 
 private:
+  std::unique_ptr<ConfigManager> config;
+
+  int maxEvents;
+
   TFile *inputFile;
   std::map<std::string, TTree *> inputTrees;
   std::shared_ptr<Event> currentEvent;

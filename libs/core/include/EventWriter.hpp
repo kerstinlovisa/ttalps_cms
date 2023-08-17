@@ -8,10 +8,11 @@
 #include "Event.hpp"
 #include "EventReader.hpp"
 #include "Helpers.hpp"
+#include "ConfigManager.hpp"
 
 class EventWriter {
 public:
-  EventWriter(std::string outputPath,
+  EventWriter(std::string configPath,
               const std::shared_ptr<EventReader> &eventReader_);
   ~EventWriter();
 
@@ -19,6 +20,8 @@ public:
   void Save();
 
 private:
+  std::unique_ptr<ConfigManager> config;
+
   TFile *outFile;
   std::map<std::string, TTree *> outputTrees;
 

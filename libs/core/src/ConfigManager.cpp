@@ -45,7 +45,7 @@ int ConfigManager::GetCollectionSize(PyObject *collection) {
   return size;
 }
 
-PyObject* ConfigManager::GetItem(PyObject *collection, int index) {
+PyObject *ConfigManager::GetItem(PyObject *collection, int index) {
   PyObject *item;
 
   if (PyList_Check(collection))
@@ -63,7 +63,7 @@ PyObject* ConfigManager::GetItem(PyObject *collection, int index) {
 PyObject *ConfigManager::GetPythonValue(string name) {
   PyObject *pythonValue = PyDict_GetItemString(config, name.c_str());
   if (!pythonValue) {
-    throw Exception(("Could not find a value in python config file: "+name).c_str());
+    throw Exception(("Could not find a value in python config file: " + name).c_str());
   }
   return pythonValue;
 }
@@ -72,7 +72,7 @@ PyObject *ConfigManager::GetPythonList(string name) {
   PyObject *pythonList = PyDict_GetItemString(config, name.c_str());
 
   if (!pythonList || (!PyList_Check(pythonList) && !PyTuple_Check(pythonList))) {
-    throw Exception(("Could not find a list/tuple in python config file: "+name).c_str());
+    throw Exception(("Could not find a list/tuple in python config file: " + name).c_str());
   }
   return pythonList;
 }
@@ -80,7 +80,7 @@ PyObject *ConfigManager::GetPythonList(string name) {
 PyObject *ConfigManager::GetPythonDict(string name) {
   PyObject *pythonDict = PyDict_GetItemString(config, name.c_str());
   if (!pythonDict || !PyDict_Check(pythonDict)) {
-    throw Exception(("Could not find a dict in python config file: "+name).c_str());
+    throw Exception(("Could not find a dict in python config file: " + name).c_str());
   }
   return pythonDict;
 }
@@ -129,7 +129,7 @@ void ConfigManager::GetVector<std::string>(std::string name, std::vector<std::st
 
   for (Py_ssize_t i = 0; i < GetCollectionSize(pythonList); ++i) {
     PyObject *item = GetItem(pythonList, i);
-    
+
     if (!item || !PyUnicode_Check(item)) {
       error() << "Failed retriving python vector<string>\n";
       continue;
@@ -209,5 +209,60 @@ void ConfigManager::GetMap<string, vector<string>>(string name, map<string, vect
       outputVector.push_back(PyUnicode_AsUTF8(item));
     }
     outputMap[PyUnicode_AsUTF8(pKey)] = outputVector;
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+// Other methods
+//-------------------------------------------------------------------------------------------------
+
+void ConfigManager::GetExtraEventCollections(map<string, ExtraCollection> &extraEventCollections) {
+  PyObject *pythonDict = GetPythonDict("extraEventCollections");
+
+  PyObject *collectionName, *collectionSettings;
+  Py_ssize_t pos = 0;
+
+  while (PyDict_Next(pythonDict, &pos, &collectionName, &collectionSettings)) {
+    if (!PyUnicode_Check(collectionName)) {
+      error() << "Failed retriving python collection name (string)\n";
+      continue;
+    }
+    PyObject *pyKey = nullptr;
+    PyObject *pyValue = nullptr;
+    Py_ssize_t pos2 = 0;
+    ExtraCollection extraCollection;
+
+    while (PyDict_Next(collectionSettings, &pos2, &pyKey, &pyValue)) {
+      string keyStr = PyUnicode_AsUTF8(pyKey);
+      if (keyStr == "inputCollections") {
+        for (Py_ssize_t i = 0; i < GetCollectionSize(pyValue); ++i) {
+          PyObject *item = GetItem(pyValue, i);
+          extraCollection.inputCollections.push_back(PyUnicode_AsUTF8(item));
+        }
+      } else {
+        PyObject *min = GetItem(pyValue, 0);
+        PyObject *max = GetItem(pyValue, 1);
+        extraCollection.selections[keyStr] = {PyFloat_AsDouble(min), PyFloat_AsDouble(max)};
+      }
+    }
+
+    extraEventCollections[PyUnicode_AsUTF8(collectionName)] = extraCollection;
+  }
+}
+
+void ConfigManager::GetSelections(map<string, pair<float, float>> &selections) {
+  PyObject *pythonDict = GetPythonDict("eventSelections");
+
+  PyObject *cutName, *cutValues;
+  Py_ssize_t pos = 0;
+
+  while (PyDict_Next(pythonDict, &pos, &cutName, &cutValues)) {
+    if (!PyUnicode_Check(cutName)) {
+      error() << "Failed retriving python cut name (string)\n";
+      continue;
+    }
+    PyObject *min = GetItem(cutValues, 0);
+    PyObject *max = GetItem(cutValues, 1);
+    selections[PyUnicode_AsUTF8(cutName)] = {PyFloat_AsDouble(min), PyFloat_AsDouble(max)};
   }
 }
