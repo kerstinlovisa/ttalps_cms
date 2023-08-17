@@ -23,4 +23,4 @@ add_library(extensions ${SOURCES})
 
 set_property(TARGET extensions PROPERTY CXX_STANDARD 17)
 
-target_link_libraries(extensions histogramming ${PYTHON_LIBRARIES})
+target_link_libraries(extensions core histogramming ${PYTHON_LIBRARIES})
