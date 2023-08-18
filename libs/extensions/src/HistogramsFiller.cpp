@@ -107,8 +107,8 @@ void HistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
       histogramsHandler->histograms1D[histName]->Fill(eventVariable);
     } else {
       auto collection = event->GetCollection(variableLocation[0]);
-      for (int i=0; i < event->GetNObjectsInCollection(variableLocation[0]); i++){
-        histogramsHandler->histograms1D[histName]->Fill(event->GetCollection(variableLocation[0])->at(i)->Get(variableLocation[1]));
+      for(auto object : *collection){
+        histogramsHandler->histograms1D[histName]->Fill(object->Get(variableLocation[1]));
       }
     }
   }

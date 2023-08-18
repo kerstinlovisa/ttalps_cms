@@ -7,7 +7,6 @@ import fileinput
 from math import sqrt, pi
 import random
 import subprocess
-# import physics as ph
 
 #username = os.getlogin()
 # username = "jniedzie"
@@ -28,6 +27,9 @@ else:
 
 base_pythia_card = "pythia8_card.dat"
 base_param_card = "param_card.dat"
+
+c = 29979245800 # speed of light in cm/s
+hbar = 6.582119569*10**(-25) # h/2pi in GeVs
 
 def remove_existing_files(output_path, file_name):
     command = f"rm -rf {output_path}/{file_name}/"
@@ -146,7 +148,7 @@ def get_output_file_name(process, part, n_events, alp_mass):
 
 def get_gamma_for_lifetime(lifetime):  # in mm
     lifetime /= 10  # convert to cm
-    gamma = ph.sm['c'] * ph.sm['hbar'] / lifetime
+    gamma = c * hbar / lifetime
     return gamma
 
 
@@ -162,6 +164,7 @@ def main():
     
     file_hash = random.getrandbits(128)
     new_mg_card_path = f"tmp_cards/mg_card_{file_hash}.txt"
+    new_param_card_path = f"tmp_cards/param_card_{file_hash}.dat"
 
     process = args.process
 
@@ -176,9 +179,12 @@ def main():
     }
     if args.file_format == "ROOT" or args.file_format == "BOTH":
         new_pythia_card_path = f"tmp_cards/pythia8_card_{file_hash}.dat"
-        new_param_card_path = f"tmp_cards/param_card_{file_hash}.dat"
-        to_change[("param_card.dat", "param_card.dat")] = new_param_card_path
         to_change[("pythia8_card.dat", "pythia8_card.dat")] = new_pythia_card_path
+
+    if float(args.lifetime) <= 0:
+        to_change[("lifetime_options", "lifetime_options")] = "compute_widths y0"
+    else:
+        to_change[("lifetime_options", "lifetime_options")] = new_param_card_path
 
     base_mg_card = "mg5_card_tta.dat"
 
@@ -205,22 +211,15 @@ def main():
     alp_mass = float(args.alp_mass)
     lifetime = float(args.lifetime)
     
-    if lifetime != 0:
-        print("Include the physics directory and base_param_card to set lifetimes")
-    #     if lifetime > 0:
-    #         gamma = get_gamma_for_lifetime(lifetime)
-    #     elif use_gamma_total:
-    #         gamma = ph.Gammaa(alp_mass, coupling, coupling, Lambda)
-    #     else:
-    #         lscs = ph.getLSfromctt(coupling, coupling, Lambda, alp_mass)
-    #         gamma = ph.Gammaatoll(alp_mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
-    
-    #     to_change = {
-    #         ("# ma", "dummy_value"): alp_mass,
-    #         ("# ax", "dummy_value"): gamma,
-    #     }
-    #     print(f"{alp_mass=}, {gamma=}, lifetime= {ph.sm['c'] * ph.sm['hbar'] / gamma * 10} mm")
-    #     copy_and_update_config(base_param_card, new_param_card_path, to_change)
+    if lifetime > 0:
+        gamma = get_gamma_for_lifetime(lifetime)
+
+        to_change = {
+            ("# my0", "dummy_value"): alp_mass,
+            ("DECAY 54", "dummy_value"): gamma,
+        }
+        print(f"{alp_mass=}, {gamma=}, lifetime= {c* hbar / gamma * 10} mm")
+        copy_and_update_config(base_param_card, new_param_card_path, to_change)
 
     # run production
     run_command(new_mg_card_path, output_path, file_name, args.file_format)

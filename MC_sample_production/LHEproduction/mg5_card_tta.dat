@@ -36,5 +36,6 @@ set drjl 0.05
 set gsh1 0.0
 set gsb 0.0
 set iseed dummy_value
-compute_widths y0
+set time_of_flight 0
+lifetime_options
 done
