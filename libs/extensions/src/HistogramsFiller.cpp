@@ -15,8 +15,23 @@ HistogramsFiller::HistogramsFiller(string configPath, shared_ptr<HistogramsHandl
     : histogramsHandler(histogramsHandler_) {
   auto configManager = std::make_unique<ConfigManager>(configPath);
 
-  configManager->GetMap("triggerSets", triggerSets);
-  for (auto it = triggerSets.begin(); it != triggerSets.end(); ++it) triggerNames.push_back(it->first);
+  try {
+    configManager->GetMap("triggerSets", triggerSets);
+    for (auto it = triggerSets.begin(); it != triggerSets.end(); ++it) triggerNames.push_back(it->first);
+  }
+  catch (const Exception& e){
+    warn() << "Couldn't read triggerSets from config file ";
+    warn() << "(which may be fine if you're not trying to apply trigger selection)\n";
+  }
+
+  try {
+    configManager->GetMap("histVariables", histVariables);
+  }
+  catch (const Exception& e){
+    warn() << "Couldn't read histVariables from config file ";
+    warn() << "(which may be fine if you don't want pre-defined histograms)\n";
+  }
+
 }
 
 HistogramsFiller::~HistogramsFiller() {}
@@ -81,5 +96,20 @@ void HistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<E
     if (passesSingleLepton) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_singleLepton");
     if (passesDilepton) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_dilepton");
     if (passesHadron) FillTriggerVariables(event, ttbarCategory, triggerSetName + "_hadron");
+  }
+}
+
+void HistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
+  for(auto &[histName, variableLocation] : histVariables) {
+    if(variableLocation[0] == "Event") {
+      // Assuming uint nObject from Event for now
+      uint eventVariable = event->Get(variableLocation[1]);
+      histogramsHandler->histograms1D[histName]->Fill(eventVariable);
+    } else {
+      auto collection = event->GetCollection(variableLocation[0]);
+      for(auto object : *collection){
+        histogramsHandler->histograms1D[histName]->Fill(object->Get(variableLocation[1]));
+      }
+    }
   }
 }

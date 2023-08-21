@@ -14,6 +14,9 @@ first_steps/check_top_channel
 
 core/build/*
 
+tmp_configs/*
+MMC_sample_production/LHEtoNanoAOD/tmp/*
+MC_sample_production/LHEproduction/tmp_cards/*
 
 # Prerequisites
 *.d
@@ -45,5 +48,6 @@ core/build/*
 
 # Executables
 *.exe
+*.err
 *.out
 *.app

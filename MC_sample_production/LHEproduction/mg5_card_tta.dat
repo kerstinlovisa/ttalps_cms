@@ -1,0 +1,41 @@
+import model Phi_simp
+
+define p = p b b~ 
+define j = j b b~
+
+define lep+ = e+ mu+ ta+
+define lep- = e- mu- ta- 
+
+define top = t t~
+define Wboson = w+ w-
+define bottom = b b~
+
+generate p p > t t~ y0, y0 > mu+ mu-
+output dummy_value
+
+launch
+done
+set mass 54 dummy_value
+set gsu33 0.0
+set gpu33 0.1
+set gsl11 0.0
+set gsl22 0.0
+set gsl33 0.0
+set gpl11 0.0
+set gpl22 0.01
+set gpl33 0.0
+set lambda 1000000
+set run_tag ttPhi_2mu_PS
+set nevents dummy_value
+set ptj 10
+set ptl 5
+set etal 5.0
+set drjj 0.05
+set drll 0.05
+set drjl 0.05
+set gsh1 0.0
+set gsb 0.0
+set iseed dummy_value
+set time_of_flight 0
+lifetime_options
+done
