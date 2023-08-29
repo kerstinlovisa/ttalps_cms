@@ -1,5 +1,7 @@
 nEvents = 1000
 
+nMixedEventsScale = 0.01
+
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/hexaquarks/data/hexaquarks_lclc.root"
 outputFilePath = "./hexaquarks_lclc.root"
 

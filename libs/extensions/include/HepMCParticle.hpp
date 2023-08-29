@@ -17,14 +17,17 @@ class HepMCParticle : public PhysicsObject {
   int GetStatus() { return Get("status"); }
   int GetPid() { return Get("pid"); }
 
-  TLorentzVector GetLorentzVector(){
+  bool IsLastJPsi() { return abs(GetPid()) == 443 && GetStatus() == 2; }
+  bool IsLastPion() { return abs(GetPid()) == 211 && GetStatus() == 1; }
+  int GetCharge() { return GetPid() > 0 ? 1 : -1; }
+
+  TLorentzVector GetLorentzVector() {
     TLorentzVector vec;
     vec.SetPxPyPzE(GetPx(), GetPy(), GetPz(), GetEnergy());
     return vec;
   }
 
  private:
-
 };
 
 #endif /* HepMCParticle_hpp */

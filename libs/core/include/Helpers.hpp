@@ -34,6 +34,8 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include <iostream>
+#include <random>
 
 #include "Logger.hpp"
 
@@ -59,6 +61,15 @@ inline std::vector<std::string> split(std::string input, char splitBy) {
   while (std::getline(iss, part, splitBy)) parts.push_back(part);
   return parts;
 }
+
+
+inline int randInt(int min, int max) {
+    std::random_device rd;  // Seed generator
+    std::mt19937 gen(rd()); // Mersenne Twister engine
+    std::uniform_int_distribution<int> dist(min, max);
+    return dist(gen);
+}
+
 
 inline bool inRange(float value, std::pair<float, float> range){
   return value >= range.first && value <= range.second;
