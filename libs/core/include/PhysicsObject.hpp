@@ -14,10 +14,12 @@ typedef Collection<std::shared_ptr<PhysicsObject>> PhysicsObjects;
 
 class PhysicsObject {
  public:
-  PhysicsObject();
+  PhysicsObject(std::string originalCollection_);
   virtual ~PhysicsObject() = default;
 
   void Reset();
+
+  inline std::string GetOriginalCollection() { return originalCollection; }
 
   inline auto Get(std::string branchName) {
     
@@ -44,6 +46,8 @@ class PhysicsObject {
   std::map<std::string, Float_t *> valuesFloat;
   std::map<std::string, ULong64_t *> valuesUlong;
   std::map<std::string, UChar_t *> valuesUchar;
+
+  std::string originalCollection;
 
   friend class EventReader;
   template <typename T>

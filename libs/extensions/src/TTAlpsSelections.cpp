@@ -43,24 +43,47 @@ bool TTAlpsSelections::PassesLooseSemileptonicSelections(const shared_ptr<Event>
   return true;
 }
 
-bool TTAlpsSelections::PassesSingleLeptonSelections(const shared_ptr<Event> event) {
+bool TTAlpsSelections::PassesSignalLikeSelections(const shared_ptr<Event> event, shared_ptr<CutFlowManager> cutFlowManager) {
   float metPt = event->Get("MET_pt");
-  if (metPt <= 30) return false;
+  if (!inRange(metPt, eventSelections["MET_pt"])) return false;
 
   AddExtraCollections(event);
 
-  if (event->GetCollectionSize("LeptonPt30") != 1) return false;
+  if (!inRange(event->GetCollectionSize("GoodLeptons"), eventSelections["nGoodLeptons"])) return false;
+  if (!inRange(event->GetCollectionSize("GoodBtaggedJets"), eventSelections["nGoodBtaggedJets"])) return false;
+  if (!inRange(event->GetCollectionSize("GoodJets"), eventSelections["nGoodJets"])) return false;
 
-  int nLeptons15 = event->GetCollectionSize("LeptonPt15");
-  if (nLeptons15 > 1) return false;
-  if (nLeptons15 == 1) {
-    auto leadingLepton = event->GetCollection("LeptonPt30")->at(0);
-    auto survivingLepton = event->GetCollection("LeptonPt15")->at(0);
+  auto goodLeptons = event->GetCollection("GoodLeptons");
+  int requiredGoodMuons = 3;
+  for (auto lepton : *goodLeptons) {
+    if (lepton->GetOriginalCollection() != "Electron") continue;
+    requiredGoodMuons = 2;
+    break;
+  }
+  if (event->GetCollectionSize("GoodMuons") < requiredGoodMuons) return false;
+  cutFlowManager->UpdateCutFlow("6_twoAdditionalMuons");
+
+  return true;
+}
+
+bool TTAlpsSelections::PassesSingleLeptonSelections(const shared_ptr<Event> event, shared_ptr<CutFlowManager> cutFlowManager) {
+  float metPt = event->Get("MET_pt");
+  if (!inRange(metPt, eventSelections["MET_pt"])) return false;
+
+  AddExtraCollections(event);
+
+  if (!inRange(event->GetCollectionSize("GoodLeptons"), eventSelections["nGoodLeptons"])) return false;
+  if (!inRange(event->GetCollectionSize("GoodBtaggedJets"), eventSelections["nGoodBtaggedJets"])) return false;
+  if (!inRange(event->GetCollectionSize("GoodJets"), eventSelections["nGoodJets"])) return false;
+
+  int almostGoodLeptons = event->GetCollectionSize("AlmostGoodLeptons");
+  if (almostGoodLeptons > 1) return false;
+  if (almostGoodLeptons == 1) {
+    auto leadingLepton = event->GetCollection("GoodLeptons")->at(0);
+    auto survivingLepton = event->GetCollection("AlmostGoodLeptons")->at(0);
     if (survivingLepton != leadingLepton) return false;
   }
-
-  if (event->GetCollectionSize("JetBtagged") < 2) return false;
-  if (event->GetCollectionSize("JetPt30") < 4) return false;
+  if(cutFlowManager) cutFlowManager->UpdateCutFlow("6_noAdditionalMuons");
 
   return true;
 }

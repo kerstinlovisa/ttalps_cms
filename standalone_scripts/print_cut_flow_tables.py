@@ -70,14 +70,19 @@ def get_cuflow_from_file(input_file_name):
   return cut_flow, cut_flow_relative, cut_flow_absolute
 
 def main():
+  
+  # skim = "skimmed_looseSemileptonic"
+  # skim = "skimmed_signalLike"
+  skim = "skimmed_ttbarLike"
+  
   base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/"
-  input_file_name = f"{base_path}/backgrounds/TTbar_inclusive/skimmed_looseSemileptonic/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
+  input_file_name = f"{base_path}/backgrounds/TTbar_inclusive/{skim}/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
   cut_flow_background, cut_flow_background_relative, cut_flow_background_absolute = get_cuflow_from_file(input_file_name)
   
-  input_file_name = f"{base_path}/signals/tta_mAlp-0p35GeV/skimmed_looseSemileptonic/tta_mAlp-0p35GeV_nEvents-100000.root"
+  input_file_name = f"{base_path}/signals/tta_mAlp-0p35GeV/{skim}/tta_mAlp-0p35GeV_nEvents-100000.root"
   cut_flow_signal, cut_flow_signal_relative, cut_flow_signal_absolute = get_cuflow_from_file(input_file_name)
   
-  input_file_name = f"{base_path}/collision_data/SingleMuon2018/skimmed_looseSemileptonic/36ED9511-D46A-0C4F-A485-C2DF1C874906.root"
+  input_file_name = f"{base_path}/collision_data/SingleMuon2018/{skim}/36ED9511-D46A-0C4F-A485-C2DF1C874906.root"
   cut_flow_data, cut_flow_data_relative, cut_flow_data_absolute = get_cuflow_from_file(input_file_name)
   
   print("\n\nRaw values: ")
