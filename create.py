@@ -3,7 +3,7 @@ import shutil
 
 args = argparse.ArgumentParser()
 args.add_argument("--name", help="Name of the class/app to add", required=True)
-args.add_argument("--type", help="Type of the extension to add: PhysicsObject (po), app", required=True)
+args.add_argument("--type", help="Type of the extension to add: PhysicsObject (po), HistogramFiller (hf), app", required=True)
 args = args.parse_args()
 
 def replace_string_in_file(file_path, old_string, new_string):
@@ -55,6 +55,18 @@ def main():
       replace_string_in_file(destination_file, "TemplateName", class_name)
       
       insert_cast(class_name)
+    elif class_type == "HistogramFiller" or class_type == "hf":
+      print(f"Adding a HistogramFiller class: {class_name}")
+      
+      source_file = "templates/HistogramFiller.template.cpp"
+      destination_file = f"libs/extensions/src/{class_name}.cpp"
+      shutil.copy(source_file, destination_file)
+      replace_string_in_file(destination_file, "TemplateName", class_name)
+      
+      source_file = "templates/HistogramFiller.template.hpp"
+      destination_file = f"libs/extensions/include/{class_name}.hpp"
+      shutil.copy(source_file, destination_file)
+      replace_string_in_file(destination_file, "TemplateName", class_name)
       
 
 if __name__ == "__main__":

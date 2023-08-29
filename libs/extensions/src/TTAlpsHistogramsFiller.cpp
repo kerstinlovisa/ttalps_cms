@@ -1,8 +1,8 @@
-//  HistogramsFiller.cpp
+//  TTAlpsHistogramsFiller.cpp
 //
 //  Created by Jeremi Niedziela on 10/08/2023.
 
-#include "HistogramsFiller.hpp"
+#include "TTAlpsHistogramsFiller.hpp"
 
 #include "ConfigManager.hpp"
 #include "TTAlpsSelections.hpp"
@@ -11,7 +11,7 @@
 
 using namespace std;
 
-HistogramsFiller::HistogramsFiller(string configPath, shared_ptr<HistogramsHandler> histogramsHandler_)
+TTAlpsHistogramsFiller::TTAlpsHistogramsFiller(string configPath, shared_ptr<HistogramsHandler> histogramsHandler_)
     : histogramsHandler(histogramsHandler_) {
   auto configManager = std::make_unique<ConfigManager>(configPath);
 
@@ -34,14 +34,14 @@ HistogramsFiller::HistogramsFiller(string configPath, shared_ptr<HistogramsHandl
 
 }
 
-HistogramsFiller::~HistogramsFiller() {}
+TTAlpsHistogramsFiller::~TTAlpsHistogramsFiller() {}
 
-bool HistogramsFiller::EndsWithTriggerName(string name) {
+bool TTAlpsHistogramsFiller::EndsWithTriggerName(string name) {
   string lastPart = name.substr(name.rfind("_") + 1);
   return find(triggerNames.begin(), triggerNames.end(), lastPart) != triggerNames.end();
 }
 
-void HistogramsFiller::FillTriggerEfficiencies() {
+void TTAlpsHistogramsFiller::FillTriggerEfficiencies() {
   TH1D *hist_tmp;
 
   for (auto &[name, hist] : histogramsHandler->histograms1D) {
@@ -54,7 +54,7 @@ void HistogramsFiller::FillTriggerEfficiencies() {
   }
 }
 
-void HistogramsFiller::FillTriggerVariables(const std::shared_ptr<Event> event, std::string prefix, std::string suffix) {
+void TTAlpsHistogramsFiller::FillTriggerVariables(const std::shared_ptr<Event> event, std::string prefix, std::string suffix) {
   if (prefix != "") prefix = prefix + "_";
   if (suffix != "") suffix = "_" + suffix;
 
@@ -76,7 +76,7 @@ void HistogramsFiller::FillTriggerVariables(const std::shared_ptr<Event> event, 
   histogramsHandler->histograms1D[jetHtName]->Fill(eventProcessor->GetHt(event, "Jet"));
 }
 
-void HistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory) {
+void TTAlpsHistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory) {
   auto ttAlpsSelections = make_unique<TTAlpsSelections>();
 
   bool passesSingleLepton = ttAlpsSelections->PassesSingleLeptonSelections(event);
