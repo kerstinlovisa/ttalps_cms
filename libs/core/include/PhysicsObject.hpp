@@ -31,7 +31,7 @@ class PhysicsObject {
 
  private:
   inline UInt_t GetUint(std::string branchName) { return *valuesUint[branchName]; }
-  inline UInt_t GetInt(std::string branchName) { return *valuesInt[branchName]; }
+  inline Int_t GetInt(std::string branchName) { return *valuesInt[branchName]; }
   inline Bool_t GetBool(std::string branchName) { return *valuesBool[branchName]; }
   inline Float_t GetFloat(std::string branchName) { return *valuesFloat[branchName]; }
   inline ULong64_t GetULong(std::string branchName) { return *valuesUlong[branchName]; }

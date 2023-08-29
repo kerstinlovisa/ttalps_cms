@@ -33,9 +33,7 @@ int main(int argc, char **argv) {
   auto hist = new TH1D("hist", "hist", 1000, 0, 10);
   auto histMixed = new TH1D("histMixed", "histMixed", 1000, 0, 10);
 
-  vector<TLorentzVector> jpsisForMixing;
-  vector<TLorentzVector> pionsPlusForMixing;
-  vector<TLorentzVector> pionsMinusForMixing;
+  vector<TLorentzVector> jpsisForMixing, pionsPlusForMixing, pionsMinusForMixing;
 
   int mixingCounter = 0;
 
@@ -45,45 +43,39 @@ int main(int argc, char **argv) {
 
     auto particles = event->GetCollection("Particle");
 
-    vector<TLorentzVector> jpsis;
-    vector<TLorentzVector> pionsPlus;
-    vector<TLorentzVector> pionsMinus;
+    vector<TLorentzVector> jpsiVectors, pionPlusVectors, pionMinusVectors;
 
     for (auto physObj : *particles) {
-      int pid = physObj->Get("pid");
-      int status = physObj->Get("status");
+      auto particle = asHepMCParticle(physObj);
+
+      int pid = particle->GetPid();
+      int status = particle->GetStatus();
+      auto vector = particle->GetLorentzVector();
 
       if ((abs(pid) == pidJpsi && status == 2) || (abs(pid) == pidPion && status == 1)) {
-        double px = physObj->Get("px");
-        double py = physObj->Get("py");
-        double pz = physObj->Get("pz");
-        double energy = physObj->Get("energy");
-
-        TLorentzVector vec;
-        vec.SetPxPyPzE(px, py, pz, energy);
-
-        if (abs(pid) == pidJpsi)
-          jpsis.push_back(vec);
-        else if (pid > 0)
-          pionsPlus.push_back(vec);
-        else
-          pionsMinus.push_back(vec);
+        if (abs(pid) == pidJpsi) {
+          jpsiVectors.push_back(vector);
+        } else if (pid > 0) {
+          pionPlusVectors.push_back(vector);
+        } else {
+          pionMinusVectors.push_back(vector);
+        }
       }
     }
 
     if (mixingCounter == 0) {
-      if (jpsis.size() > 0) {
-        jpsisForMixing.push_back(jpsis[0]);
+      if (jpsiVectors.size() > 0) {
+        jpsisForMixing.push_back(jpsiVectors[0]);
         mixingCounter++;
       }
     } else if (mixingCounter == 1) {
-      if (pionsPlus.size() > 0) {
-        pionsPlusForMixing.push_back(pionsPlus[0]);
+      if (pionPlusVectors.size() > 0) {
+        pionsPlusForMixing.push_back(pionPlusVectors[0]);
         mixingCounter++;
       }
     } else if (mixingCounter == 2) {
-      if (pionsMinus.size() > 0) {
-        pionsMinusForMixing.push_back(pionsMinus[0]);
+      if (pionMinusVectors.size() > 0) {
+        pionsMinusForMixing.push_back(pionMinusVectors[0]);
         mixingCounter = 0;
       }
     }
@@ -94,11 +86,11 @@ int main(int argc, char **argv) {
     // histogramsFiller->FillTriggerVariablesPerTriggerSet(event, "inclusive");
     // histogramsFiller->FillTriggerVariablesPerTriggerSet(event, ttbarCategory);
 
-    for (auto jpsi : jpsis) {
-      for (auto pionPlus : pionsPlus) {
-        for (auto pionMinus : pionsMinus) {
+    for (auto jpsi : jpsiVectors) {
+      for (auto pionPlus : pionPlusVectors) {
+        for (auto pionMinus : pionPlusVectors) {
           if (jpsi.DeltaR(pionPlus) < 0.8 && jpsi.DeltaR(pionMinus) < 0.8 && pionMinus.DeltaR(pionPlus) < 0.8) {
-            TLorentzVector sum = jpsi + pionPlus + pionMinus;
+            auto sum = jpsi + pionPlus + pionMinus;
             hist->Fill(sum.M());
           }
         }
@@ -106,11 +98,12 @@ int main(int argc, char **argv) {
     }
   }
 
+  
   for (auto jpsi : jpsisForMixing) {
     for (auto pionPlus : pionsPlusForMixing) {
       for (auto pionMinus : pionsMinusForMixing) {
         if (jpsi.DeltaR(pionPlus) < 0.8 && jpsi.DeltaR(pionMinus) < 0.8 && pionMinus.DeltaR(pionPlus) < 0.8) {
-          TLorentzVector sum = jpsi + pionPlus + pionMinus;
+          auto sum = jpsi + pionPlus + pionMinus;
           histMixed->Fill(sum.M());
         }
       }
