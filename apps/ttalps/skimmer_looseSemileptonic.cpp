@@ -30,10 +30,10 @@ int main(int argc, char **argv) {
   
     auto event = eventReader->GetEvent(i_event);
 
-    cutFlowManager->UpdateCutFlow("0_initial");
+    cutFlowManager->UpdateCutFlow("initial");
 
     if(!ttAlpsSelections->PassesTriggerSelections(event)) continue;
-    cutFlowManager->UpdateCutFlow("1_trigger");
+    cutFlowManager->UpdateCutFlow("trigger");
 
     if(!ttAlpsSelections->PassesLooseSemileptonicSelections(event, cutFlowManager)) continue;
     

@@ -27,18 +27,18 @@ bool TTAlpsSelections::PassesTriggerSelections(const shared_ptr<Event> event) {
 bool TTAlpsSelections::PassesLooseSemileptonicSelections(const shared_ptr<Event> event, shared_ptr<CutFlowManager> cutFlowManager) {
   float metPt = event->Get("MET_pt");
   if (!inRange(metPt, eventSelections["MET_pt"])) return false;
-  cutFlowManager->UpdateCutFlow("2_MetPt");
+  cutFlowManager->UpdateCutFlow("MetPt");
 
   AddExtraCollections(event);
 
   if (!inRange(event->GetCollectionSize("GoodLeptons"), eventSelections["nGoodLeptons"])) return false;
-  cutFlowManager->UpdateCutFlow("3_nGoodLeptons");
+  cutFlowManager->UpdateCutFlow("nGoodLeptons");
 
   if (!inRange(event->GetCollectionSize("GoodBtaggedJets"), eventSelections["nGoodBtaggedJets"])) return false;
-  cutFlowManager->UpdateCutFlow("4_nGoodBtaggedJets");
+  cutFlowManager->UpdateCutFlow("nGoodBtaggedJets");
 
   if (!inRange(event->GetCollectionSize("GoodJets"), eventSelections["nGoodJets"])) return false;
-  cutFlowManager->UpdateCutFlow("5_nGoodJets");
+  cutFlowManager->UpdateCutFlow("nGoodJets");
 
   return true;
 }
@@ -61,7 +61,7 @@ bool TTAlpsSelections::PassesSignalLikeSelections(const shared_ptr<Event> event,
     break;
   }
   if (event->GetCollectionSize("GoodMuons") < requiredGoodMuons) return false;
-  cutFlowManager->UpdateCutFlow("6_twoAdditionalMuons");
+  cutFlowManager->UpdateCutFlow("twoAdditionalMuons");
 
   return true;
 }
@@ -83,7 +83,7 @@ bool TTAlpsSelections::PassesSingleLeptonSelections(const shared_ptr<Event> even
     auto survivingLepton = event->GetCollection("AlmostGoodLeptons")->at(0);
     if (survivingLepton != leadingLepton) return false;
   }
-  if(cutFlowManager) cutFlowManager->UpdateCutFlow("6_noAdditionalMuons");
+  if(cutFlowManager) cutFlowManager->UpdateCutFlow("noAdditionalMuons");
 
   return true;
 }
