@@ -13,11 +13,12 @@ class CutFlowManager;
 
 class CutFlowManager {
  public:
-  CutFlowManager(std::shared_ptr<EventReader> eventReader_, std::shared_ptr<EventWriter> eventWriter_);
+  CutFlowManager(std::shared_ptr<EventReader> eventReader_, std::shared_ptr<EventWriter> eventWriter_=NULL);
   ~CutFlowManager();
 
   void UpdateCutFlow(std::string cutName);
   void SaveCutFlow();
+  std::map<std::string, float> GetCutFlow();
 
  private:
   std::shared_ptr<EventReader> eventReader;

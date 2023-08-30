@@ -99,17 +99,58 @@ void HistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared_ptr<E
   }
 }
 
+void HistogramsFiller::FillDefaultHistograms1D(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation) {
+  if(variableLocation[0] == "Event") {
+    // Assuming uint nObject from Event for now
+    uint eventVariable = event->Get(variableLocation[1]);
+    histogramsHandler->histograms1D[histName]->Fill(eventVariable);
+  } else if(variableLocation[0] == "cutFlow") {
+    return;
+  } else {
+    auto collection = event->GetCollection(variableLocation[0]);
+    for(auto object : *collection){
+      histogramsHandler->histograms1D[histName]->Fill(object->Get(variableLocation[1]));
+    }
+  }
+}
+
+void HistogramsFiller::FillSubLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation) {
+  auto eventProcessor = make_unique<EventProcessor>();
+  float maxPt = eventProcessor->GetMaxPt(event, variableLocation[0]);
+  auto collection = event->GetCollection(variableLocation[0]);
+    for(auto object : *collection){
+      float pt = object->Get("pt");
+      if(pt == maxPt) continue;
+      histogramsHandler->histograms1D[histName]->Fill(pt);
+    }
+}
+
 void HistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
   for(auto &[histName, variableLocation] : histVariables) {
-    if(variableLocation[0] == "Event") {
-      // Assuming uint nObject from Event for now
-      uint eventVariable = event->Get(variableLocation[1]);
-      histogramsHandler->histograms1D[histName]->Fill(eventVariable);
-    } else {
-      auto collection = event->GetCollection(variableLocation[0]);
-      for(auto object : *collection){
-        histogramsHandler->histograms1D[histName]->Fill(object->Get(variableLocation[1]));
-      }
-    }
+    FillDefaultHistograms1D(event, histName, variableLocation);
+  }
+}
+
+void HistogramsFiller::FillCutFlowHist(const std::shared_ptr<CutFlowManager> cutFlowManager) {
+  int bin = 1;
+  int cutFlowLength = cutFlowManager->GetCutFlow().size();
+  TH1D* cutFlowHist = new TH1D("cutFlow", "cutFlow", cutFlowLength, 0, cutFlowLength+1);
+  for(auto &[name, weight] : cutFlowManager->GetCutFlow()){
+    cutFlowHist->SetBinContent(bin, weight);
+    cutFlowHist->GetXaxis()->SetBinLabel(bin, name.c_str());
+    // histogramsHandler->histograms1D["cutFlow"]->SetBinContent(bin, weight);
+    // histogramsHandler->histograms1D["cutFlow"]->GetXaxis()->SetBinLabel(bin, name.c_str());
+    bin++;
+  }
+  histogramsHandler->histograms1D["cutFlow"] = cutFlowHist;
+}
+
+void HistogramsFiller::FillTTAlpsHists(const std::shared_ptr<Event> event) {
+
+  auto eventProcessor = make_unique<EventProcessor>();
+  for(auto &[histName, variableLocation] : histVariables) {
+    if(histName.find("subleading_pt") != std::string::npos) FillSubLeadingPt(event, histName, variableLocation);
+    else if(histName.find("leading_pt") != std::string::npos) histogramsHandler->histograms1D[histName]->Fill(eventProcessor->GetMaxPt(event, variableLocation[0]));
+    else FillDefaultHistograms1D(event, histName, variableLocation);
   }
 }

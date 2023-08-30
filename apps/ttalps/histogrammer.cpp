@@ -3,6 +3,7 @@
 #include "EventReader.hpp"
 #include "HistogramsFiller.hpp"
 #include "HistogramsHandler.hpp"
+#include "CutFlowManager.hpp"
 
 using namespace std;
 
@@ -14,9 +15,10 @@ int main(int argc, char **argv) {
 
   string configPath = argv[1];
 
-  auto eventReader = make_unique<EventReader>(configPath);
+  auto eventReader = make_shared<EventReader>(configPath);
   auto histogramsHandler = make_shared<HistogramsHandler>(configPath);
   auto histogramsFiller = make_unique<HistogramsFiller>(configPath, histogramsHandler);
+  auto cutFlowManager = make_shared<CutFlowManager>(eventReader);
 
   histogramsHandler->SetupHistograms();
 
@@ -24,9 +26,11 @@ int main(int argc, char **argv) {
     if (i_event % 1000 == 0) info() << "Event: " << i_event << "\n";
     auto event = eventReader->GetEvent(i_event);
 
-    histogramsFiller->FillHistograms1D(event);
+    histogramsFiller->FillTTAlpsHists(event);
 
   }
+  
+  histogramsFiller->FillCutFlowHist(cutFlowManager);
 
   histogramsHandler->SaveHistograms();
 

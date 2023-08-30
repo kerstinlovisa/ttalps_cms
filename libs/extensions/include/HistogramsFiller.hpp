@@ -8,6 +8,7 @@
 #include "Event.hpp"
 #include "Helpers.hpp"
 #include "HistogramsHandler.hpp"
+#include "CutFlowManager.hpp"
 
 class HistogramsFiller {
  public:
@@ -19,6 +20,13 @@ class HistogramsFiller {
   void FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory = "");
 
   void FillHistograms1D(const std::shared_ptr<Event> event);
+  void FillDefaultHistograms1D(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation);
+  void FillSubLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation);
+
+  void FillCutFlowHist(const std::shared_ptr<CutFlowManager> cutFlowManager);
+
+  void FillTTAlpsHists(const std::shared_ptr<Event> event);
+  
 
  private:
   std::shared_ptr<HistogramsHandler> histogramsHandler;
