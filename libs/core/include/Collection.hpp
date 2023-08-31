@@ -10,10 +10,14 @@
 template <typename T>
 class Collection : public std::vector<T> {
  private:
-  size_t stopIndex;
-
  public:
+  size_t stopIndex = 0;
   void ChangeVisibleSize(size_t index) { stopIndex = index; }
+
+  void push_back(const T &value) {
+    std::vector<T>::push_back(value);
+    ++stopIndex;
+  }
 
   class Iterator {
    public:
@@ -24,9 +28,7 @@ class Collection : public std::vector<T> {
       return *this;
     }
 
-    bool operator!=(const Iterator &other) const {
-      return currentIndex != other.vec.stopIndex;
-    }
+    bool operator!=(const Iterator &other) const { return currentIndex != other.vec.stopIndex; }
 
     T &operator*() { return vec[currentIndex]; }
 
