@@ -4,7 +4,7 @@
 
 #include "PhysicsObject.hpp"
 
-PhysicsObject::PhysicsObject() {}
+PhysicsObject::PhysicsObject(std::string originalCollection_) : originalCollection(originalCollection_) {}
 
 void PhysicsObject::Reset() {
   for (auto &[key, value] : valuesUint) value = 0;

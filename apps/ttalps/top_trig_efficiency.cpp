@@ -3,7 +3,7 @@
 #include "EventProcessor.hpp"
 #include "EventReader.hpp"
 #include "ExtensionsHelpers.hpp"
-#include "HistogramsFiller.hpp"
+#include "TTAlpsHistogramsFiller.hpp"
 #include "HistogramsHandler.hpp"
 
 using namespace std;
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   string configPath = argv[1];
   
   auto histogramsHandler = make_shared<HistogramsHandler>(configPath);
-  auto histogramsFiller = make_unique<HistogramsFiller>(configPath, histogramsHandler);
+  auto histogramsFiller = make_unique<TTAlpsHistogramsFiller>(configPath, histogramsHandler);
   auto eventReader = make_unique<EventReader>(configPath);
   auto eventProcessor = make_unique<EventProcessor>();
 

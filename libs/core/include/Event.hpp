@@ -8,6 +8,7 @@
 #include "Helpers.hpp"
 #include "Multitype.hpp"
 #include "PhysicsObject.hpp"
+#include "Logger.hpp"
 
 class Event {
  public:
@@ -17,14 +18,11 @@ class Event {
   void Reset();
 
   inline auto Get(std::string branchName) {
-    bool badBranch = false;
-
     if (valuesTypes.count(branchName) == 0) {
-      error() << "Trying to access incorrect event-level branch: " << branchName << "\n";
-      badBranch = true;
+      throw Exception(("Trying to access incorrect event-level branch: " + branchName).c_str());
     }
 
-    return Multitype(this, branchName, badBranch);
+    return Multitype(this, branchName);
   }
 
   inline std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const {

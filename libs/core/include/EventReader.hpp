@@ -32,6 +32,8 @@ private:
   void SetupVectorBranch(std::string branchName, std::string branchType);
   void InitializeCollection(std::string collectionName);
 
+  std::vector<std::string> sizeWarningsPrinted;
+
   friend class EventWriter;
   friend class CutFlowManager;
 };

@@ -10,38 +10,37 @@
 template <typename T>
 class Multitype {
  public:
-  Multitype(T *object_, std::string branchName_, bool badBranch_)
-      : object(object_), branchName(branchName_), badBranch(badBranch_) {}
+  Multitype(T *object_, std::string branchName_) : object(object_), branchName(branchName_) {}
+
   operator UInt_t() {
-    if (badBranch || !isCorrectType("UInt_t")) return 0;
+    if (!isCorrectType("UInt_t")) return 0;
     return object->GetUint(branchName);
   }
   operator Int_t() {
-    if (badBranch || !isCorrectType("Int_t")) return 0;
+    if (!isCorrectType("Int_t")) return 0;
     return object->GetInt(branchName);
   }
   operator Bool_t() {
-    if (badBranch || !isCorrectType("Bool_t")) return 0;
+    if (!isCorrectType("Bool_t")) return 0;
     return object->GetBool(branchName);
   }
   operator Float_t() {
-    if (badBranch || !isCorrectType("Float_t")) return 0;
+    if (!isCorrectType("Float_t")) return 0;
     return object->GetFloat(branchName);
     ;
   }
   operator ULong64_t() {
-    if (badBranch || !isCorrectType("ULong64_t")) return 0;
+    if (!isCorrectType("ULong64_t")) return 0;
     return object->GetULong(branchName);
   }
   operator UChar_t() {
-    if (badBranch || !isCorrectType("UChar_t")) return 0;
+    if (!isCorrectType("UChar_t")) return 0;
     return object->GetUChar(branchName);
   }
 
  private:
   T *object;
   std::string branchName;
-  bool badBranch;
 
   bool isCorrectType(std::string typeName) {
     std::string branchType = object->valuesTypes.at(branchName);

@@ -1,6 +1,6 @@
 //  skimmer.cpp
 //
-//  Created by Jeremi Niedziela on 10/08/2023.
+//  Created by Jeremi Niedziela on 17/08/2023.
 
 #include "ConfigManager.hpp"
 #include "Event.hpp"
@@ -30,12 +30,8 @@ int main(int argc, char **argv) {
   
     auto event = eventReader->GetEvent(i_event);
 
-    cutFlowManager->UpdateCutFlow("initial");
-
     if(!ttAlpsSelections->PassesTriggerSelections(event)) continue;
-    cutFlowManager->UpdateCutFlow("trigger");
-
-    if(!ttAlpsSelections->PassesLooseSemileptonicSelections(event, cutFlowManager)) continue;
+    if(!ttAlpsSelections->PassesSignalLikeSelections(event, cutFlowManager)) continue;
     
     eventWriter->AddCurrentEvent("Events");
   }
