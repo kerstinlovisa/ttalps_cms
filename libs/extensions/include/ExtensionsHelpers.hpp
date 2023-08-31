@@ -26,7 +26,7 @@ inline std::shared_ptr<Jet> asJet(const std::shared_ptr<PhysicsObject> physicsOb
 }
 
 inline std::shared_ptr<HepMCParticle> asHepMCParticle(const std::shared_ptr<PhysicsObject> physicsObject) {
-  return std::static_pointer_cast<HepMCParticle>(physicsObject);
+  return std::make_shared<HepMCParticle>(physicsObject);
 }
 
 #endif /* ExtensionsHelpers_hpp */

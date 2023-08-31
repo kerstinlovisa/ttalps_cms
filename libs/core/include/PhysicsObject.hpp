@@ -15,6 +15,7 @@ typedef Collection<std::shared_ptr<PhysicsObject>> PhysicsObjects;
 class PhysicsObject {
  public:
   PhysicsObject(std::string originalCollection_);
+  PhysicsObject() = default;
   virtual ~PhysicsObject() = default;
 
   void Reset();
@@ -22,7 +23,6 @@ class PhysicsObject {
   inline std::string GetOriginalCollection() { return originalCollection; }
 
   inline auto Get(std::string branchName) {
-    
     if (valuesTypes.count(branchName) == 0) {
       throw Exception(("Trying to access incorrect physics object-level branch: " + branchName).c_str());
     }

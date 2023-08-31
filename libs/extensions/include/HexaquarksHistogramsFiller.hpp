@@ -4,23 +4,22 @@
 #include "Event.hpp"
 #include "EventProcessor.hpp"
 #include "Helpers.hpp"
+#include "HepMCParticle.hpp"
 #include "HistogramsHandler.hpp"
 
 class HexaquarksHistogramsFiller {
  public:
   HexaquarksHistogramsFiller(std::string configPath, std::shared_ptr<HistogramsHandler> histogramsHandler_);
   ~HexaquarksHistogramsFiller();
-  
-  void FillJpsiPiPiMinvHists(const std::vector<std::vector<TLorentzVector>> &jPsi,
-                                 const std::vector<std::vector<TLorentzVector>> &piPlus,
-                                 const std::vector<std::vector<TLorentzVector>> &piMinus);
+
+  void FillJpsiPiPiMinvHists(std::vector<std::vector<TLorentzVector>> &particle0, std::vector<std::vector<TLorentzVector>> &particle1,
+                             std::vector<std::vector<TLorentzVector>> &particle2, std::string histName);
 
  private:
   std::shared_ptr<HistogramsHandler> histogramsHandler;
   std::unique_ptr<EventProcessor> eventProcessor;
 
   float nMixedEventsScale;
-
 };
 
 #endif /* HexaquarksHistogramsFiller_hpp */

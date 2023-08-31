@@ -1,12 +1,13 @@
-nEvents = 1000
+nEvents = 300
 
-nMixedEventsScale = 0.01
+nMixedEvents = 20000
 
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/hexaquarks/data/hexaquarks_lclc.root"
 outputFilePath = "./hexaquarks_lclc.root"
 
 histParams = {
     "m_inv": ("m_inv", 1000, 0, 10, ""),
+    "m_inv_from_hexaquark": ("m_inv_from_hexaquark", 1000, 0, 10, ""),
     "m_inv_mixed": ("m_inv_mixed", 1000, 0, 10, ""),
 }
 

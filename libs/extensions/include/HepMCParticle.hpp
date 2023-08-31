@@ -7,15 +7,17 @@
 class HepMCParticle;
 typedef Collection<std::shared_ptr<HepMCParticle>> HepMCParticles;
 
-class HepMCParticle : public PhysicsObject {
+class HepMCParticle {
  public:
-  float GetPx() { return Get("px"); }
-  float GetPy() { return Get("py"); }
-  float GetPz() { return Get("pz"); }
-  float GetEnergy() { return Get("energy"); }
+  HepMCParticle(std::shared_ptr<PhysicsObject> physicsObject_);
+  
+  float GetPx() { return physicsObject->Get("px"); }
+  float GetPy() { return physicsObject->Get("py"); }
+  float GetPz() { return physicsObject->Get("pz"); }
+  float GetEnergy() { return physicsObject->Get("energy"); }
 
-  int GetStatus() { return Get("status"); }
-  int GetPid() { return Get("pid"); }
+  int GetStatus() { return physicsObject->Get("status"); }
+  int GetPid() { return physicsObject->Get("pid"); }
 
   bool IsLastJPsi() { return abs(GetPid()) == 443 && GetStatus() == 2; }
   bool IsLastPion() { return abs(GetPid()) == 211 && GetStatus() == 1; }
@@ -27,7 +29,28 @@ class HepMCParticle : public PhysicsObject {
     return vec;
   }
 
+  int GetIndex() { return index; }
+  void SetIndex(int index_) { index = index_; }
+
+  void SetMother(int mother_) { mother = mother_; }
+  void AddMother(int mother_) { mothers.push_back(mother_); }
+  int GetMother() { return mother; }
+  std::vector<int>& GetMothers() { return mothers; }
+
+  bool HasMother(int motherPid,const HepMCParticles &allParticles);
+  bool IsMother(int motherPid, const HepMCParticles &allParticles);
+
+  std::vector<int>& GetDaughters() { return daughters; }
+
  private:
+  int index;
+  int mother;
+  std::vector<int> daughters;
+  std::vector<int> mothers;
+
+  std::shared_ptr<PhysicsObject> physicsObject;
+
+  void SetupDaughters();
 };
 
 #endif /* HepMCParticle_hpp */
