@@ -99,7 +99,7 @@ void TTAlpsHistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared
   }
 }
 
-void HistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
+void TTAlpsHistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
   for(auto &[histName, variableLocation] : histVariables) {
     if(variableLocation[0] == "Event") {
       // Assuming uint nObject from Event for now
