@@ -48,7 +48,7 @@ extraEventCollections = {
 }
 
 eventSelections = {
-    "MET_pt": (0, 30),
+    "MET_pt": (30, 9999999),
     "nGoodLeptons": (1, 1),
     "nGoodJets": (4, 9999999),
     "nGoodBtaggedJets": (2, 9999999),
