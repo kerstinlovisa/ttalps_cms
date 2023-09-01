@@ -5,6 +5,7 @@
 #include "ExtensionsHelpers.hpp"
 #include "HexaquarksHistogramsFiller.hpp"
 #include "HistogramsHandler.hpp"
+#include "Profiler.hpp"
 
 using namespace std;
 
@@ -31,6 +32,9 @@ int main(int argc, char **argv) {
   auto histogramsFiller = make_unique<HexaquarksHistogramsFiller>(configPath, histogramsHandler);
   auto eventReader = make_unique<EventReader>(configPath);
   auto eventProcessor = make_unique<EventProcessor>();
+  auto configManager = make_unique<ConfigManager>(configPath);
+
+  Profiler &profiler = Profiler::GetInstance();
 
   histogramsHandler->SetupHistograms();
 
@@ -38,40 +42,32 @@ int main(int argc, char **argv) {
   vector<vector<TLorentzVector>> jPsi, piPlus, piMinus;
   vector<vector<TLorentzVector>> jPsiFromHexa, piPlusFromHexa, piMinusFromHexa;
 
-  map<string, float> time = {
-    {"setup_mothers", 0},
-    {"fill_vectors", 0},
-    {"prepare_mixing", 0},
-  };
+  int maxNdaughters;
+  configManager->GetValue("maxNdaughters", maxNdaughters);
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
     if (i_event % 100 == 0) cout << "Event: " << i_event << endl;
+
     auto event = eventReader->GetEvent(i_event);
 
     auto particles = event->GetCollection("Particle");
-
-    vector<TLorentzVector> j, p, m;
-    vector<TLorentzVector> jFromHexa, pFromHexa, mFromHexa;
+    vector<TLorentzVector> j, p, m, jFromHexa, pFromHexa, mFromHexa;
     HepMCParticles hepMCparticles;
 
     int index = 0;
     for (auto physObj : *particles) {
-      auto particle = asHepMCParticle(physObj);
-      particle->SetIndex(index++);
+      auto particle = asHepMCParticle(physObj, index++, maxNdaughters);
       hepMCparticles.push_back(particle);
     }
 
-
-    auto t0 = now();
     SetupMothers(hepMCparticles);
-    time["setup_mothers"] += duration(t0, now());
 
-    t0 = now();
     for (auto particle : hepMCparticles) {
       bool fromHexa = false;
       if (particle->IsLastJPsi() || particle->IsLastPion()) {
         fromHexa = particle->IsMother(511, hepMCparticles) || particle->IsMother(521, hepMCparticles);
       }
+
       if (particle->IsLastJPsi()) {
         j.push_back(particle->GetLorentzVector());
         if (fromHexa) jFromHexa.push_back(particle->GetLorentzVector());
@@ -85,21 +81,43 @@ int main(int argc, char **argv) {
         if (fromHexa) mFromHexa.push_back(particle->GetLorentzVector());
       }
     }
-    time["fill_vectors"] += duration(t0, now());
+
     jPsi.push_back(j);
     piPlus.push_back(p);
     piMinus.push_back(m);
-
     jPsiFromHexa.push_back(jFromHexa);
     piPlusFromHexa.push_back(pFromHexa);
     piMinusFromHexa.push_back(mFromHexa);
   }
 
   info() << "Filling real histograms" << endl;
-  histogramsFiller->FillJpsiPiPiMinvHists(jPsi, piPlus, piMinus, "m_inv");
-  histogramsFiller->FillJpsiPiPiMinvHists(jPsiFromHexa, piPlusFromHexa, piMinusFromHexa, "m_inv_from_hexaquark");
+  histogramsFiller->FillMinvHists(jPsi, piPlus, piMinus, "m_inv");
+  histogramsFiller->FillMinvHists(jPsiFromHexa, piPlusFromHexa, piMinusFromHexa, "m_inv_from_hexa");
 
-  auto configManager = make_unique<ConfigManager>(configPath);
+  histogramsFiller->FillDeltaHists(piPlus, piMinus, "delta_eta_pi_pi");
+  histogramsFiller->FillDeltaHists(jPsi, piPlus, "delta_eta_jPsi_pi");
+  histogramsFiller->FillDeltaHists(jPsi, piMinus, "delta_eta_jPsi_pi");
+
+  histogramsFiller->FillDeltaHists(piPlus, piMinus, "delta_phi_pi_pi");
+  histogramsFiller->FillDeltaHists(jPsi, piPlus, "delta_phi_jPsi_pi");
+  histogramsFiller->FillDeltaHists(jPsi, piMinus, "delta_phi_jPsi_pi");
+
+  histogramsFiller->FillDeltaHists(piPlus, piMinus, "delta_r_pi_pi");
+  histogramsFiller->FillDeltaHists(jPsi, piPlus, "delta_r_jPsi_pi");
+  histogramsFiller->FillDeltaHists(jPsi, piMinus, "delta_r_jPsi_pi");
+
+  histogramsFiller->FillDeltaHists(piPlusFromHexa, piMinusFromHexa, "delta_eta_pi_pi_from_hexa");
+  histogramsFiller->FillDeltaHists(jPsiFromHexa, piPlusFromHexa, "delta_eta_jPsi_pi_from_hexa");
+  histogramsFiller->FillDeltaHists(jPsiFromHexa, piMinusFromHexa, "delta_eta_jPsi_pi_from_hexa");
+
+  histogramsFiller->FillDeltaHists(piPlusFromHexa, piMinusFromHexa, "delta_phi_pi_pi_from_hexa");
+  histogramsFiller->FillDeltaHists(jPsiFromHexa, piPlusFromHexa, "delta_phi_jPsi_pi_from_hexa");
+  histogramsFiller->FillDeltaHists(jPsiFromHexa, piMinusFromHexa, "delta_phi_jPsi_pi_from_hexa");
+
+  histogramsFiller->FillDeltaHists(piPlusFromHexa, piMinusFromHexa, "delta_r_pi_pi_from_hexa");
+  histogramsFiller->FillDeltaHists(jPsiFromHexa, piPlusFromHexa, "delta_r_jPsi_pi_from_hexa");
+  histogramsFiller->FillDeltaHists(jPsiFromHexa, piMinusFromHexa, "delta_r_jPsi_pi_from_hexa");
+
   int nMixedEvents;
   configManager->GetValue("nMixedEvents", nMixedEvents);
 
@@ -111,7 +129,6 @@ int main(int argc, char **argv) {
   info() << "Collecting particles for mixing..." << endl;
   vector<vector<TLorentzVector>> jForMixing, pForMixing, mForMixing;
 
-  auto t0 = now();
   while (!mixingFinished) {
     int jEventIndex = randInt(0, jPsi.size() - 1);
     int pEventIndex = randInt(0, piPlus.size() - 1);
@@ -134,31 +151,11 @@ int main(int argc, char **argv) {
     }
     if (nMixedEntries == nMixedEvents) mixingFinished = true;
   }
-  time["prepare_mixing"] += duration(t0, now());
-  
+
   info() << "Filling mixed histograms...\n";
-  histogramsFiller->FillJpsiPiPiMinvHists(jForMixing, pForMixing, mForMixing, "m_inv_mixed");
+  histogramsFiller->FillMinvHists(jForMixing, pForMixing, mForMixing, "m_inv_mixed");
 
-
-  for(auto &[name, t] : time) info()<<name<<": "<<t<<" (s)"<<endl;
-  // auto histMixedScaled = new TH1D(*histMixed);
-  // histMixedScaled->Scale(hist->GetEntries() / histMixed->GetEntries());
-
-  // auto file = new TFile("hexa_test.root", "recreate");
-  // file->cd();
-  // hist->Write();
-  // histMixed->Write();
-  // histMixedScaled->Write();
-
-  // auto histDiff = new TH1D(*hist);
-  // histDiff->SetName("diff");
-  // histDiff->SetTitle("diff");
-  // histDiff->Add(histMixedScaled, -1);
-  // histDiff->Write();
-
-  // file->Close();
-
-  // histogramsFiller->FillTriggerEfficiencies();
+  profiler.Print();
   histogramsHandler->SaveHistograms();
 
   return 0;

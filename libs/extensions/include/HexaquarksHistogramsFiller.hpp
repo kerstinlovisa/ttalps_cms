@@ -12,8 +12,11 @@ class HexaquarksHistogramsFiller {
   HexaquarksHistogramsFiller(std::string configPath, std::shared_ptr<HistogramsHandler> histogramsHandler_);
   ~HexaquarksHistogramsFiller();
 
-  void FillJpsiPiPiMinvHists(std::vector<std::vector<TLorentzVector>> &particle0, std::vector<std::vector<TLorentzVector>> &particle1,
-                             std::vector<std::vector<TLorentzVector>> &particle2, std::string histName);
+  void FillMinvHists(std::vector<std::vector<TLorentzVector>> &particle0, std::vector<std::vector<TLorentzVector>> &particle1,
+                     std::vector<std::vector<TLorentzVector>> &particle2, std::string histName);
+
+  void FillDeltaHists(std::vector<std::vector<TLorentzVector>> &particle0, std::vector<std::vector<TLorentzVector>> &particle1,
+                      std::string histName);
 
  private:
   std::shared_ptr<HistogramsHandler> histogramsHandler;
