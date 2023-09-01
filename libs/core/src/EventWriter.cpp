@@ -12,7 +12,7 @@ EventWriter::EventWriter(string configPath, const std::shared_ptr<EventReader> &
   config = make_unique<ConfigManager>(configPath);
 
   string outputFilePath;
-  config->GetValue("outputFilePath", outputFilePath);
+  config->GetValue("treeOutputFilePath", outputFilePath);
 
   SetupOutputTree(outputFilePath);
 }

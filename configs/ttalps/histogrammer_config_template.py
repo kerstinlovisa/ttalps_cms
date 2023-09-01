@@ -1,7 +1,7 @@
 nEvents = "dummy_value"
 
 inputFilePath = "dummy_value"
-outputFilePath = "dummy_value"
+histogramsOutputFilePath = "dummy_value"
 
 
 histParams = {

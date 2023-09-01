@@ -21,6 +21,7 @@ private:
   std::unique_ptr<ConfigManager> config;
 
   int maxEvents;
+  int printEveryNevents;
 
   TFile *inputFile;
   std::map<std::string, TTree *> inputTrees;

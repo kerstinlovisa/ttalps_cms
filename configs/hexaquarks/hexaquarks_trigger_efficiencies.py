@@ -8,7 +8,7 @@ maxNdaughters = 10
 # outputFilePath = "./hexaquarks_lclc.root"
 
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/hexaquarks/data/hexaquarks_lclc_jpsi2mumu.root"
-outputFilePath = "./hexaquarks_lclc_jpsi2mumu.root"
+histogramsOutputFilePath = "./hexaquarks_lclc_jpsi2mumu.root"
 
 
 histParams = {
