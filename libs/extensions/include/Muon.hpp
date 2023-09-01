@@ -11,11 +11,16 @@
 class Muon;
 typedef Collection<std::shared_ptr<Muon>> Muons;
 
-class Muon : public PhysicsObject {
+class Muon {
  public:
-  inline float GetPt() { return Get("pt"); }
-  inline float GetEta() { return Get("eta"); }
-  inline float GetPhi() { return Get("phi"); }
+  Muon(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
+
+  inline float GetPt() { return physicsObject->Get("pt"); }
+  inline float GetEta() { return physicsObject->Get("eta"); }
+  inline float GetPhi() { return physicsObject->Get("phi"); }
+
+ private:
+  std::shared_ptr<PhysicsObject> physicsObject;
 };
 
 #endif /* Muon_hpp */

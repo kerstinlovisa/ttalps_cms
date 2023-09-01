@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int GenParticle::GetPdgId() { return Get("pdgId"); }
+int GenParticle::GetPdgId() { return physicsObject->Get("pdgId"); }
 
 bool GenParticle::IsGoodBottomQuark(shared_ptr<GenParticle> mother) {
   if (!IsFirstCopy()) return false;

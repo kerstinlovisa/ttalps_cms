@@ -11,11 +11,13 @@
 class GenParticle;
 typedef Collection<std::shared_ptr<GenParticle>> GenParticles;
 
-class GenParticle : public PhysicsObject {
+class GenParticle {
  public:
+  GenParticle(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
+
   int GetPdgId();
-  int GetMotherIndex() { return Get("genPartIdxMother"); }
-  int GetStatusFlags() { return Get("statusFlags"); }
+  int GetMotherIndex() { return physicsObject->Get("genPartIdxMother"); }
+  int GetStatusFlags() { return physicsObject->Get("statusFlags"); }
 
   bool IsLastCopy() { return (GetStatusFlags() & isLastCopy); }
   bool IsFirstCopy() { return (GetStatusFlags() & isFirstCopy); }
@@ -28,6 +30,8 @@ class GenParticle : public PhysicsObject {
   bool IsTop();
 
  private:
+  std::shared_ptr<PhysicsObject> physicsObject;
+
   enum StatusFlagMask {
     isPrompt = 1 << 0,
     isDecayedLeptonHadron = 1 << 1,

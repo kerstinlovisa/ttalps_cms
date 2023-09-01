@@ -10,19 +10,19 @@
 #include "PhysicsObject.hpp"
 
 inline std::shared_ptr<GenParticle> asGenParticle(const std::shared_ptr<PhysicsObject> physicsObject) {
-  return std::static_pointer_cast<GenParticle>(physicsObject);
+  return std::make_shared<GenParticle>(physicsObject);
 }
 
 inline std::shared_ptr<Muon> asMuon(const std::shared_ptr<PhysicsObject> physicsObject) {
-  return std::static_pointer_cast<Muon>(physicsObject);
+  return std::make_shared<Muon>(physicsObject);
 }
 
 inline std::shared_ptr<Electron> asElectron(const std::shared_ptr<PhysicsObject> physicsObject) {
-  return std::static_pointer_cast<Electron>(physicsObject);
+  return std::make_shared<Electron>(physicsObject);
 }
 
 inline std::shared_ptr<Jet> asJet(const std::shared_ptr<PhysicsObject> physicsObject) {
-  return std::static_pointer_cast<Jet>(physicsObject);
+  return std::make_shared<Jet>(physicsObject);
 }
 
 inline std::shared_ptr<HepMCParticle> asHepMCParticle(const std::shared_ptr<PhysicsObject> physicsObject, int index = -1,

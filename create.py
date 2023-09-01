@@ -29,7 +29,7 @@ def insert_cast(class_name):
   
   old_string = "#endif /* ExtensionsHelpers_hpp */"
   new_string = f"inline std::shared_ptr<{class_name}> as{class_name}(const std::shared_ptr<PhysicsObject> physicsObject) {{\n"
-  new_string += f"  return std::static_pointer_cast<{class_name}>(physicsObject);\n"
+  new_string += f"  return std::make_shared<{class_name}>(physicsObject);\n"
   new_string += "}\n\n"
   new_string += "#endif /* ExtensionsHelpers_hpp */\n"
   
@@ -48,13 +48,16 @@ def main():
       destination_file = f"libs/extensions/src/{class_name}.cpp"
       shutil.copy(source_file, destination_file)
       replace_string_in_file(destination_file, "TemplateName", class_name)
+      print(f"Added file: {destination_file}")
       
       source_file = "templates/PhysicsObject.template.hpp"
       destination_file = f"libs/extensions/include/{class_name}.hpp"
       shutil.copy(source_file, destination_file)
       replace_string_in_file(destination_file, "TemplateName", class_name)
+      print(f"Added file: {destination_file}")
       
       insert_cast(class_name)
+      print(f"Added conversion from PhysicsObject to {class_name} in libs/extensions/include/ExtensionsHelpers.hpp")
     elif class_type == "HistogramFiller" or class_type == "hf":
       print(f"Adding a HistogramFiller class: {class_name}")
       
