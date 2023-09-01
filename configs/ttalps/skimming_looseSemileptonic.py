@@ -1,4 +1,5 @@
 nEvents = -1
+printEveryNevents = 1000
 
 # background
 # inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"

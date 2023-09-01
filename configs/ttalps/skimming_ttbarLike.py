@@ -1,4 +1,5 @@
 nEvents = -1
+printEveryNevents = 1000
 
 base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/"
 

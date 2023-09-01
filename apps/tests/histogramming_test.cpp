@@ -24,7 +24,6 @@ int main() {
   auto muonEta = new TH1D("muonEta", "muonEta", 100, -5, 5);
 
   for (int iEvent = 0; iEvent < 1000; iEvent++) {
-    cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
     cout << eventProcessor->GetTTbarEventCategory(event) << endl;
 

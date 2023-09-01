@@ -46,8 +46,6 @@ int main(int argc, char **argv) {
   configManager->GetValue("maxNdaughters", maxNdaughters);
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-    if (i_event % 100 == 0) cout << "Event: " << i_event << endl;
-
     auto event = eventReader->GetEvent(i_event);
 
     auto particles = event->GetCollection("Particle");

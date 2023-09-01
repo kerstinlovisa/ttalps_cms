@@ -1,4 +1,5 @@
 nEvents = 100
+printEveryNevents = 1000
 
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
 # inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTTo2LNu/C853E1CF-5210-5A44-95EA-511CC3BE4245.root"

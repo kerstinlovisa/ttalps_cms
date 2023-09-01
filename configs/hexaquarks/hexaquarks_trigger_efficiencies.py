@@ -1,6 +1,9 @@
-nEvents = 60000
+# nEvents = 60000
+nEvents = 100
+printEveryNevents = 10
 
-nMixedEvents = 10000000
+# nMixedEvents = 10000000
+nMixedEvents = 100
 
 maxNdaughters = 10
 
@@ -8,7 +11,7 @@ maxNdaughters = 10
 # outputFilePath = "./hexaquarks_lclc.root"
 
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/hexaquarks/data/hexaquarks_lclc_jpsi2mumu.root"
-histogramsOutputFilePath = "./hexaquarks_lclc_jpsi2mumu.root"
+histogramsOutputFilePath = "./test.root"
 
 
 histParams = {

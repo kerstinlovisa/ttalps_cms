@@ -13,7 +13,7 @@ EventReader::EventReader(string configPath) : currentEvent(make_shared<Event>())
 
   config->GetValue("nEvents", maxEvents);
   config->GetValue("printEveryNevents", printEveryNevents);
-  if(printEveryNevents==0) printEveryNevents = -1;
+  if (printEveryNevents == 0) printEveryNevents = -1;
 
   string inputFilePath;
   config->GetValue("inputFilePath", inputFilePath);
@@ -137,7 +137,9 @@ void EventReader::InitializeCollection(string collectionName) {
 }
 
 shared_ptr<Event> EventReader::GetEvent(int iEvent) {
-  if (iEvent % printEveryNevents == 0) info() << "Event: " << iEvent << endl;
+  if (printEveryNevents > 0) {
+    if (iEvent % printEveryNevents == 0) info() << "Event: " << iEvent << endl;
+  }
 
   currentEvent->Reset();
 

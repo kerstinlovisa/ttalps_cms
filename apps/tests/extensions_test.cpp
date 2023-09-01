@@ -21,7 +21,6 @@ int main() {
   auto eventProcessor = make_unique<EventProcessor>();
 
   for (int iEvent = 0; iEvent < 10; iEvent++) {
-    cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
     cout << eventProcessor->GetTTbarEventCategory(event) << endl;
 
