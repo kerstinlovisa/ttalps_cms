@@ -25,8 +25,8 @@ int main(int argc, char **argv) {
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
     auto event = eventReader->GetEvent(i_event);
-
-    string ttbarCategory = eventProcessor->GetTTbarEventCategory(event);
+    auto ttAlpsEvent = asTTAlpsEvent(event);
+    string ttbarCategory = ttAlpsEvent->GetTTbarEventCategory();
     histogramsFiller->FillTriggerVariables(event, "inclusive");
     histogramsFiller->FillTriggerVariables(event, ttbarCategory);
     histogramsFiller->FillTriggerVariablesPerTriggerSet(event, "inclusive");

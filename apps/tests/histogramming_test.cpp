@@ -16,7 +16,7 @@ int main() {
       "TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root";
 
   auto eventReader = make_shared<EventReader>(inputPath);
-  cout << "Event reader created" << endl;
+  info() << "Event reader created" << endl;
 
   auto eventProcessor = make_unique<EventProcessor>();
 
@@ -25,7 +25,9 @@ int main() {
 
   for (int iEvent = 0; iEvent < 1000; iEvent++) {
     auto event = eventReader->GetEvent(iEvent);
-    cout << eventProcessor->GetTTbarEventCategory(event) << endl;
+    auto ttAlpsEvent = asTTAlpsEvent(event);
+
+    info() << ttAlpsEvent->GetTTbarEventCategory() << endl;
 
     auto muons = event->GetCollection("Muon");
 
