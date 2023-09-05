@@ -13,6 +13,10 @@ class HistogramsHandler {
   HistogramsHandler(std::string configPath);
   ~HistogramsHandler();
 
+  void CheckHistogram(std::string name){
+    if (!histograms1D.count(name)) error() << "Couldn't find key: " << name << " in histograms map\n";
+  }
+
   void SetupHistograms();
   void SaveHistograms();
 

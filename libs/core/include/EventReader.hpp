@@ -21,6 +21,7 @@ private:
   std::unique_ptr<ConfigManager> config;
 
   int maxEvents;
+  int printEveryNevents;
 
   TFile *inputFile;
   std::map<std::string, TTree *> inputTrees;
@@ -31,6 +32,8 @@ private:
   void SetupScalarBranch(std::string branchName, std::string branchType);
   void SetupVectorBranch(std::string branchName, std::string branchType);
   void InitializeCollection(std::string collectionName);
+
+  std::vector<std::string> sizeWarningsPrinted;
 
   friend class EventWriter;
   friend class CutFlowManager;

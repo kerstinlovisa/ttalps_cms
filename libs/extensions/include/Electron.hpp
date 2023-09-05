@@ -11,11 +11,16 @@
 class Electron;
 typedef Collection<std::shared_ptr<Electron>> Electrons;
 
-class Electron : public PhysicsObject {
+class Electron {
  public:
-  inline float GetPt() { return Get("pt"); }
-  inline float GetEta() { return Get("eta"); }
-  inline float GetPhi() { return Get("phi"); }
+  Electron(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
+
+  inline float GetPt() { return physicsObject->Get("pt"); }
+  inline float GetEta() { return physicsObject->Get("eta"); }
+  inline float GetPhi() { return physicsObject->Get("phi"); }
+
+ private:
+  std::shared_ptr<PhysicsObject> physicsObject;
 };
 
 #endif /* Electron_hpp */

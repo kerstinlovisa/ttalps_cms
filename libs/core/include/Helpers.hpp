@@ -30,10 +30,12 @@
 #pragma clang diagnostic pop  // restores the saved state for diagnostics
 
 #include <any>
+#include <filesystem>
+#include <iostream>
+#include <random>
 #include <sstream>
 #include <string>
-#include <iostream>
-#include <filesystem>
+#include <regex>
 
 #include "Logger.hpp"
 
@@ -60,35 +62,51 @@ inline std::vector<std::string> split(std::string input, char splitBy) {
   return parts;
 }
 
-inline bool inRange(float value, std::pair<float, float> range){
-  return value >= range.first && value <= range.second;
+inline int randInt(int min, int max) {
+  std::random_device rd;   // Seed generator
+  std::mt19937 gen(rd());  // Mersenne Twister engine
+  std::uniform_int_distribution<int> dist(min, max);
+  return dist(gen);
 }
 
-inline void makeParentDirectories(std::string filePath) {
-    std::filesystem::path directoryPath = std::filesystem::path(filePath).parent_path();
+inline bool inRange(float value, std::pair<float, float> range) { return value >= range.first && value <= range.second; }
 
-    if (!std::filesystem::exists(directoryPath)) {
-        if (std::filesystem::create_directories(directoryPath)) {
-            info() << "Created directory: " << directoryPath << "\n";
-        } else {
-            error() << "Failed to create directory: " << directoryPath << "\n";
-        }
+inline void makeParentDirectories(std::string filePath) {
+  std::filesystem::path directoryPath = std::filesystem::path(filePath).parent_path();
+
+  if (!std::filesystem::exists(directoryPath)) {
+    if (std::filesystem::create_directories(directoryPath)) {
+      info() << "Created directory: " << directoryPath << "\n";
+    } else {
+      error() << "Failed to create directory: " << directoryPath << "\n";
     }
+  }
 }
 
 struct ExtraCollection {
   std::vector<std::string> inputCollections;
   std::map<std::string, std::pair<float, float>> selections;
 
-  void Print(){
+  void Print() {
     info() << "Input collections: \n";
-    for(std::string name : inputCollections) info() << name << "\n";
+    for (std::string name : inputCollections) info() << name << "\n";
 
     info() << "Selections: \n";
-    for(auto &[name, cuts] : selections){
-      info() << "\t" << name <<": "<< cuts.first <<", "<< cuts.second << "\n";
+    for (auto &[name, cuts] : selections) {
+      info() << "\t" << name << ": " << cuts.first << ", " << cuts.second << "\n";
     }
   }
 };
+
+template <class T>
+double duration(T t0, T t1) {
+  auto elapsed_secs = t1 - t0;
+  typedef std::chrono::duration<float> float_seconds;
+  auto secs = std::chrono::duration_cast<float_seconds>(elapsed_secs);
+  return secs.count();
+}
+
+/// Returns current time
+inline std::chrono::time_point<std::chrono::steady_clock> now() { return std::chrono::steady_clock::now(); }
 
 #endif /* Helpers_hpp */

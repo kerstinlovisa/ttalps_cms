@@ -69,7 +69,6 @@ int main() {
   // auto nEvents = eventReader->GetNevents();
 
   for (int iEvent = 0; iEvent < 10; iEvent++) {
-    cout << "\n event " << iEvent << endl;
     auto event = eventReader->GetEvent(iEvent);
 
     uint nMuons = event->Get("nMuon");

@@ -9,6 +9,7 @@ frameworks_tests/cpp_loops_o3
 
 *.root
 
+standalone_scripts/*.pdf
 first_steps/check_top_channel
 
 

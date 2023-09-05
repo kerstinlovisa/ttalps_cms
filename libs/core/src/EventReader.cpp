@@ -12,6 +12,8 @@ EventReader::EventReader(string configPath) : currentEvent(make_shared<Event>())
   config = make_unique<ConfigManager>(configPath);
 
   config->GetValue("nEvents", maxEvents);
+  config->GetValue("printEveryNevents", printEveryNevents);
+  if (printEveryNevents == 0) printEveryNevents = -1;
 
   string inputFilePath;
   config->GetValue("inputFilePath", inputFilePath);
@@ -130,11 +132,15 @@ void EventReader::InitializeCollection(string collectionName) {
 
   currentEvent->collections[collectionName] = make_shared<PhysicsObjects>();
   for (int i = 0; i < maxCollectionElements; i++) {
-    currentEvent->collections[collectionName]->push_back(make_shared<PhysicsObject>());
+    currentEvent->collections[collectionName]->push_back(make_shared<PhysicsObject>(collectionName));
   }
 }
 
 shared_ptr<Event> EventReader::GetEvent(int iEvent) {
+  if (printEveryNevents > 0) {
+    if (iEvent % printEveryNevents == 0) info() << "Event: " << iEvent << endl;
+  }
+
   currentEvent->Reset();
 
   // Move to desired entry in all trees
@@ -143,8 +149,32 @@ shared_ptr<Event> EventReader::GetEvent(int iEvent) {
   // Tell collections where to stop in loops, without actually changing their
   // size in memory
   for (auto &[name, collection] : currentEvent->collections) {
-    UInt_t collectionSize = currentEvent->Get("n" + name);
-    collection->ChangeVisibleSize(collectionSize);
+    try {
+      UInt_t collectionSize = currentEvent->Get("n" + name);
+      collection->ChangeVisibleSize(collectionSize);
+    } catch (Exception &e) {
+      bool workedWithHepMC = true;
+
+      try {
+        Int_t collectionSize = currentEvent->Get("Event_numberP");
+        collection->ChangeVisibleSize(collectionSize);
+      } catch (Exception &e) {
+        workedWithHepMC = false;
+        if (find(sizeWarningsPrinted.begin(), sizeWarningsPrinted.end(), name) == sizeWarningsPrinted.end()) {
+          error() << "Could not set size of collection: " << name << "\n";
+          error() << "Range-based loops over this collection should not be used!\n";
+          sizeWarningsPrinted.push_back(name);
+        }
+      }
+
+      if (!workedWithHepMC) {
+        if (find(sizeWarningsPrinted.begin(), sizeWarningsPrinted.end(), name) == sizeWarningsPrinted.end()) {
+          error() << "Could not set size of collection: " << name << "\n";
+          error() << "Range-based loops over this collection should not be used!\n";
+          sizeWarningsPrinted.push_back(name);
+        }
+      }
+    }
   }
   return currentEvent;
 }

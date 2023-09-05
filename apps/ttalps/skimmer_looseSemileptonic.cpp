@@ -26,14 +26,12 @@ int main(int argc, char **argv) {
   auto ttAlpsSelections = make_unique<TTAlpsSelections>(configPath);
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-    if (i_event % 1000 == 0) info() << "Event: " << i_event << "\n";
-  
     auto event = eventReader->GetEvent(i_event);
 
-    cutFlowManager->UpdateCutFlow("0_initial");
+    cutFlowManager->UpdateCutFlow("initial");
 
     if(!ttAlpsSelections->PassesTriggerSelections(event)) continue;
-    cutFlowManager->UpdateCutFlow("1_trigger");
+    cutFlowManager->UpdateCutFlow("trigger");
 
     if(!ttAlpsSelections->PassesLooseSemileptonicSelections(event, cutFlowManager)) continue;
     

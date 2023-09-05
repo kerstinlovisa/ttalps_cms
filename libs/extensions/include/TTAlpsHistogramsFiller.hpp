@@ -1,19 +1,19 @@
-//  HistogramsFiller.hpp
+//  TTAlpsHistogramsFiller.hpp
 //
 //  Created by Jeremi Niedziela on 10/08/2023.
 
-#ifndef HistogramsFiller_hpp
-#define HistogramsFiller_hpp
+#ifndef TTAlpsHistogramsFiller_hpp
+#define TTAlpsHistogramsFiller_hpp
 
 #include "Event.hpp"
 #include "Helpers.hpp"
 #include "HistogramsHandler.hpp"
 #include "CutFlowManager.hpp"
 
-class HistogramsFiller {
+class TTAlpsHistogramsFiller {
  public:
-  HistogramsFiller(std::string configPath, std::shared_ptr<HistogramsHandler> histogramsHandler_);
-  ~HistogramsFiller();
+  TTAlpsHistogramsFiller(std::string configPath, std::shared_ptr<HistogramsHandler> histogramsHandler_);
+  ~TTAlpsHistogramsFiller();
 
   void FillTriggerEfficiencies();
   void FillTriggerVariables(const std::shared_ptr<Event> event, std::string prefix = "", std::string suffix = "");
@@ -38,4 +38,4 @@ class HistogramsFiller {
   bool EndsWithTriggerName(std::string name);
 };
 
-#endif /* HistogramsFiller_hpp */
+#endif /* TTAlpsHistogramsFiller_hpp */

@@ -10,7 +10,7 @@
 using namespace std;
 
 CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<EventWriter> eventWriter_)
-    : eventReader(eventReader_), eventWriter(eventWriter_) {
+    : eventReader(eventReader_), eventWriter(eventWriter_), currentIndex(0) {
   if (eventReader->inputFile->Get("CutFlow")) {
     hasInitial = true;
     info() << "Input file contains CutFlow directory - will store existing cutflow for output.\n";
@@ -25,6 +25,7 @@ CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<
       auto hist = (TH1D*)obj;
       weightsAfterCuts[key->GetName()] = hist->GetBinContent(1);
       delete obj;
+      currentIndex++;
     }
   }
   if(eventWriter_==NULL) {
@@ -35,12 +36,32 @@ CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<
 CutFlowManager::~CutFlowManager() {}
 
 void CutFlowManager::UpdateCutFlow(string cutName) {
-  float weight = eventReader->currentEvent->Get("genWeight");
+  float weight = 1;
 
-  if (weightsAfterCuts.count(cutName)) {
-    weightsAfterCuts[cutName] += weight;
+  string fullCutName;
+
+  bool found = false;
+  for (const auto &[key, value] : weightsAfterCuts) {
+    if (key.find(cutName) != std::string::npos) {
+      fullCutName = key;
+      found = true;
+      break;
+    }
+  }
+  if(!found){
+    fullCutName = to_string(currentIndex) + "_" + cutName;
+  }
+
+  try {
+    eventReader->currentEvent->Get("genWeight");
+  } catch (Exception &) {
+  }
+
+  if (weightsAfterCuts.count(fullCutName)) {
+    weightsAfterCuts[fullCutName] += weight;
   } else {
-    weightsAfterCuts[cutName] = weight;
+    weightsAfterCuts[fullCutName] = weight;
+    currentIndex++;
   }
 }
 
