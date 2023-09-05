@@ -28,6 +28,7 @@ void HistogramsHandler::SetupHistograms() {
   for (auto &[name, title] : histTitles) {
     histograms1D[name] = new TH1D(title.c_str(), title.c_str(), histNbins[name], histMin[name], histMax[name]);
   }
+  histograms1D["cutFlow"] = new TH1D();
 }
 
 void HistogramsHandler::SaveHistograms() {

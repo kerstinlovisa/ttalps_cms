@@ -9,6 +9,7 @@
 #include "Helpers.hpp"
 #include "HistogramsHandler.hpp"
 #include "CutFlowManager.hpp"
+#include "EventProcessor.hpp"
 
 class TTAlpsHistogramsFiller {
  public:
@@ -20,7 +21,8 @@ class TTAlpsHistogramsFiller {
   void FillTriggerVariablesPerTriggerSet(const std::shared_ptr<Event> event, std::string ttbarCategory = "");
 
   void FillHistograms1D(const std::shared_ptr<Event> event);
-  void FillDefaultHistograms1D(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation);
+  void FillDefaultHistograms1D(const std::shared_ptr<Event> event);
+  void FillLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation);
   void FillSubLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation);
 
   void FillCutFlowHist(const std::shared_ptr<CutFlowManager> cutFlowManager);
@@ -30,9 +32,11 @@ class TTAlpsHistogramsFiller {
 
  private:
   std::shared_ptr<HistogramsHandler> histogramsHandler;
+  std::unique_ptr<EventProcessor> eventProcessor;
 
   std::map<std::string, std::vector<std::string>> triggerSets;
-  std::map<std::string, std::vector<std::string>> histVariables;
+  std::map<std::string, std::vector<std::string>> defaultHistVariables;
+  std::map<std::string, std::vector<std::string>> ttalpsHistVariables;
 
   std::vector<std::string> triggerNames;
   bool EndsWithTriggerName(std::string name);
