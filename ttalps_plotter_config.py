@@ -3,12 +3,10 @@ from ROOT import TColor
 
 signal_path = "build"
 background_path = "build"
-output_path = "../plots_test"
+output_path = "../plots"
 
 files = {
   #name                  filename     type(signal/background)
-  # "tta_mAlp-0p35GeV"  :  ["tta_mAlp-0p35GeV_nEvents-100000.root", "signal"],
-  # "TTbar_inclusive"   :  ["TTbar_inclusive_FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root", "background"],
   "tta_mAlp-0p35GeV"  :  ["tta_mAlp-0p35GeV_skimmed_looseSemileptonic_hists.root", "signal"],
   "TTJets"            :  ["TTJets_skimmed_looseSemileptonic_hists.root", "background"],
   "TTbar_inclusive"   :  ["TT_skimmed_looseSemileptonic_hists.root", "background"],
@@ -41,24 +39,26 @@ signal_legend_position = (0.7,0.7,0.85,0.75)
 background_legend_position = (0.7,0.75,0.85,0.85)
 
 variables = {
-# key                    title        norm1   rebin    xmin     xmax     ymin,  ymax,  xlabel                 ylabel
-  "n_muons"   :          ("",          True,   1,       0,       10,      -1,    -1,    "Number of muons",    "Fraction of events"  ),
-  "muon_pt"   :          ("",          True,   5,       0,       100,     -1,    -1,    "p_{T}^{#mu} [GeV]",  "Fraction of events"  ),
-  # "muon_leading_pt" :    ("",          True,   5,       0,       100,     -1,    -1,    "Leading p_{T}^{#mu} [GeV]",  "Fraction of events"  ),
-  # "muon_subleading_pt" : ("",          True,   5,       0,       100,     -1,    -1,    "All subleading p_{T}^{#mu} [GeV]",  "Fraction of events"  ),
-  "muon_eta"  :          ("",          True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{#mu}",         "Fraction of events"  ),
-  "muon_dxy"  :          ("",          True,   2,       -10,     10,      -1,    -1,    "d_{xy}^{#mu}",       "Fraction of events"  ),
-  "muon_dz"   :          ("",          True,   2,       -10,     10,      -1,    -1,    "d_{z}^{#mu}",        "Fraction of events"  ),
-  "n_eles"    :          ("",          True,   1,       0,       10,      -1,    -1,    "Number of electrons","Fraction of events"  ),
-  "ele_pt"    :          ("",          True,   5,       0,       200,     -1,    -1,    "p_{T}^{e} [GeV]",    "Fraction of events"  ),
-  "ele_eta"   :          ("",          True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{e}",           "Fraction of events"  ),
-  "ele_dxy"   :          ("",          True,   2,       -10,     10,      -1,    -1,    "d_{xy}^{e}",         "Fraction of events"  ),
-  "ele_dz"    :          ("",          True,   2,       -10,     10,      -1,    -1,    "d_{z}^{e}",          "Fraction of events"  ),
-  "n_jets"    :          ("",          True,   1,       0,       30,      -1,    -1,    "Number of jets",     "Fraction of events"  ),
-  "jet_pt"    :          ("",          True,   5,       0,       200,     -1,    -1,    "p_{T}^{j} [GeV]",    "Fraction of events"  ),
-  "jet_eta"   :          ("",          True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{j}",           "Fraction of events"  ),
-  "jet_btagDeepB":       ("",          True,   2,       -1,      1,       -1,    -1,    "jet btagDeepB",      "Fraction of events"  ),
-  "cutFlow"   :          ("cutflow",   False,  1,       0,       7,       -1,    -1,    "Selection",          "Number of events"  ),
+# key                    title         logy     norm1   rebin    xmin     xmax     ymin,  ymax,  xlabel                 ylabel
+  "n_muons"   :          ("",          False,   True,   1,       0,       10,      -1,    -1,    "Number of muons",    "Fraction of events"  ),
+  "muon_pt"   :          ("",          True,    True,   5,       0,       100,     -1,    -1,    "p_{T}^{#mu} [GeV]",  "Fraction of events"  ),
+  "muon_leading_pt" :    ("",          True,    True,   5,       0,       100,     -1,    -1,    "Leading p_{T}^{#mu} [GeV]",  "Fraction of events"  ),
+  "muon_subleading_pt" : ("",          True,    True,   5,       0,       100,     -1,    -1,    "All subleading p_{T}^{#mu} [GeV]",  "Fraction of events"  ),
+  "muon_eta"  :          ("",          True,    True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{#mu}",         "Fraction of events"  ),
+  "muon_dxy"  :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{xy}^{#mu}",       "Fraction of events"  ),
+  "muon_dz"   :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{z}^{#mu}",        "Fraction of events"  ),
+  "n_eles"    :          ("",          False,   True,   1,       0,       10,      -1,    -1,    "Number of electrons","Fraction of events"  ),
+  "ele_pt"    :          ("",          True,    True,   5,       0,       200,     -1,    -1,    "p_{T}^{e} [GeV]",    "Fraction of events"  ),
+  # "ele_leading_pt"    :  ("",          True,    True,   5,       0,       200,     -1,    -1,    "Leading p_{T}^{e} [GeV]",    "Fraction of events"  ),
+  # "ele_subleading_pt"  : ("",          True,    True,   5,       0,       200,     -1,    -1,    "All subleading p_{T}^{e} [GeV]",    "Fraction of events"  ),
+  "ele_eta"   :          ("",          True,    True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{e}",           "Fraction of events"  ),
+  "ele_dxy"   :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{xy}^{e}",         "Fraction of events"  ),
+  "ele_dz"    :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{z}^{e}",          "Fraction of events"  ),
+  "n_jets"    :          ("",          False,   True,   1,       0,       30,      -1,    -1,    "Number of jets",     "Fraction of events"  ),
+  "jet_pt"    :          ("",          True,    True,   5,       0,       200,     -1,    -1,    "p_{T}^{j} [GeV]",    "Fraction of events"  ),
+  "jet_eta"   :          ("",          True,    True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{j}",           "Fraction of events"  ),
+  "jet_btagDeepB":       ("",          True,    True,   2,       -1,      1,       -1,    -1,    "jet btagDeepB",      "Fraction of events"  ),
+  "cutFlow"   :          ("cutflow",   True,    False,  1,       0,       7,       -1,    -1,    "Selection",          "Number of events"  ),
 }
 
 efficiency_plots = {
