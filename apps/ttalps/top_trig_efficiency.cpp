@@ -24,10 +24,9 @@ int main(int argc, char **argv) {
   histogramsHandler->SetupHistograms();
 
   for (int i_event = 0; i_event < eventReader->GetNevents(); i_event++) {
-    if (i_event % 1000 == 0) cout << "Event: " << i_event << endl;
     auto event = eventReader->GetEvent(i_event);
-
-    string ttbarCategory = eventProcessor->GetTTbarEventCategory(event);
+    auto ttAlpsEvent = asTTAlpsEvent(event);
+    string ttbarCategory = ttAlpsEvent->GetTTbarEventCategory();
     histogramsFiller->FillTriggerVariables(event, "inclusive");
     histogramsFiller->FillTriggerVariables(event, ttbarCategory);
     histogramsFiller->FillTriggerVariablesPerTriggerSet(event, "inclusive");

@@ -19,7 +19,7 @@ HistogramsHandler::HistogramsHandler(string configPath) {
   configManager->GetMap("histMax", histMax);
   configManager->GetMap("histOutputDir", histOutputDir);
 
-  configManager->GetValue("outputFilePath", outputPath);
+  configManager->GetValue("histogramsOutputFilePath", outputPath);
 }
 
 HistogramsHandler::~HistogramsHandler() {}

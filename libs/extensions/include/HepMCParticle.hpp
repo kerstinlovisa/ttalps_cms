@@ -9,8 +9,8 @@ typedef Collection<std::shared_ptr<HepMCParticle>> HepMCParticles;
 
 class HepMCParticle {
  public:
-  HepMCParticle(std::shared_ptr<PhysicsObject> physicsObject_);
-  
+  HepMCParticle(std::shared_ptr<PhysicsObject> physicsObject_, int index_, int maxNdaughters_);
+
   float GetPx() { return physicsObject->Get("px"); }
   float GetPy() { return physicsObject->Get("py"); }
   float GetPz() { return physicsObject->Get("pz"); }
@@ -37,12 +37,13 @@ class HepMCParticle {
   int GetMother() { return mother; }
   std::vector<int>& GetMothers() { return mothers; }
 
-  bool HasMother(int motherPid,const HepMCParticles &allParticles);
-  bool IsMother(int motherPid, const HepMCParticles &allParticles);
+  bool HasMother(int motherPid, const HepMCParticles& allParticles);
+  bool IsMother(int motherPid, const HepMCParticles& allParticles);
 
   std::vector<int>& GetDaughters() { return daughters; }
 
  private:
+  int maxNdaughters;
   int index;
   int mother;
   std::vector<int> daughters;

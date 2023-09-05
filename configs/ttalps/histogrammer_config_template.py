@@ -1,7 +1,8 @@
 nEvents = "dummy_value"
+printEveryNevents = 1000
 
 inputFilePath = "dummy_value"
-outputFilePath = "dummy_value"
+histogramsOutputFilePath = "dummy_value"
 
 
 histParams = {

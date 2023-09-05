@@ -7,11 +7,12 @@
 class TemplateName;
 typedef Collection<std::shared_ptr<TemplateName>> TemplateNames;
 
-class TemplateName : public PhysicsObject {
+class TemplateName {
  public:
+  TemplateName(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
 
  private:
-
+  std::shared_ptr<PhysicsObject> physicsObject;
 };
 
 #endif /* TemplateName_hpp */

@@ -35,6 +35,7 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <regex>
 
 #include "Logger.hpp"
 

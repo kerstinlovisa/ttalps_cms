@@ -11,12 +11,17 @@
 class Jet;
 typedef Collection<std::shared_ptr<Jet>> Jets;
 
-class Jet : public PhysicsObject {
+class Jet {
  public:
-  inline float GetPt() { return Get("pt"); }
-  inline float GetEta() { return Get("eta"); }
-  inline float GetPhi() { return Get("phi"); }
-  inline float GetBtagDeepB() { return Get("btagDeepB"); }
+  Jet(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
+
+  inline float GetPt() { return physicsObject->Get("pt"); }
+  inline float GetEta() { return physicsObject->Get("eta"); }
+  inline float GetPhi() { return physicsObject->Get("phi"); }
+  inline float GetBtagDeepB() { return physicsObject->Get("btagDeepB"); }
+
+ private:
+  std::shared_ptr<PhysicsObject> physicsObject;
 };
 
 #endif /* Jet_hpp */

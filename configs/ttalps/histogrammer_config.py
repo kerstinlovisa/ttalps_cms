@@ -1,10 +1,11 @@
 nEvents = -1
+printEveryNevents = 1000
 
 # inputFilePath = "/nfs/dust/cms/user/lrygaard/ttalps_cms/LHEtoNanoAOD_output/UL_NanoAOD/tta_mAlp-0p35GeV_nEvents-10000/tta_mAlp-0p35GeV_nEvents-10000_part-39_NanoAOD_0.root"
 # outputFilePath = "./tta_mAlp-0p35GeV_nEvents-10000_part-39_NanoAOD_0.root"
 
 inputFilePath = "/nfs/dust/cms/user/lrygaard/ttalps_cms/tta_mAlp-0p35GeV_nEvents-100000.root"
-outputFilePath = "./tta_mAlp-0p35GeV_nEvents-100000.root"
+histogramsOutputFilePath = "./tta_mAlp-0p35GeV_nEvents-100000.root"
 
 # inputFilePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/TTbar_inclusive/FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
 # outputFilePath = "./TTbar_inclusive_FCA55055-C8F3-C44B-8DCC-6DCBC0B8B992.root"
