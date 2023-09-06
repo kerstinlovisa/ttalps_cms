@@ -12,7 +12,6 @@ using namespace std;
 CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<EventWriter> eventWriter_)
     : eventReader(eventReader_), eventWriter(eventWriter_), currentIndex(0) {
   if (eventReader->inputFile->Get("CutFlow")) {
-    hasInitial = true;
     info() << "Input file contains CutFlow directory - will store existing cutflow for output.\n";
 
     auto sourceDir = (TDirectory *)eventReader->inputFile->Get("CutFlow");
@@ -28,7 +27,7 @@ CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<
       currentIndex++;
     }
   }
-  if(eventWriter_==NULL) {
+  if(eventWriter_==nullptr) {
     info() << "No eventWriter given for CutFlowManager\n";
   }
 }
@@ -66,13 +65,14 @@ void CutFlowManager::UpdateCutFlow(string cutName) {
 }
 
 void CutFlowManager::SaveCutFlow() {
-  if (eventWriter == NULL) {
+  if (!eventWriter) {
     error() << "Error: No existing eventWriter for CutFlowManager - cannot save CutFlow\n";
   }
   if (!eventReader->inputFile->Get("CutFlow")) {
     info() << "Input file doesn't contain CutFlow directory yet... will create a new one in the output file.\n";
     eventWriter->outFile->mkdir("CutFlow");
   } 
+  eventWriter->outFile->mkdir("CutFlow");
   eventWriter->outFile->cd("CutFlow");
 
   for (auto &[cutName, sumOfWeights] : weightsAfterCuts) {

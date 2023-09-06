@@ -26,7 +26,6 @@ class CutFlowManager {
 
   std::map<std::string, float> weightsAfterCuts;
 
-  bool hasInitial = false;
   int currentIndex;
 };
 

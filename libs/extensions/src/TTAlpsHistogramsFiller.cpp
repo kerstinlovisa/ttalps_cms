@@ -103,7 +103,7 @@ void TTAlpsHistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared
   }
 }
 
-void TTAlpsHistogramsFiller::FillDefaultHistograms1D(const std::shared_ptr<Event> event) {
+void TTAlpsHistogramsFiller::FillDefaultVariables(const std::shared_ptr<Event> event) {
   for(auto &[histName, variableLocation] : defaultHistVariables) {
     if(variableLocation[0] == "Event") {
       // Assuming uint nObject from Event for now
@@ -122,7 +122,7 @@ void TTAlpsHistogramsFiller::FillLeadingPt(const std::shared_ptr<Event> event, s
   histogramsHandler->histograms1D[histName]->Fill(eventProcessor->GetMaxPt(event, variableLocation[0]));
 }
 
-void TTAlpsHistogramsFiller::FillSubLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation) {
+void TTAlpsHistogramsFiller::FillAllSubLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation) {
   
   float maxPt = eventProcessor->GetMaxPt(event, variableLocation[0]);
   auto collection = event->GetCollection(variableLocation[0]);
@@ -133,7 +133,7 @@ void TTAlpsHistogramsFiller::FillSubLeadingPt(const std::shared_ptr<Event> event
     }
 }
 
-void TTAlpsHistogramsFiller::FillCutFlowHist(const std::shared_ptr<CutFlowManager> cutFlowManager) {
+void TTAlpsHistogramsFiller::FillCutFlow(const std::shared_ptr<CutFlowManager> cutFlowManager) {
   int bin = 1;
   int cutFlowLength = cutFlowManager->GetCutFlow().size();
   TH1D* cutFlowHist = new TH1D("cutFlow", "cutFlow", cutFlowLength, 0, cutFlowLength+1);
@@ -145,10 +145,10 @@ void TTAlpsHistogramsFiller::FillCutFlowHist(const std::shared_ptr<CutFlowManage
   histogramsHandler->histograms1D["cutFlow"] = cutFlowHist;
 }
 
-void TTAlpsHistogramsFiller::FillTTAlpsHists(const std::shared_ptr<Event> event) {
+void TTAlpsHistogramsFiller::FillCustomTTAlpsVariables(const std::shared_ptr<Event> event) {
 
   for(auto &[histName, variableLocation] : ttalpsHistVariables) {
-    if(variableLocation[1] == "subleading_pt") FillSubLeadingPt(event, histName, variableLocation);
+    if(variableLocation[1] == "subleading_pt") FillAllSubLeadingPt(event, histName, variableLocation);
     else if(variableLocation[1] == "leading_pt") FillLeadingPt(event, histName, variableLocation);
   }
 }
