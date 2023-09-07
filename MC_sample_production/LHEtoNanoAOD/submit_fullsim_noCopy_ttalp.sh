@@ -134,12 +134,12 @@ cd $condordir
 cmsRun run_MiniAOD_noCopy.py $(($1+0)) $file_collection $file_name $condordir
 cp output/UL_MiniAOD/$file_collection/${file_name}_MiniAOD_$(($1+0)).root $output_dir/UL_MiniAOD/$file_collection/.
 
-cmsrel CMSSW_10_6_29
-cd CMSSW_10_6_29/src
+# cmsrel CMSSW_10_6_29
+cd $production_dir/CMSSW_10_6_29/src
 eval `scramv1 runtime -sh`
 
 echo 7_run_NanoAOD
-cp $production_dir/Hadronizers/run_NanoAOD.py $condordir
+cp $production_dir/Hadronizers/run_NanoAOD.py $production_dir/Hadronizers/ttalps_cff.py $condordir
 mkdir -p $condordir/output/UL_NanoAOD/$file_collection
 cd $condordir
 cmsRun run_NanoAOD.py $(($1+0)) $file_collection $file_name $condordir
