@@ -31,8 +31,10 @@ void HexaquarksHistogramsFiller::FillMinvHists(vector<vector<TLorentzVector>> &p
           auto sum = p0 + p1 + p2;
           histogramsHandler->histograms1D[histName]->Fill(sum.M());
 
-          if (fabs(p0.Eta() - p1.Eta()) < 1.5 && fabs(p1.Eta() - p2.Eta()) < 1.5 && fabs(p0.Eta() - p2.Eta()) < 1.5 &&
-              fabs(p0.DeltaPhi(p1)) < 1.5 && fabs(p1.DeltaPhi(p2)) < 1.5 && fabs(p0.DeltaPhi(p2)) < 1.5) {
+          // if (fabs(p0.Eta() - p1.Eta()) < 1.5 && fabs(p1.Eta() - p2.Eta()) < 1.5 && fabs(p0.Eta() - p2.Eta()) < 1.5 &&
+          //     fabs(p0.DeltaPhi(p1)) < 1.5 && fabs(p1.DeltaPhi(p2)) < 1.5 && fabs(p0.DeltaPhi(p2)) < 1.5) {
+
+          if (fabs(p0.DeltaR(p1)) < 1.5 && fabs(p1.DeltaR(p2)) < 1.5 && fabs(p0.DeltaR(p2)) < 1.5) {
             histogramsHandler->histograms1D[histNameAfterCuts]->Fill(sum.M());
           }
         }
@@ -58,6 +60,18 @@ void HexaquarksHistogramsFiller::FillDeltaHists(vector<vector<TLorentzVector>> &
           histogramsHandler->histograms1D[histName]->Fill(fabs(p0.DeltaR(p1)));
         }
       }
+    }
+  }
+}
+
+void HexaquarksHistogramsFiller::FillPtHists(vector<vector<TLorentzVector>> &particle, string histName) {
+  histogramsHandler->CheckHistogram(histName);
+
+  int nEvents = particle.size();
+
+  for (int iEvent = 0; iEvent < nEvents; iEvent++) {
+    for (auto p0 : particle[iEvent]) {
+      histogramsHandler->histograms1D[histName]->Fill(p0.Pt());
     }
   }
 }

@@ -15,6 +15,10 @@ class Electron {
  public:
   Electron(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
 
+  auto Get(std::string branchName) { return physicsObject->Get(branchName); }
+  std::string GetOriginalCollection() { return physicsObject->GetOriginalCollection(); }
+  void Reset() { physicsObject->Reset(); }
+
   inline float GetPt() { return physicsObject->Get("pt"); }
   inline float GetEta() { return physicsObject->Get("eta"); }
   inline float GetPhi() { return physicsObject->Get("phi"); }

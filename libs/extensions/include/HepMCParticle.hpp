@@ -7,9 +7,13 @@
 class HepMCParticle;
 typedef Collection<std::shared_ptr<HepMCParticle>> HepMCParticles;
 
-class HepMCParticle {
+class HepMCParticle : public std::enable_shared_from_this<HepMCParticle> {
  public:
   HepMCParticle(std::shared_ptr<PhysicsObject> physicsObject_, int index_, int maxNdaughters_);
+
+  auto Get(std::string branchName) { return physicsObject->Get(branchName); }
+  std::string GetOriginalCollection() { return physicsObject->GetOriginalCollection(); }
+  void Reset() { physicsObject->Reset(); }
 
   float GetPx() { return physicsObject->Get("px"); }
   float GetPy() { return physicsObject->Get("py"); }
@@ -19,8 +23,8 @@ class HepMCParticle {
   int GetStatus() { return physicsObject->Get("status"); }
   int GetPid() { return physicsObject->Get("pid"); }
 
-  bool IsLastJPsi() { return abs(GetPid()) == 443 && GetStatus() == 2; }
-  bool IsLastPion() { return abs(GetPid()) == 211 && GetStatus() == 1; }
+  bool IsJPsi() { return abs(GetPid()) == 443 /* && GetStatus() == 2*/; }
+  bool IsPion() { return abs(GetPid()) == 211 /* && GetStatus() == 1*/; }
   int GetCharge() { return GetPid() > 0 ? 1 : -1; }
 
   TLorentzVector GetLorentzVector() {
