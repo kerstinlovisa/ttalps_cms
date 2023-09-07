@@ -13,7 +13,7 @@ class CutFlowManager;
 
 class CutFlowManager {
  public:
-  CutFlowManager(std::shared_ptr<EventReader> eventReader_, std::shared_ptr<EventWriter> eventWriter_=NULL);
+  CutFlowManager(std::shared_ptr<EventReader> eventReader_, std::shared_ptr<EventWriter> eventWriter_=nullptr);
   ~CutFlowManager();
 
   void UpdateCutFlow(std::string cutName);

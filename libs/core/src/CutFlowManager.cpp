@@ -27,7 +27,7 @@ CutFlowManager::CutFlowManager(shared_ptr<EventReader> eventReader_, shared_ptr<
       currentIndex++;
     }
   }
-  if(eventWriter_==nullptr) {
+  if(!eventWriter_) {
     info() << "No eventWriter given for CutFlowManager\n";
   }
 }
