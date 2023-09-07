@@ -13,11 +13,12 @@ class CutFlowManager;
 
 class CutFlowManager {
  public:
-  CutFlowManager(std::shared_ptr<EventReader> eventReader_, std::shared_ptr<EventWriter> eventWriter_);
+  CutFlowManager(std::shared_ptr<EventReader> eventReader_, std::shared_ptr<EventWriter> eventWriter_=nullptr);
   ~CutFlowManager();
 
   void UpdateCutFlow(std::string cutName);
   void SaveCutFlow();
+  std::map<std::string, float> GetCutFlow();
 
  private:
   std::shared_ptr<EventReader> eventReader;
@@ -25,7 +26,6 @@ class CutFlowManager {
 
   std::map<std::string, float> weightsAfterCuts;
 
-  bool hasInitial = false;
   int currentIndex;
 };
 

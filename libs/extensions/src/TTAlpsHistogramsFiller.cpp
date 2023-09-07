@@ -6,7 +6,6 @@
 
 #include "ConfigManager.hpp"
 #include "TTAlpsSelections.hpp"
-#include "EventProcessor.hpp"
 #include "ExtensionsHelpers.hpp"
 
 using namespace std;
@@ -14,6 +13,8 @@ using namespace std;
 TTAlpsHistogramsFiller::TTAlpsHistogramsFiller(string configPath, shared_ptr<HistogramsHandler> histogramsHandler_)
     : histogramsHandler(histogramsHandler_) {
   auto configManager = std::make_unique<ConfigManager>(configPath);
+
+  eventProcessor = make_unique<EventProcessor>();
 
   try {
     configManager->GetMap("triggerSets", triggerSets);
@@ -25,11 +26,16 @@ TTAlpsHistogramsFiller::TTAlpsHistogramsFiller(string configPath, shared_ptr<His
   }
 
   try {
-    configManager->GetMap("histVariables", histVariables);
+    configManager->GetMap("defaultHistVariables", defaultHistVariables);
   }
   catch (const Exception& e){
-    warn() << "Couldn't read histVariables from config file ";
-    warn() << "(which may be fine if you don't want pre-defined histograms)\n";
+    warn() << "Couldn't read defaultHistVariables from config file - no default histograms will be included";
+  }
+  try {
+    configManager->GetMap("ttalpsHistVariables", ttalpsHistVariables);
+  }
+  catch (const Exception& e){
+    warn() << "Couldn't read ttalpsHistVariables from config file - no custom ttalps histograms will be included";
   }
 
 }
@@ -68,8 +74,6 @@ void TTAlpsHistogramsFiller::FillTriggerVariables(const std::shared_ptr<Event> e
   if (!histogramsHandler->histograms1D.count(jetPtName)) error() << "Couldn't find key: " << jetPtName << " in histograms map\n";
   if (!histogramsHandler->histograms1D.count(jetHtName)) error() << "Couldn't find key: " << jetHtName << " in histograms map\n";
 
-  auto eventProcessor = make_unique<EventProcessor>();
-
   histogramsHandler->histograms1D[muonName]->Fill(eventProcessor->GetMaxPt(event, "Muon"));
   histogramsHandler->histograms1D[eleName]->Fill(eventProcessor->GetMaxPt(event, "Electron"));
   histogramsHandler->histograms1D[jetPtName]->Fill(eventProcessor->GetMaxPt(event, "Jet"));
@@ -99,8 +103,8 @@ void TTAlpsHistogramsFiller::FillTriggerVariablesPerTriggerSet(const std::shared
   }
 }
 
-void TTAlpsHistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event) {
-  for(auto &[histName, variableLocation] : histVariables) {
+void TTAlpsHistogramsFiller::FillDefaultVariables(const std::shared_ptr<Event> event) {
+  for(auto &[histName, variableLocation] : defaultHistVariables) {
     if(variableLocation[0] == "Event") {
       // Assuming uint nObject from Event for now
       uint eventVariable = event->Get(variableLocation[1]);
@@ -111,5 +115,40 @@ void TTAlpsHistogramsFiller::FillHistograms1D(const std::shared_ptr<Event> event
         histogramsHandler->histograms1D[histName]->Fill(object->Get(variableLocation[1]));
       }
     }
+  }
+}
+
+void TTAlpsHistogramsFiller::FillLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation) {
+  histogramsHandler->histograms1D[histName]->Fill(eventProcessor->GetMaxPt(event, variableLocation[0]));
+}
+
+void TTAlpsHistogramsFiller::FillAllSubLeadingPt(const std::shared_ptr<Event> event, std::string histName, std::vector<std::string> variableLocation) {
+  
+  float maxPt = eventProcessor->GetMaxPt(event, variableLocation[0]);
+  auto collection = event->GetCollection(variableLocation[0]);
+    for(auto object : *collection){
+      float pt = object->Get("pt");
+      if(pt == maxPt) continue;
+      histogramsHandler->histograms1D[histName]->Fill(pt);
+    }
+}
+
+void TTAlpsHistogramsFiller::FillCutFlow(const std::shared_ptr<CutFlowManager> cutFlowManager) {
+  int bin = 1;
+  int cutFlowLength = cutFlowManager->GetCutFlow().size();
+  TH1D* cutFlowHist = new TH1D("cutFlow", "cutFlow", cutFlowLength, 0, cutFlowLength+1);
+  for(auto &[name, weight] : cutFlowManager->GetCutFlow()){
+    cutFlowHist->SetBinContent(bin, weight);
+    cutFlowHist->GetXaxis()->SetBinLabel(bin, name.c_str());
+    bin++;
+  }
+  histogramsHandler->histograms1D["cutFlow"] = cutFlowHist;
+}
+
+void TTAlpsHistogramsFiller::FillCustomTTAlpsVariables(const std::shared_ptr<Event> event) {
+
+  for(auto &[histName, variableLocation] : ttalpsHistVariables) {
+    if(variableLocation[1] == "subleading_pt") FillAllSubLeadingPt(event, histName, variableLocation);
+    else if(variableLocation[1] == "leading_pt") FillLeadingPt(event, histName, variableLocation);
   }
 }
