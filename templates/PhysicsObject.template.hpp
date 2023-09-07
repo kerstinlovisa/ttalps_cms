@@ -11,6 +11,10 @@ class TemplateName {
  public:
   TemplateName(std::shared_ptr<PhysicsObject> physicsObject_) : physicsObject(physicsObject_) {}
 
+  auto Get(std::string branchName) { return physicsObject->Get(branchName); }
+  std::string GetOriginalCollection() { return physicsObject->GetOriginalCollection(); }
+  void Reset() { physicsObject->Reset(); }
+
  private:
   std::shared_ptr<PhysicsObject> physicsObject;
 };

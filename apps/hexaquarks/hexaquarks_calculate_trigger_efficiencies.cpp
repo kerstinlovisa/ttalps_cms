@@ -6,6 +6,7 @@
 #include "HexaquarksHistogramsFiller.hpp"
 #include "HistogramsHandler.hpp"
 #include "Profiler.hpp"
+#include "HepMCProcessor.hpp"
 
 using namespace std;
 
@@ -33,10 +34,15 @@ int main(int argc, char **argv) {
   auto eventReader = make_unique<EventReader>(configPath);
   auto eventProcessor = make_unique<EventProcessor>();
   auto configManager = make_unique<ConfigManager>(configPath);
+  auto hepMCProcessor = make_unique<HepMCProcessor>();
 
   Profiler &profiler = Profiler::GetInstance();
 
   histogramsHandler->SetupHistograms();
+
+  int nMixedEvents;
+  configManager->GetValue("nMixedEvents", nMixedEvents);
+  info() << "Requested number of mixed entries: " << nMixedEvents << "\n";
 
   info() << "Storing interesting particles' vectors...\n";
   vector<vector<TLorentzVector>> jPsi, piPlus, piMinus;
@@ -62,19 +68,21 @@ int main(int argc, char **argv) {
 
     for (auto particle : hepMCparticles) {
       bool fromHexa = false;
-      if (particle->IsLastJPsi() || particle->IsLastPion()) {
+      
+      if (particle->IsJPsi() || particle->IsPion()) {
+        if(!hepMCProcessor->IsLastCopy(particle, hepMCparticles)) continue;
         fromHexa = particle->IsMother(511, hepMCparticles) || particle->IsMother(521, hepMCparticles);
       }
 
-      if (particle->IsLastJPsi()) {
+      if (particle->IsJPsi()) {
         j.push_back(particle->GetLorentzVector());
         if (fromHexa) jFromHexa.push_back(particle->GetLorentzVector());
 
-      } else if (particle->IsLastPion() && particle->GetCharge() > 0) {
+      } else if (particle->IsPion() && particle->GetCharge() > 0) {
         p.push_back(particle->GetLorentzVector());
         if (fromHexa) pFromHexa.push_back(particle->GetLorentzVector());
 
-      } else if (particle->IsLastPion() && particle->GetCharge() < 0) {
+      } else if (particle->IsPion() && particle->GetCharge() < 0) {
         m.push_back(particle->GetLorentzVector());
         if (fromHexa) mFromHexa.push_back(particle->GetLorentzVector());
       }
@@ -104,6 +112,10 @@ int main(int argc, char **argv) {
   histogramsFiller->FillDeltaHists(jPsi, piPlus, "delta_r_jPsi_pi");
   histogramsFiller->FillDeltaHists(jPsi, piMinus, "delta_r_jPsi_pi");
 
+  histogramsFiller->FillPtHists(jPsi, "pt_jPsi");
+  histogramsFiller->FillPtHists(piPlus, "pt_pi");
+  histogramsFiller->FillPtHists(piMinus, "pt_pi");
+
   histogramsFiller->FillDeltaHists(piPlusFromHexa, piMinusFromHexa, "delta_eta_pi_pi_from_hexa");
   histogramsFiller->FillDeltaHists(jPsiFromHexa, piPlusFromHexa, "delta_eta_jPsi_pi_from_hexa");
   histogramsFiller->FillDeltaHists(jPsiFromHexa, piMinusFromHexa, "delta_eta_jPsi_pi_from_hexa");
@@ -116,13 +128,13 @@ int main(int argc, char **argv) {
   histogramsFiller->FillDeltaHists(jPsiFromHexa, piPlusFromHexa, "delta_r_jPsi_pi_from_hexa");
   histogramsFiller->FillDeltaHists(jPsiFromHexa, piMinusFromHexa, "delta_r_jPsi_pi_from_hexa");
 
-  int nMixedEvents;
-  configManager->GetValue("nMixedEvents", nMixedEvents);
+  histogramsFiller->FillPtHists(jPsiFromHexa, "pt_jPsi_from_hexa");
+  histogramsFiller->FillPtHists(piPlusFromHexa, "pt_pi_from_hexa");
+  histogramsFiller->FillPtHists(piMinusFromHexa, "pt_pi_from_hexa");
+
 
   bool mixingFinished = false;
-  int nMixedEntries = 0;
-
-  info() << "Requested number of mixed entries: " << nMixedEvents << "\n";
+  long long nMixedEntries = 0;  
 
   info() << "Collecting particles for mixing..." << endl;
   vector<vector<TLorentzVector>> jForMixing, pForMixing, mForMixing;

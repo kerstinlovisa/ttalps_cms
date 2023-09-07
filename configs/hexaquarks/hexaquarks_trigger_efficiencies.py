@@ -1,17 +1,16 @@
 # nEvents = 60000
-nEvents = 100
-printEveryNevents = 10
+nEvents = 1000
+printEveryNevents = 1000
 
-# nMixedEvents = 10000000
-nMixedEvents = 100
-
+# nMixedEvents = 100000000
+nMixedEvents = 1000
 maxNdaughters = 10
 
 # inputFilePath = "/Users/jeremi/Documents/Physics/DESY/hexaquarks/data/hexaquarks_lclc.root"
-# outputFilePath = "./hexaquarks_lclc.root"
+# histogramsOutputFilePath = "./hexaquarks_lclc.root"
 
 inputFilePath = "/Users/jeremi/Documents/Physics/DESY/hexaquarks/data/hexaquarks_lclc_jpsi2mumu.root"
-histogramsOutputFilePath = "./test.root"
+histogramsOutputFilePath = "./hexaquarks_lclc_jpsi2mumu_small.root"
 
 
 histParams = {
@@ -35,7 +34,13 @@ histParams = {
     "delta_phi_pi_pi_from_hexa": ("delta_phi_pi_pi_from_hexa", 1000, 0, 3.5, ""),
     "delta_phi_jPsi_pi_from_hexa": ("delta_phi_jPsi_pi_from_hexa", 1000, 0, 3.5, ""),
     "delta_r_pi_pi_from_hexa": ("delta_r_pi_pi_from_hexa", 1000, 0, 10, ""),
-    "delta_r_jPsi_pi_from_hexa": ("delta_r_jPsi_pi_from_hexa", 1000, 0, 10, ""),   
+    "delta_r_jPsi_pi_from_hexa": ("delta_r_jPsi_pi_from_hexa", 1000, 0, 10, ""),
+    
+    "pt_pi": ("pt_pi", 1000, 0, 20, ""),
+    "pt_jPsi": ("pt_jPsi", 1000, 0, 20, ""),
+    
+    "pt_pi_from_hexa": ("pt_pi_from_hexa", 1000, 0, 20, ""),
+    "pt_jPsi_from_hexa": ("pt_jPsi_from_hexa", 1000, 0, 20, ""),
 }
 
 histTitles = {key: params[0] for key, params in histParams.items()}

@@ -1,7 +1,8 @@
 from ROOT import TFile, kBlue, kGreen, TCanvas, TH1D, gStyle
 
 # input_file_path = "../build/hexaquarks_lclc.root"
-input_file_path = "../build/hexaquarks_lclc_jpsi2mumu.root"
+# input_file_path = "../build/hexaquarks_lclc_jpsi2mumu.root"
+input_file_path = "../build/hexaquarks_lclc_jpsi2mumu_small.root"
 
 def main():
   gStyle.SetLineScalePS(1)
@@ -15,13 +16,15 @@ def main():
     "delta_phi_pi_pi",
     "delta_r_jPsi_pi",
     "delta_r_pi_pi",
+    "pt_jPsi",
+    "pt_pi",
   ]
   
   hists = {}
   hists_from_hexa = {}
   
   canvas = TCanvas("canvas", "canvas", 2880, 1800)
-  canvas.Divide(2, 3)
+  canvas.Divide(3, 3)
   
   i_pad = 1
   for hist_name in hist_names:

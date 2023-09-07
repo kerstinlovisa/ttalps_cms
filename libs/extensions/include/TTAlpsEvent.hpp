@@ -12,8 +12,12 @@ class TTAlpsEvent {
  public:
   TTAlpsEvent(std::shared_ptr<Event> event_) : event(event_) {}
 
+  auto Get(std::string branchName) { return event->Get(branchName); }
+  std::shared_ptr<PhysicsObjects> GetCollection(std::string name) const { return event->GetCollection(name); }
+  int GetCollectionSize(std::string name) { return event->GetCollectionSize(name); }
+  void AddExtraCollection(std::string name, std::shared_ptr<PhysicsObjects> collection) { event->AddExtraCollection(name, collection); }
+  
   std::string GetTTbarEventCategory();
-
   
  private:
   std::shared_ptr<Event> event;
