@@ -1,4 +1,4 @@
-from ROOT import TFile, TGraph, TCanvas, gPad, gStyle, gROOT, TLegend, TLine, TColor
+from ROOT import TFile, TGraph, TCanvas, gPad, gStyle, gROOT, TLegend, TLine, TColor, TObject
 import ROOT
 import importlib
 import sys, os
@@ -18,6 +18,8 @@ def getStackandLegendDicts(config,file_type,efficiency=False):
   legend_position = config.signal_legend_position
   if(file_type=="background"):
     legend_position = config.background_legend_position
+  elif(file_type=="data"):
+    legend_position = config.data_legend_position
 
   if(efficiency == False):
     for variable, params in config.variables.items():
@@ -52,9 +54,13 @@ def getNBackgroundEvents(config):
     if(file_type!="background"):
       continue
     input_path = config.background_path
-    input_file = TFile.Open(input_path+"/"+filename, "READ")
+    skim = config.skim
+    input_file = TFile.Open(input_path+"/"+name+"/"+skim+"/"+filename, "READ")
     for variable, params in config.variables.items():
       hist = input_file.Get(variable)
+      if hist is None or type(hist) is TObject:
+        print(f"Couldn't find hist: {variable}")
+        continue
       n_events = getTotalEntires(hist)
       tot_background_events[variable] = n_events
 
@@ -72,6 +78,11 @@ def setupHist(hist,config,params,linestyles,file_type,norm_scale=-1):
   if(file_type=="signal"):
     hist.SetLineStyle(line_style)
     hist.SetLineColor(line_color)
+  elif(file_type=="data"):
+    hist.SetLineColor(ROOT.kBlack)
+    hist.SetMarkerStyle(20)
+    hist.SetMarkerSize(1)
+    hist.SetMarkerColor(ROOT.kBlack)
   else:
     hist.SetLineColorAlpha(line_color, 0)
     hist.SetFillColorAlpha(line_color, 0.7)
@@ -80,6 +91,9 @@ def setupHist(hist,config,params,linestyles,file_type,norm_scale=-1):
 
 
 def setupFigure(stack, params):
+  if stack is None or type(stack) is TObject:
+    return
+  
   title,logy,norm1,rebin,xmin,xmax,ymin,ymax,xlabel,ylabel = params
 
   if(ymin>0):
@@ -87,10 +101,14 @@ def setupFigure(stack, params):
   if(ymax>0):
     stack.GetYaxis().SetMaximum(ymax)
 
-  stack.GetXaxis().SetLimits(xmin, xmax)
-  stack.GetXaxis().SetTitle(xlabel)
-  stack.GetYaxis().SetTitle(ylabel)
-  stack.SetTitle(title)
+  try:
+    stack.GetXaxis().SetLimits(xmin, xmax)
+    stack.GetXaxis().SetTitle(xlabel)
+    stack.GetYaxis().SetTitle(ylabel)
+    stack.SetTitle(title)
+  except:
+    print("Couldn't set axes limits")
+    return
 
 
 def getEfficiencyHist(input_hist):
@@ -101,18 +119,30 @@ def getEfficiencyHist(input_hist):
   return hist
 
 
-def addHistsToStacks(config, input_files, filename, signal_hists, background_hists, signal_legends, background_legends, file_type, tot_background_events, efficiency=False):
+def addHistsToStacks(config, input_files, filename, signal_hists, background_hists, data_hists, signal_legends, background_legends, data_legends, file_type, tot_background_events, efficiency=False):
   backgrounds_included = False
+  data_included = False
+  
   if(efficiency==False):
     for variable, params in config.variables.items():
       hist = input_files[filename].Get(variable)
+      if hist is None or type(hist) is TObject:
+        print(f"Couldn't find hist: {variable}")
+        continue
+      
       if(hist.GetEntries() == 0):
+        print(f"Hist empty: {variable}")
         continue
       
       if(file_type=="signal"):
         setupHist(hist, config, params, config.lines[filename], file_type)
         signal_hists[variable].Add(hist)
         signal_legends[variable].AddEntry(hist, config.legends[filename], "l")
+      elif(file_type=="data"):
+        setupHist(hist, config, params, config.lines[filename], file_type)
+        data_hists[variable].Add(hist)
+        data_legends[variable].AddEntry(hist, config.legends[filename], "pl")
+        data_included = True
       else:
         background_scale = getTotalEntires(hist)/tot_background_events[variable]
         setupHist(hist, config, params, config.lines[filename], file_type)
@@ -124,7 +154,13 @@ def addHistsToStacks(config, input_files, filename, signal_hists, background_his
       variable, title, xlabel, ylabel = eff_params
       params = config.variables[variable]
       hist = input_files[filename].Get(variable)
+      
+      if hist is None or type(hist) is TObject:
+        print(f"Couldn't find hist: {variable}")
+        continue
+      
       if(hist.GetEntries() == 0):
+        print(f"Hist empty: {variable}")
         continue
       
       hist_eff = getEfficiencyHist(hist)
@@ -133,16 +169,27 @@ def addHistsToStacks(config, input_files, filename, signal_hists, background_his
         setupHist(hist, config, params, config.lines[filename], file_type)
         signal_hists[efficiency].Add(hist_eff)
         signal_legends[efficiency].AddEntry(hist_eff, config.legends[filename], "l")
+      elif(file_type=="data"):
+        setupHist(hist, config, params, config.lines[filename], file_type)
+        data_hists[efficiency].Add(hist_eff)
+        data_legends[efficiency].AddEntry(hist_eff, config.legends[filename], "l")
+        data_included = True
       else:
         setupHist(hist, config, params, config.lines[filename], file_type)
         background_hists[efficiency].Add(hist_eff)
         background_legends[efficiency].AddEntry(hist_eff, config.legends[filename], "f")
         backgrounds_included = True
 
-  return backgrounds_included
+  return backgrounds_included, data_included
 
 
-def drawStacks(config, backgrounds_included, signal_hists, background_hists, signal_legends, background_legends, efficiency=False):
+def drawStacks(config, backgrounds_included, data_included, signal_hists, background_hists, data_hists, signal_legends, background_legends, data_legends, efficiency=False):
+  
+  # create output path if it doesn't exist
+  if not os.path.exists(config.output_path):
+    os.makedirs(config.output_path)
+    
+  
   if(efficiency==False):
     for variable, params in config.variables.items():
       title,logy,norm1,rebin,xmin,xmax,ymin,ymax,xlabel,ylabel = params
@@ -156,14 +203,17 @@ def drawStacks(config, backgrounds_included, signal_hists, background_hists, sig
       if(backgrounds_included):
         background_hists[variable].Draw("hist nostack")
         setupFigure(background_hists[variable], params)
-
         signal_hists[variable].Draw("nostack same")
       else:
         signal_hists[variable].Draw("hist nostack")
         setupFigure(signal_hists[variable], params)
 
+      if data_included:
+        data_hists[variable].Draw("nostack same P")
+
       signal_legends[variable].Draw()
       background_legends[variable].Draw()
+      data_legends[variable].Draw()
     
       canvas.Update()
       canvas.SaveAs(config.output_path+"/"+variable+".pdf")
@@ -187,8 +237,12 @@ def drawStacks(config, backgrounds_included, signal_hists, background_hists, sig
         signal_hists[efficiency].Draw("hist nostack")
         setupFigure(signal_hists[efficiency], params)
 
+      if data_included:
+        data_hists[efficiency].Draw("nostack same")
+
       signal_legends[efficiency].Draw()
       background_legends[efficiency].Draw()
+      data_legends[efficiency].Draw()
     
       canvas.Update()
       canvas.SaveAs(config.output_path+"/"+efficiency+".pdf")
@@ -205,8 +259,12 @@ def main():
   signal_eff_hists, signal_eff_legends = getStackandLegendDicts(config,"signal", True)
   background_hists, background_legends = getStackandLegendDicts(config,"background")
   background_eff_hists, background_eff_legends = getStackandLegendDicts(config,"background", True)
+  data_hists, data_legends = getStackandLegendDicts(config,"data")
+  data_eff_hists, data_eff_legends = getStackandLegendDicts(config,"data", True)
 
   backgrounds_included = False
+  data_included = False
+  
   input_files = {}
   tot_background_events = getNBackgroundEvents(config)
 
@@ -214,15 +272,29 @@ def main():
     filename, file_type = fileInfo
     if(file_type=="signal"):
       input_path = config.signal_path
-    else:
+    elif(file_type=="data"):
+      input_path = config.data_path
+    elif(file_type=="background"):
       input_path = config.background_path
-    input_files[name] = TFile.Open(input_path+"/"+filename, "READ")
-
-    backgrounds_included = addHistsToStacks(config, input_files, name, signal_hists, background_hists, signal_legends, background_legends, file_type, tot_background_events)
-    backgrounds_included = addHistsToStacks(config, input_files, name, signal_eff_hists, background_eff_hists, signal_eff_legends, background_eff_legends, file_type, tot_background_events, True)
+    else:
+      print(f"\n\nERROR -- unrecognized file type: {file_type}\n\n")
+      continue
       
-  drawStacks(config, backgrounds_included, signal_hists, background_hists, signal_legends, background_legends)
-  drawStacks(config, backgrounds_included, signal_eff_hists, background_eff_hists, signal_eff_legends, background_eff_legends, True)
+    skim = config.skim
+    input_files[name] = TFile.Open(input_path+"/"+name+"/"+skim+"/"+filename, "READ")
+
+    b_included, d_included = addHistsToStacks(config, input_files, name, signal_hists, background_hists, data_hists, signal_legends, background_legends, data_legends, file_type, tot_background_events)
+    addHistsToStacks(config, input_files, name, signal_eff_hists, background_eff_hists, data_eff_hists, signal_eff_legends, background_eff_legends, data_eff_legends, file_type, tot_background_events, True)
+    
+    print(f"{d_included=}")
+    backgrounds_included = backgrounds_included or b_included
+    data_included = data_included or d_included 
+    
+    
+  print(f"\n\n {data_included=}")
+  
+  drawStacks(config, backgrounds_included, data_included, signal_hists, background_hists, data_hists, signal_legends, background_legends, data_legends)
+  drawStacks(config, backgrounds_included, data_included, signal_eff_hists, background_eff_hists, signal_eff_hists, signal_eff_legends, background_eff_legends, data_eff_legends, True)
   
 
 if __name__ == "__main__":
