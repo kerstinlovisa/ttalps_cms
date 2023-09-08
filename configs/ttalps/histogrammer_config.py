@@ -1,15 +1,15 @@
 nEvents = -1
 printEveryNevents = 1000
 
-# basePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/"
+basePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/backgrounds/"
 # basePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/signals/"
-basePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/collision_data/"
+# basePath = "/nfs/dust/cms/user/jniedzie/ttalps_cms/collision_data/"
 
 # basePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/backgrounds/"
 # basePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/signals/"
 # basePath = "/Users/jeremi/Documents/Physics/DESY/ttalps_cms.nosync/data/collision_data/"
 
-sampleName = "SingleMuon2018"
+sampleName = "ttHToMuMu"
 # skim = ""
 skim = "skimmed_looseSemileptonic"
 # skim = "skimmed_signalLike"
