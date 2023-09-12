@@ -14,14 +14,14 @@ skim = "skimmed_looseSemileptonic"
 # skim = "skimmed_signalLike"
 # skim = "skimmed_ttbarLike"
 
-# data must be listed after backgrounds for now
+# data&signals must be listed after backgrounds for now
 files = {
   #name                  filename     type(signal/background)
   # "tta_mAlp-0p35GeV"  :  ["tta_mAlp-0p35GeV_skimmed_looseSemileptonic_hists.root", "signal"],
   # "TTJets"            :  ["TTJets_skimmed_looseSemileptonic_hists.root", "background"],
   # "TTbar_inclusive"   :  ["TT_skimmed_looseSemileptonic_hists.root", "background"],
   
-  "tta_mAlp-0p35GeV": ("tta_mAlp-0p35GeV_nEvents-100000_hists.root", "signal"),
+  
   
   
   "ttZJets": ("EB2F627D-0570-7C4C-A561-C29B6E4F123A_hists.root", "background"),
@@ -47,7 +47,7 @@ files = {
   # "QCD_Pt_2400to3200": ("A937F1B0-3D60-4E4D-B9EF-F7882A82450E_hists.root", "background"),
   # "QCD_Pt_3200toInf": ("980542CA-9396-6344-88E3-EA9CCB639159_hists.root", "background"),
   
-  
+  "tta_mAlp-0p35GeV": ("tta_mAlp-0p35GeV_nEvents-100000_hists.root", "signal"),
   "SingleMuon2018": ("36ED9511-D46A-0C4F-A485-C2DF1C874906_hists.root", "data"),
 }
 
@@ -163,23 +163,23 @@ legend_position = {
 
 variables = {
 # key                    title         logy     norm1   rebin    xmin     xmax     ymin,  ymax,  xlabel                 ylabel
-  "n_muons"   :          ("",          False,   True,   1,       0,       10,      -1,    -1,    "Number of muons",    "# events (2018)"  ),
-  "muon_pt"   :          ("",          True,    True,   5,       0,       100,     -1,    -1,    "p_{T}^{#mu} [GeV]",  "# events (2018)"  ),
-  "muon_leading_pt" :    ("",          True,    True,   5,       0,       100,     -1,    -1,    "Leading p_{T}^{#mu} [GeV]",  "# events (2018)"  ),
-  "muon_subleading_pt" : ("",          True,    True,   5,       0,       100,     -1,    -1,    "All subleading p_{T}^{#mu} [GeV]",  "# events (2018)"  ),
-  "muon_eta"  :          ("",          True,    True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{#mu}",         "# events (2018)"  ),
+  "n_muons"   :          ("",          True,   True,   1,       0,       20,      1e1,    1e9,    "Number of muons",    "# events (2018)"  ),
+  "muon_pt"   :          ("",          True,    True,   5,       0,       500,     1e2,    1e8,    "p_{T}^{#mu} [GeV]",  "# events (2018)"  ),
+  "muon_leading_pt" :    ("",          True,    True,   5,       0,       500,     -1,    -1,    "Leading p_{T}^{#mu} [GeV]",  "# events (2018)"  ),
+  "muon_subleading_pt" : ("",          True,    True,   5,       0,       500,     -1,    -1,    "All subleading p_{T}^{#mu} [GeV]",  "# events (2018)"  ),
+  "muon_eta"  :          ("",          True,    True,   10,      -3.5,    3.5,     1e0,    1e10,    "#eta^{#mu}",         "# events (2018)"  ),
   "muon_dxy"  :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{xy}^{#mu}",       "# events (2018)"  ),
   "muon_dz"   :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{z}^{#mu}",        "# events (2018)"  ),
-  "n_eles"    :          ("",          False,   True,   1,       0,       10,      -1,    -1,    "Number of electrons","# events (2018)"  ),
-  "ele_pt"    :          ("",          True,    True,   5,       0,       200,     -1,    -1,    "p_{T}^{e} [GeV]",    "# events (2018)"  ),
+  "n_eles"    :          ("",          True,    True,   1,       0,       10,      1e0,    1e8,    "Number of electrons","# events (2018)"  ),
+  "ele_pt"    :          ("",          True,    True,   5,       0,       500,     10,    1e8,    "p_{T}^{e} [GeV]",    "# events (2018)"  ),
   # "ele_leading_pt"    :  ("",          True,    True,   5,       0,       200,     -1,    -1,    "Leading p_{T}^{e} [GeV]",    "# events (2018)"  ),
   # "ele_subleading_pt"  : ("",          True,    True,   5,       0,       200,     -1,    -1,    "All subleading p_{T}^{e} [GeV]",    "# events (2018)"  ),
-  "ele_eta"   :          ("",          True,    True,   10,      -2.5,    2.5,     1e-10,    1e10,    "#eta^{e}",           "# events (2018)"  ),
+  "ele_eta"   :          ("",          True,    True,   10,      -3.5,    3.5,     1e2,    1e9,    "#eta^{e}",           "# events (2018)"  ),
   "ele_dxy"   :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{xy}^{e}",         "# events (2018)"  ),
   "ele_dz"    :          ("",          True,    True,   2,       -10,     10,      -1,    -1,    "d_{z}^{e}",          "# events (2018)"  ),
-  "n_jets"    :          ("",          False,   True,   1,       0,       30,      -1,    -1,    "Number of jets",     "# events (2018)"  ),
-  "jet_pt"    :          ("",          True,    True,   5,       0,       200,     -1,    -1,    "p_{T}^{j} [GeV]",    "# events (2018)"  ),
-  "jet_eta"   :          ("",          True,    True,   10,      -2.5,    2.5,     -1,    -1,    "#eta^{j}",           "# events (2018)"  ),
+  "n_jets"    :          ("",          True,    True,   1,       0,       30,      1e0,   1e9,    "Number of jets",     "# events (2018)"  ),
+  "jet_pt"    :          ("",          True,    True,   5,       0,       500,     10,    1e8,    "p_{T}^{j} [GeV]",    "# events (2018)"  ),
+  "jet_eta"   :          ("",          True,    True,   10,      -3.5,    3.5,     1e0,    1e10,    "#eta^{j}",           "# events (2018)"  ),
   "jet_btagDeepB":       ("",          True,    True,   2,       -1,      1,       -1,    -1,    "jet btagDeepB",      "# events (2018)"  ),
   "cutFlow"   :          ("cutflow",   True,    False,  1,       0,       7,       -1,    -1,    "Selection",          "Number of events"  ),
 }

@@ -112,7 +112,7 @@ def addHistsToStacks(config, input_files, file_name, hists, legends, file_type, 
   file_type = config.files[file_name][1]
   
   # TODO: once we have all data included, this scaling should be removed
-  if file_type == "data":
+  if file_type != "background":
     cross_section = bck_entries
   
   background_count = 0
@@ -120,22 +120,23 @@ def addHistsToStacks(config, input_files, file_name, hists, legends, file_type, 
   first = True
   for name, values in variables.items():
     params = config.variables[values[0]] if efficiency else values
+    hist_name = values[0] if efficiency else name
+      
 
-    hist = input_files[file_name].Get(name)
+    hist = input_files[file_name].Get(hist_name)
     if not checkHist(hist):
-      print(f"Couldn't find hist or it is empty: {name}")
+      print(f"Couldn't find hist or it is empty: {hist_name}")
       continue
 
     if efficiency:
       hist = getEfficiencyHist(hist)
 
-    norm_scale = config.luminosity_2018 * cross_section if file_type != "data" else bck_entries
+    norm_scale = config.luminosity_2018 * cross_section if file_type == "background" else bck_entries
     setupHist(hist, params, config.lines[file_name], file_type, norm_scale)
     hists[file_type][name].Add(hist)
     legends[file_type][name].AddEntry(hist, config.legends[file_name], config.legend_types[file_type])
     
     if file_type == "background" and first:
-      print(f"adding entries for {name}, {file_name}")
       background_count += hist.Integral()
       first = False
       
@@ -219,8 +220,6 @@ def main():
     addHistsToStacks(config, input_files, name, hists_eff, legends_eff, file_type, background_entries, True)
 
     background_entries += entries
-
-    print(f"{background_entries=}")
 
     backgrounds_included |= file_type == "background"
     data_included |= file_type == "data"
