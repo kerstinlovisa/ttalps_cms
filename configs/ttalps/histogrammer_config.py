@@ -48,29 +48,29 @@ histogramsOutputFilePath = f"{basePath}/{sampleName}/{skim}/{histsFileName}"
 defaultHistParams = {
 # key              collection    variable      bins    xmin     xmax    outputdir  
   "n_muons"   :   ("Event",      "nMuon",      50,     0,       50,      ""  ),
-  "muon_pt"   :   ("Muon",       "pt",         400,    0,       200,     ""  ),
+  "muon_pt"   :   ("Muon",       "pt",         2000,    0,      1000,    ""  ),
   "muon_eta"  :   ("Muon",       "eta",        100,    -2.5,    2.5,     ""  ),
   "muon_dxy"  :   ("Muon",       "dxy",        400,    -20,     20,      ""  ),
   "muon_dz"   :   ("Muon",       "dz",         400,    -20,     20,      ""  ),
   "n_eles"    :   ("Event",      "nElectron",  50,     0,       50,      ""  ),
-  "ele_pt"    :   ("Electron",   "pt",         400,    0,       200,     ""  ),
+  "ele_pt"    :   ("Electron",   "pt",         2000,    0,      1000,    ""  ),
   "ele_eta"   :   ("Electron",   "eta",        100,    -2.5,    2.5,     ""  ),
   "ele_dxy"   :   ("Electron",   "dxy",        400,    -20,     20,      ""  ),
   "ele_dz"    :   ("Electron",   "dz",         400,    -20,     20,      ""  ),
   "n_jets"    :   ("Event",      "nJet",       50,     0,       50,      ""  ),
-  "jet_pt"    :   ("Jet",        "pt",         400,    0,       200,     ""  ),
+  "jet_pt"    :   ("Jet",        "pt",         2000,    0,      1000,    ""  ),
   "jet_eta"   :   ("Jet",        "eta",        100,    -2.5,    2.5,     ""  ),
   "jet_eta"   :   ("Jet",        "eta",        100,    -2.5,    2.5,     ""  ),
   "jet_btagDeepB":("Jet",        "btagDeepB",  200,    -1,      1,       ""  ),
 }
 
 ttalpsHistParams = {
-  "muon_leading_pt"   :   ("Muon",       "leading_pt",         400,    0,       200,     ""  ),
-  "muon_subleading_pt":   ("Muon",       "subleading_pt",      400,    0,       200,     ""  ),
-  "ele_leading_pt"    :   ("Electron",   "leading_pt",         400,    0,       200,     ""  ),
-  "ele_subleading_pt" :   ("Electron",   "subleading_pt",      400,    0,       200,     ""  ),
-  "jet_leading_pt"    :   ("Jet",        "leading_pt",         400,    0,       200,     ""  ),
-  "jet_subleading_pt" :   ("Jet",        "subleading_pt",      400,    0,       200,     ""  ),
+  "muon_leading_pt"   :   ("Muon",       "leading_pt",         2000,    0,       1000,     ""  ),
+  "muon_subleading_pt":   ("Muon",       "subleading_pt",      2000,    0,       1000,     ""  ),
+  "ele_leading_pt"    :   ("Electron",   "leading_pt",         2000,    0,       1000,     ""  ),
+  "ele_subleading_pt" :   ("Electron",   "subleading_pt",      2000,    0,       1000,     ""  ),
+  "jet_leading_pt"    :   ("Jet",        "leading_pt",         2000,    0,       1000,     ""  ),
+  "jet_subleading_pt" :   ("Jet",        "subleading_pt",      2000,    0,       1000,     ""  ),
 }
 
 defaultHistVariables = {key: (params[0],params[1]) for key, params in defaultHistParams.items()}
