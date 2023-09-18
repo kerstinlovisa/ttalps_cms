@@ -90,6 +90,10 @@ from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeMC
 #call to customisation function nanoAOD_customizeMC imported from PhysicsTools.NanoAOD.nano_cff
 process = nanoAOD_customizeMC(process)
 
+from ttalps_cff import ttalps_customizeMC
+
+process = ttalps_customizeMC(process)
+
 # End of customisation functions
 
 # Customisation from command line

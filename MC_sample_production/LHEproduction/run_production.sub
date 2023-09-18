@@ -1,7 +1,7 @@
 Universe              = vanilla
 executable            = run_production.sh
 #			                  process   part	    n_events	alp_mass (GeV)  ctau_0    output-option
-arguments             = tta       $(ProcId) 100 		  0.4             0         LHE
+arguments             = tta       $(ProcId) 10000 	  0.35            1e4       LHE
 #   output-options:  LHE, ROOT, BOTH
 GetEnv                = True
 output                = output/$(ClusterId).$(ProcId).out
@@ -10,4 +10,4 @@ log                   = log/$(ClusterId).log
 requirements 	      = (OpSysAndVer =?= "CentOS7")
 +JobFlavour           = "longlunch"
 
-queue 1
+queue 100

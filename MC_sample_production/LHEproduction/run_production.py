@@ -133,13 +133,15 @@ def clear_string(s):
     return s.replace(".", "p").replace("-", "m")
     
 
-def get_output_file_name(process, part, n_events, alp_mass):
+def get_output_file_name(process, part, n_events, alp_mass, alp_lifetime):
     alp_mass_name = clear_string(f"{alp_mass}")
     
     file_name = f"{process}"
     
     if process == "tta":
         file_name += f"_mAlp-{alp_mass_name}GeV"
+        if(float(alp_lifetime) > 0):
+            file_name += f"_ctau-{alp_lifetime}mm"
     file_name += f"_nEvents-{n_events}"
     file_name += f"_part-{part}"
     
@@ -168,7 +170,7 @@ def main():
 
     process = args.process
 
-    file_name = get_output_file_name(process, args.part, args.n_events, args.alp_mass)
+    file_name = get_output_file_name(process, args.part, args.n_events, args.alp_mass, args.lifetime)
 
     # prepare MG card
     to_change = {

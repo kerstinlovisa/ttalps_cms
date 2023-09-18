@@ -5,8 +5,8 @@ error = error/run_$(ClusterId)-$(Process).error
 log = log/run_$(ClusterId)-$(Process).log
 output = output/run_$(ClusterId)-$(Process).out
 executable = submit_fullsim_noCopy_ttalp.sh
-#           process      part   mass   events    GENevents/job
-arguments = $(Process)   0      1      100       10
+#           process      part   mass   events    GENevents/job   ctau
+arguments = $(Process)   0      0.35   10000     1000            -1
 Notification=never
 transfer_output_files = ""
 +JobFlavour           = "workday"
