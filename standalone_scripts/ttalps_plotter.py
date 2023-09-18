@@ -41,19 +41,27 @@ def getLegendDicts(config, file_type, efficiency=False):
   return legends_dict
 
 
-def setupHist(hist, params, linestyles, file_type, norm_scale=-1):
+def normalizeHist(hist, normalization_type, sample_type, lumi, cross_section):
+  
+  if normalization_type == "norm1":
+    if sample_type == "background":
+      hist.Scale(lumi*cross_section/total_backgrounds_integral)
+    else:
+      hist.Scale(1./hist.Integral())
+  elif normalization_type == "to_background":
+    if sample_type == "background":
+      # TODO: should do this one properly, dividing by initial number of events
+      hist.Scale(lumi*cross_section/hist.Integral())
+    else:
+      hist.Scale(lumi*total_backgrounds_cross_section/hist.Integral())
+
+def setupHist(hist, params, linestyles, sample_type):
   line_color, line_style = linestyles
   
-  norm1 = params[2]
-  if (norm1):
-    hist.Scale(1./hist.Integral())
-    if (norm_scale > 0):
-      hist.Scale(norm_scale)
-
-  if (file_type == "signal"):
+  if sample_type == "signal":
     hist.SetLineStyle(line_style)
     hist.SetLineColor(line_color)
-  elif (file_type == "data"):
+  elif sample_type == "data":
     hist.SetLineColor(ROOT.kBlack)
     hist.SetMarkerStyle(20)
     hist.SetMarkerSize(1)
@@ -104,16 +112,37 @@ def checkHist(hist):
   return True
 
 
-def addHistsToStacks(config, input_files, file_name, hists, legends, file_type, bck_entries, efficiency=False):
+def getTotalBackgroundsIntegral(config):
+  entries = 0
+  integral = 0
+  cross_section = 0
+  
+  for sample_name, file_info in config.files.items():
+    file_name, file_type = file_info
+    
+    if file_type != "background":
+      continue
+    
+    input_path = config.input_paths[file_type]
+    file = TFile.Open(input_path+"/"+sample_name+"/"+config.skim+"/"+file_name, "READ")
+
+    hist_name, _ = next(iter(config.variables.items()))
+    hist = file.Get(hist_name) 
+
+
+    integral += hist.Integral() * config.luminosity_2018 * config.cross_sections[sample_name]
+    entries += hist.Integral()
+    cross_section += config.cross_sections[sample_name]
+    
+  return entries, integral, cross_section
+
+def addHistsToStacks(config, input_files, file_name, hists, legends, file_type, efficiency=False):
   variables = config.efficiency_plots if efficiency else config.variables
 
   cross_section = config.cross_sections[file_name]
+  lumi = config.luminosity_2018
   
   file_type = config.files[file_name][1]
-  
-  # TODO: once we have all data included, this scaling should be removed
-  if file_type != "background":
-    cross_section = bck_entries
   
   background_count = 0
   
@@ -131,8 +160,10 @@ def addHistsToStacks(config, input_files, file_name, hists, legends, file_type, 
     if efficiency:
       hist = getEfficiencyHist(hist)
 
-    norm_scale = config.luminosity_2018 * cross_section if file_type == "background" else bck_entries
-    setupHist(hist, params, config.lines[file_name], file_type, norm_scale)
+    normalization_type = params[2]
+    normalizeHist(hist, normalization_type, file_type, lumi, cross_section)
+    
+    setupHist(hist, params, config.lines[file_name], file_type)
     hists[file_type][name].Add(hist)
     legends[file_type][name].AddEntry(hist, config.legends[file_name], config.legend_types[file_type])
     
@@ -208,7 +239,14 @@ def main():
 
   input_files = {}
   
-  background_entries = 0
+  global total_backgrounds_entries
+  global total_backgrounds_integral
+  global total_backgrounds_cross_section
+  total_backgrounds_entries, total_backgrounds_integral, total_backgrounds_cross_section = getTotalBackgroundsIntegral(config)
+  
+  print(f"Total backgrounds entries: {total_backgrounds_entries}")
+  print(f"Total backgrounds integral: {total_backgrounds_integral}")
+  print(f"Total backgrounds cross section: {total_backgrounds_cross_section}")
   
   for name, file_info in config.files.items():
     file_name, file_type = file_info
@@ -216,10 +254,8 @@ def main():
     skim = config.skim
     input_files[name] = TFile.Open(input_path+"/"+name+"/"+skim+"/"+file_name, "READ")
 
-    entries = addHistsToStacks(config, input_files, name, hists, legends, file_type, background_entries)
-    addHistsToStacks(config, input_files, name, hists_eff, legends_eff, file_type, background_entries, True)
-
-    background_entries += entries
+    addHistsToStacks(config, input_files, name, hists, legends, file_type)
+    addHistsToStacks(config, input_files, name, hists_eff, legends_eff, file_type, True)
 
     backgrounds_included |= file_type == "background"
     data_included |= file_type == "data"
