@@ -6,7 +6,7 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 export SCRAM_ARCH=slc7_amd64_gcc700
 export CMSSW_GIT_REFERENCE=/cvmfs/cms.cern.ch/cmssw.git
 
-#INPUT: $1: processId $2: part $3: mass $4: tot events $5: events/job for SIM
+#INPUT: $1: processId $2: part $3: mass $4: tot events $5: events/job for SIM $6: ctau
 
 production_dir=$(pwd)
 mass=`echo "$3" | tr . p`
@@ -15,7 +15,12 @@ mass=`echo "$3" | tr . p`
 # Either on 1 input lhe which gets divided into smaller files in the SIM step, 
 # given number of events/job
 # Or run over all events in several lhe-files, if part = -1 ($2)
-file_collection=tta_mAlp-${mass}GeV_nEvents-$4
+file_collection=tta_mAlp-${mass}GeV
+if [ "$6" != -1 ] #ctau
+then
+  file_collection=${file_collection}_ctau-${6}mm
+fi
+file_collection=${file_collection}_nEvents-$4
 # input_dir=/eos/user/l/lrygaard/TTALP/signal_LHE_files/$file_collection/
 # output_dir=/eos/user/l/lrygaard/TTALP/LHEtoNanoAOD_output
 input_dir=/nfs/dust/cms/user/lrygaard/ttalps_cms/signal_LHE_files/$file_collection/
